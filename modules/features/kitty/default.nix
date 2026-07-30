@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  flake.modules.homeManager.terminal = {
+  flake.modules.homeManager.kitty = {
     programs.kitty = {
       enable = true;
       font = {
