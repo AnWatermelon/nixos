@@ -1,6 +1,7 @@
 { config, ... }:
 {
-  config.flake.modules.homeManager.niri = { ... }: {
+  config.flake.modules.homeManager.niri = { inputs, ... }: {
+    imports = [ inputs.niri.homeModules.niri ];
     programs.niri.enable = true;
   };
 }
