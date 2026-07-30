@@ -1,0 +1,16 @@
+keys:
+  # User age key (for editing secrets from your workstation)
+  # Generate with: ssh-to-age -private-key -i ~/.ssh/id_ed25519
+  - &user_maxfh age1...  # REPLACE THIS WITH YOUR ACTUAL AGE PUBLIC KEY
+
+  # System SSH host key (for decrypting secrets at boot on desktop)
+  # Generate with: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+  - &host_desktop age1...  # REPLACE THIS WITH YOUR ACTUAL HOST AGE PUBLIC KEY
+
+creation_rules:
+  # All secrets use both user key (for editing) and host keys (for boot decryption)
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *user_maxfh
+          - *host_desktop
