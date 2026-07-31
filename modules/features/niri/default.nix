@@ -20,7 +20,7 @@ in
       };
 
       spawn-at-startup = [
-	{ argv - ["noctalia"]; }
+	{ argv = ["noctalia"]; }
       ];
 
       layout = {
