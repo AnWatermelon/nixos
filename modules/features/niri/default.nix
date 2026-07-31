@@ -19,10 +19,6 @@ in
         };
       };
 
-      spawn-at-startup = [
-	{ argv = ["noctalia"]; }
-      ];
-
       layout = {
         gaps = 16;
         center-focused-column = "never";
