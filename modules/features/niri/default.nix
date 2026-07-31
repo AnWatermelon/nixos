@@ -47,7 +47,7 @@ in
       };
 
       spawn-at-startup = [
-        { command = "noctalia"; }
+        { command = [ "noctalia" ]; }
       ];
 
       screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
