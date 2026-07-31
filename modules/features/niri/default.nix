@@ -10,7 +10,6 @@ in
     programs.niri.settings = {
       input = {
         keyboard = {
-          xkb = { };
           numlock = true;
         };
         touchpad = {
@@ -31,16 +30,11 @@ in
 
         focus-ring = {
           width = 4;
-          active-color.color = "#f0b0ff";
-          inactive-color.color = "#131313";
         };
 
         border = {
           enable = false;
           width = 4;
-          active-color.color = "#f0b0ff";
-          inactive-color.color = "#131313";
-          urgent-color.color = "#ffb4ab";
         };
 
         shadow = {
@@ -48,27 +42,15 @@ in
           spread = 5;
           offset.x = 0;
           offset.y = 5;
-          color = "#00000070";
         };
 
-        tab-indicator = {
-          active-color.color = "#f0b0ff";
-          inactive-color.color = "#662f78";
-          urgent-color.color = "#ffb4ab";
-        };
-
-        insert-hint.color = "#f0b0ff80";
       };
 
       spawn-at-startup = [
-        { spawn = [ "noctalia" ]; }
+        { command = "noctalia"; }
       ];
 
       screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
-
-      hotkey-overlay = { };
-
-      animations = { };
 
       window-rules = [
         {
@@ -88,34 +70,33 @@ in
       binds = {
         "Mod+Shift+Slash".action."show-hotkey-overlay" = [ ];
         "Mod+T" = {
-          hotkey-overlay-title = "Open a Terminal: kitty";
-          action.spawn = [ "kitty" ];
+          hotkey-overlay.title = "Open a Terminal: kitty";
+          action.spawn = "kitty";
         };
         "Super+Alt+S" = {
           allow-when-locked = true;
-          hotkey-overlay-title = null;
-          action.spawn-sh = [ "pkill orca || exec orca" ];
+          action.spawn-sh = "pkill orca || exec orca";
         };
 
         "XF86AudioPlay" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "playerctl play-pause" ];
+          action.spawn-sh = "playerctl play-pause";
         };
         "XF86AudioStop" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "playerctl stop" ];
+          action.spawn-sh = "playerctl stop";
         };
         "XF86AudioPrev" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "playerctl previous" ];
+          action.spawn-sh = "playerctl previous";
         };
         "XF86AudioNext" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "playerctl next" ];
+          action.spawn-sh = "playerctl next";
         };
         "XF86AudioMicMute" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle" ];
+          action.spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
         };
 
         "Mod+O" = { repeat = false; action."toggle-overview" = [ ]; };
@@ -180,24 +161,24 @@ in
         "Mod+Ctrl+Shift+WheelScrollDown".action."move-column-right" = [ ];
         "Mod+Ctrl+Shift+WheelScrollUp".action."move-column-left" = [ ];
 
-        "Mod+1".action."focus-workspace" = [ 1 ];
-        "Mod+2".action."focus-workspace" = [ 2 ];
-        "Mod+3".action."focus-workspace" = [ 3 ];
-        "Mod+4".action."focus-workspace" = [ 4 ];
-        "Mod+5".action."focus-workspace" = [ 5 ];
-        "Mod+6".action."focus-workspace" = [ 6 ];
-        "Mod+7".action."focus-workspace" = [ 7 ];
-        "Mod+8".action."focus-workspace" = [ 8 ];
-        "Mod+9".action."focus-workspace" = [ 9 ];
-        "Mod+Ctrl+1".action."move-column-to-workspace" = [ 1 ];
-        "Mod+Ctrl+2".action."move-column-to-workspace" = [ 2 ];
-        "Mod+Ctrl+3".action."move-column-to-workspace" = [ 3 ];
-        "Mod+Ctrl+4".action."move-column-to-workspace" = [ 4 ];
-        "Mod+Ctrl+5".action."move-column-to-workspace" = [ 5 ];
-        "Mod+Ctrl+6".action."move-column-to-workspace" = [ 6 ];
-        "Mod+Ctrl+7".action."move-column-to-workspace" = [ 7 ];
-        "Mod+Ctrl+8".action."move-column-to-workspace" = [ 8 ];
-        "Mod+Ctrl+9".action."move-column-to-workspace" = [ 9 ];
+        "Mod+1".action."focus-workspace" = 1;
+        "Mod+2".action."focus-workspace" = 2;
+        "Mod+3".action."focus-workspace" = 3;
+        "Mod+4".action."focus-workspace" = 4;
+        "Mod+5".action."focus-workspace" = 5;
+        "Mod+6".action."focus-workspace" = 6;
+        "Mod+7".action."focus-workspace" = 7;
+        "Mod+8".action."focus-workspace" = 8;
+        "Mod+9".action."focus-workspace" = 9;
+        "Mod+Ctrl+1".action."move-column-to-workspace" = 1;
+        "Mod+Ctrl+2".action."move-column-to-workspace" = 2;
+        "Mod+Ctrl+3".action."move-column-to-workspace" = 3;
+        "Mod+Ctrl+4".action."move-column-to-workspace" = 4;
+        "Mod+Ctrl+5".action."move-column-to-workspace" = 5;
+        "Mod+Ctrl+6".action."move-column-to-workspace" = 6;
+        "Mod+Ctrl+7".action."move-column-to-workspace" = 7;
+        "Mod+Ctrl+8".action."move-column-to-workspace" = 8;
+        "Mod+Ctrl+9".action."move-column-to-workspace" = 9;
 
         "Mod+BracketLeft".action."consume-or-expel-window-left" = [ ];
         "Mod+BracketRight".action."consume-or-expel-window-right" = [ ];
@@ -223,24 +204,24 @@ in
         "Mod+Shift+E".action."quit" = [ ];
         "Mod+Shift+P".action."power-off-monitors" = [ ];
 
-        "Ctrl+Alt+Delete".action.spawn-sh = [ "noctalia msg panel-toggle session" ];
-        "Mod+E".action.spawn-sh = [ "kitty --hold -e zsh -i -c 'y'" ];
+        "Ctrl+Alt+Delete".action.spawn-sh = "noctalia msg panel-toggle session";
+        "Mod+E".action.spawn-sh = "kitty --hold -e zsh -i -c 'y'";
         "Mod+Space".action."toggle-window-floating" = [ ];
-        "Mod+R".action.spawn-sh = [ "noctalia msg config-reload" ];
-        "Mod+B".action.spawn = [ "zen-browser" ];
-        "Mod+L".action.spawn-sh = [ "noctalia msg session lock" ];
-        "Mod+Shift+S".action.spawn-sh = [ "noctalia msg screenshot-region" ];
-        "Mod+W".action.spawn-sh = [ "noctalia msg panel-toggle wallpaper" ];
+        "Mod+R".action.spawn-sh = "noctalia msg config-reload";
+        "Mod+B".action.spawn = "zen-browser";
+        "Mod+L".action.spawn-sh = "noctalia msg session lock";
+        "Mod+Shift+S".action.spawn-sh = "noctalia msg screenshot-region";
+        "Mod+W".action.spawn-sh = "noctalia msg panel-toggle wallpaper";
         # KillActiveProcess.sh does not yet exist — uncomment when ready:
-        # "Mod+Shift+Q".action.spawn-sh = [ "sh ~/.config/scripts/KillActiveProcess.sh" ];
+        # "Mod+Shift+Q".action.spawn-sh = "~/.config/scripts/KillActiveProcess.sh";
         "Mod+C".action.spawn = [ "hyprpicker" "-a" ];
-        "Mod+V".action.spawn-sh = [ "noctalia msg panel-open clipboard" ];
-        "Mod+Z".action.spawn-sh = [ "noctalia msg panel-toggle control-center" ];
-        "Mod+S".action.spawn-sh = [ "noctalia msg settings-toggle" ];
-        "Mod+F".action."fullscreen-window" = [ ];
-        "Mod+A".action.spawn-sh = [ "noctalia msg panel-open maxfh/noctagent:chat" ];
-        "Mod+Shift+A".action.spawn-sh = [ "sh ~/.config/scripts/toggle_audio.sh" ];
-        "Ctrl+Shift+Escape".action.spawn-sh = [ "noctalia msg panel-toggle control-center system" ];
+        "Mod+V".action.spawn-sh = "noctalia msg panel-open clipboard";
+        "Mod+Z".action.spawn-sh = "noctalia msg panel-toggle control-center";
+        "Mod+S".action.spawn-sh = "noctalia msg settings-toggle";
+        "Mod+F".action."maximize-column" = [ ];
+        "Mod+A".action.spawn-sh = "noctalia msg panel-open maxfh/noctagent:chat";
+        "Mod+Shift+A".action.spawn-sh = "~/.config/scripts/toggle_audio.sh";
+        "Ctrl+Shift+Escape".action.spawn-sh = "noctalia msg panel-toggle control-center system";
 
         "Mod+Shift+Left".action."swap-window-left" = [ ];
         "Mod+Shift+Right".action."swap-window-right" = [ ];
@@ -251,38 +232,37 @@ in
         "Mod+Ctrl+Right".action."set-column-width" = [ "+10%" ];
         "Mod+Ctrl+Up".action."set-window-height" = [ "+10%" ];
         "Mod+Ctrl+Down".action."set-window-height" = [ "-10%" ];
-        "Mod+Ctrl+F".action."set-window-width" = [ "100%" ];
 
-        "Mod+Shift+1".action."move-window-to-workspace" = [ 1 ];
-        "Mod+Shift+2".action."move-window-to-workspace" = [ 2 ];
-        "Mod+Shift+3".action."move-window-to-workspace" = [ 3 ];
-        "Mod+Shift+4".action."move-window-to-workspace" = [ 4 ];
-        "Mod+Shift+5".action."move-window-to-workspace" = [ 5 ];
-        "Mod+Shift+6".action."move-window-to-workspace" = [ 6 ];
-        "Mod+Shift+7".action."move-window-to-workspace" = [ 7 ];
-        "Mod+Shift+8".action."move-window-to-workspace" = [ 8 ];
-        "Mod+Shift+9".action."move-window-to-workspace" = [ 9 ];
-        "Mod+Shift+0".action."move-window-to-workspace" = [ 10 ];
+        "Mod+Shift+1".action."move-window-to-workspace" = 1;
+        "Mod+Shift+2".action."move-window-to-workspace" = 2;
+        "Mod+Shift+3".action."move-window-to-workspace" = 3;
+        "Mod+Shift+4".action."move-window-to-workspace" = 4;
+        "Mod+Shift+5".action."move-window-to-workspace" = 5;
+        "Mod+Shift+6".action."move-window-to-workspace" = 6;
+        "Mod+Shift+7".action."move-window-to-workspace" = 7;
+        "Mod+Shift+8".action."move-window-to-workspace" = 8;
+        "Mod+Shift+9".action."move-window-to-workspace" = 9;
+        "Mod+Shift+0".action."move-window-to-workspace" = 10;
 
         "XF86AudioRaiseVolume" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "noctalia msg volume-up" ];
+          action.spawn-sh = "noctalia msg volume-up";
         };
         "XF86AudioLowerVolume" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "noctalia msg volume-down" ];
+          action.spawn-sh = "noctalia msg volume-down";
         };
         "XF86AudioMute" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "noctalia msg volume-mute" ];
+          action.spawn-sh = "noctalia msg volume-mute";
         };
         "XF86MonBrightnessUp" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "noctalia msg brightness-up" ];
+          action.spawn-sh = "noctalia msg brightness-up";
         };
         "XF86MonBrightnessDown" = {
           allow-when-locked = true;
-          action.spawn-sh = [ "noctalia msg brightness-down" ];
+          action.spawn-sh = "noctalia msg brightness-down";
         };
       };
     };
