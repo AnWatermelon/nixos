@@ -213,8 +213,6 @@ in
         "Mod+Shift+R".action."switch-preset-column-width-back" = [ ];
         "Mod+Ctrl+Shift+R".action."switch-preset-window-height" = [ ];
         "Mod+Ctrl+R".action."reset-window-height" = [ ];
-        "Mod+Shift+F".action."fullscreen-window" = [ ];
-        "Mod+M".action."maximize-window-to-edges" = [ ];
         "Mod+Ctrl+C".action."center-visible-columns" = [ ];
 
         "Mod+Minus".action."set-column-width" = [ "-10%" ];
