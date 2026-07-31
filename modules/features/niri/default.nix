@@ -60,13 +60,6 @@ in
         insert-hint.color = "#f0b0ff80";
       };
 
-      recent-windows = {
-        highlight = {
-          active-color.color = "#f0b0ff";
-          urgent-color.color = "#ffb4ab";
-        };
-      };
-
       spawn-at-startup = [
         { spawn = [ "noctalia" ]; }
       ];
