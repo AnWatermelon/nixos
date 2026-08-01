@@ -27,6 +27,7 @@
               config.flake.modules.homeManager.git
               config.flake.modules.homeManager.ssh
               config.flake.modules.homeManager.cli
+              config.flake.modules.homeManager.neovim
               config.flake.modules.homeManager.scripts
               config.flake.modules.homeManager.hyprland
             ];
