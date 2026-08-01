@@ -4,6 +4,7 @@
     home.packages = with pkgs; [
       fastfetch
       btop
+      nerd-fonts.jetbrains-mono
       neovim
     ] ++ [
       inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
