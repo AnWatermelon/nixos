@@ -1,10 +1,10 @@
 { config, lib, ... }:
-let
-  toggleAudioScript = builtins.readFile ./toggle_audio.sh;
-in
 {
   config.flake.modules.homeManager.niri = { inputs, lib, ... }: {
-    imports = [ inputs.niri.homeModules.niri ];
+    imports = [
+      inputs.niri.homeModules.niri
+      config.flake.modules.homeManager.scripts
+    ];
     programs.niri.enable = true;
 
     programs.niri.settings = {
@@ -267,9 +267,5 @@ in
       };
     };
 
-    home.file.".config/scripts/toggle_audio.sh" = {
-      text = toggleAudioScript;
-      executable = true;
-    };
   };
 }
