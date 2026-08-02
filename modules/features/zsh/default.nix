@@ -1,18 +1,18 @@
 {
   flake.modules.homeManager.zsh = {
-    programs.zsh = { 
+    programs.zsh = {
       enable = true;
       shellAliases = {
-	sp = "spotatui";
-	cfg = "cd ~/.config/";
-	lg = "lazygit";
-	p = "cd ~/Projects";
+        sp = "spotatui";
+        cfg = "cd ~/.config/";
+        lg = "lazygit";
+        p = "cd ~/Projects";
       };
       oh-my-zsh = {
-	enable = true;
-	theme = "gnzh";
+        enable = true;
+        theme = "gnzh";
       };
-      initExtra = ''
+      initContent = ''
         # yazi cd-on-exit wrapper
         function y() {
           local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
