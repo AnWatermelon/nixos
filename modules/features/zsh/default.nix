@@ -1,6 +1,5 @@
-{ config, ... }:
 {
-  config.flake.modules.homeManager.zsh = { ... }: {
+  flake.modules.homeManager.zsh = {
     programs.zsh.enable = true;
   };
 }
