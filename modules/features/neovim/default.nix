@@ -1,31 +1,71 @@
 {
-  flake.modules.homeManager.neovim = { pkgs, ... }: {
-    programs.neovim = {
-      enable = true;
-      defaultEditor = true;
-      viAlias = true;
-      vimAlias = true;
-      sideloadInitLua = true;
-      extraPackages = with pkgs; [
-        ripgrep
-        fd
-        git
-      ];
-    };
+  flake.modules.homeManager.neovim =
+    { pkgs, ... }:
+    {
+      programs.neovim = {
+        enable = true;
+        defaultEditor = true;
+        viAlias = true;
+        vimAlias = true;
 
-    xdg.configFile = {
-      "nvim/init.lua".source = ./init.lua;
-      "nvim/lua/config/options.lua".source = ./lua/config/options.lua;
-      "nvim/lua/config/lazy.lua".source = ./lua/config/lazy.lua;
-      "nvim/lua/plugins/base16.lua".source = ./lua/plugins/base16.lua;
-      "nvim/lua/plugins/flash.lua".source = ./lua/plugins/flash.lua;
-      "nvim/lua/plugins/mini.lua".source = ./lua/plugins/mini.lua;
-      "nvim/lua/plugins/snacks.lua".source = ./lua/plugins/snacks.lua;
-      "nvim/lua/plugins/whichkey.lua".source = ./lua/plugins/whichkey.lua;
-      "nvim/lua/matugen.lua".source = ./lua/matugen.lua;
-      "nvim/lazy-lock.json".source = ./lazy-lock.json;
-      "nvim/stylua.toml".source = ./stylua.toml;
-      "nvim/.gitignore".source = ./gitignore;
+        # home-manager owns init.lua so it can merge in its own plugin
+        # scaffolding; everything of substance lives in the lua/ tree below.
+        initLua = ''
+          require("config.options")
+          require("plugins")
+        '';
+
+        extraPackages = with pkgs; [
+          ripgrep
+          fd
+          git
+        ];
+
+        # Plugins and treesitter grammars are pinned by nixpkgs and placed on the
+        # packpath. No imperative bootstrap, and no lazy-lock.json that lazy.nvim
+        # could never write to anyway (the config dir is a read-only store path).
+        plugins = with pkgs.vimPlugins; [
+          base16-nvim
+          flash-nvim
+          mini-nvim
+          snacks-nvim
+          which-key-nvim
+          (nvim-treesitter.withPlugins (
+            p: with p; [
+              bash
+              c
+              cpp
+              css
+              diff
+              git_config
+              git_rebase
+              gitcommit
+              gitignore
+              go
+              html
+              javascript
+              json
+              lua
+              luadoc
+              make
+              markdown
+              markdown_inline
+              nix
+              python
+              query
+              regex
+              rust
+              toml
+              tsx
+              typescript
+              vim
+              vimdoc
+              yaml
+            ]
+          ))
+        ];
+      };
+
+      xdg.configFile."nvim/lua".source = ./lua;
     };
-  };
 }
