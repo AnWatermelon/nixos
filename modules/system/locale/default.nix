@@ -1,6 +1,5 @@
-{ config, ... }:
 {
-  config.flake.modules.nixos.locale = { ... }: {
+  flake.modules.nixos.locale = {
     time.timeZone = "America/Chicago";
 
     i18n.defaultLocale = "en_US.UTF-8";
@@ -16,6 +15,7 @@
       LC_TIME = "en_US.UTF-8";
     };
 
+    # Console / XWayland keyboard layout.
     services.xserver.xkb = {
       layout = "us";
       variant = "";

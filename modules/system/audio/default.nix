@@ -1,6 +1,5 @@
-{ config, ... }:
 {
-  config.flake.modules.nixos.audio = { ... }: {
+  flake.modules.nixos.audio = {
     services.pipewire = {
       enable = true;
       alsa.enable = true;
