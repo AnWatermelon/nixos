@@ -31,7 +31,6 @@
       config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
-      config.flake.modules.nixos.hyprland
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -48,7 +47,6 @@
             config.flake.modules.homeManager.ssh
             config.flake.modules.homeManager.cli
             config.flake.modules.homeManager.neovim
-            config.flake.modules.homeManager.hyprland
           ];
         };
       }
