@@ -7,6 +7,15 @@
       # flake-parts module.
       ./_hardware-configuration.nix
       { networking.hostName = "nixos-test"; }
+      {
+        services.openssh = {
+          enable = true;
+          settings = {
+            PasswordAuthentication = true;
+            PermitRootLogin = "no";
+          };
+        };
+      }
 
       config.flake.modules.nixos.boot
       config.flake.modules.nixos.networking
