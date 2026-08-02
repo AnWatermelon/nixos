@@ -23,7 +23,7 @@
         services.cage = {
           enable = true;
           inherit (cfg) user;
-          program = "${lib.getExe config.my.terminal} -e ${pkgs.shadow}/bin/su -l ${cfg.user}";
+          program = "${lib.getExe config.my.terminal} -e ${lib.getExe' pkgs.shadow.su "su"} -l ${cfg.user}";
         };
       };
     };

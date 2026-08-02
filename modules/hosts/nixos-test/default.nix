@@ -33,8 +33,6 @@
       config.flake.modules.nixos.core
       config.flake.modules.nixos.hyprland
 
-      { my.cage.enable = true; }
-
       inputs.home-manager.nixosModules.home-manager
       {
         home-manager = {
