@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.cage =
+flake.modules.nixos.cage =
     {
       config,
       lib,
@@ -11,19 +11,27 @@
     in
     {
       options.my.cage = {
-        enable = lib.mkEnableOption "cage kiosk session — boots to a fullscreen terminal on tty1";
+        enable = lib.mkEnableOption "cage kiosk session — boots greetd with a TUI login, then a fullscreen terminal on tty1";
         user = lib.mkOption {
           type = lib.types.str;
           default = "maxfh";
-          description = "User auto-logged in for the cage session.";
+          description = "Default user for the cage session (used if initial_session auto-login is configured).";
         };
       };
 
       config = lib.mkIf cfg.enable {
-        services.cage = {
+        hardware.graphics.enable = lib.mkDefault true;
+        security.polkit.enable = true;
+
+        services.greetd = {
           enable = true;
-          inherit (cfg) user;
-          program = "${lib.getExe config.my.terminal} -e ${lib.getExe' pkgs.shadow.su "su"} -l ${cfg.user}";
+          useTextGreeter = true;
+          settings = {
+            default_session = {
+              command = "${lib.getExe pkgs.tuigreet} --time --asterisks --remember --cmd '${lib.getExe pkgs.cage} -- ${lib.getExe config.my.terminal}'";
+              user = "greeter";
+            };
+          };
         };
       };
     };

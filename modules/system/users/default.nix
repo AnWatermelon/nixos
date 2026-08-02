@@ -8,6 +8,8 @@
         extraGroups = [
           "networkmanager"
           "wheel"
+          "input"
+          "video"
         ];
         shell = pkgs.zsh;
       };
