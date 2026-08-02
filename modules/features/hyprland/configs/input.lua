@@ -13,11 +13,6 @@ hl.config({
     accel_profile  = "flat",
     force_no_accel = true,
   },
-
-  -- https://wiki.hypr.land/Configuring/Basics/Variables/#gestures
-  gestures = {
-
-  },
 })
 
 -- Per-device config
