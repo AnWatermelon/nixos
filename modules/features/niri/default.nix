@@ -1,11 +1,14 @@
-{ config, ... }:
+{ config, lib, ... }:
+let
+  flakeCfg = config;
+in
 {
   flake.modules.homeManager.niri =
-    { inputs, ... }:
+    { inputs, config, ... }:
     {
       imports = [
         inputs.niri.homeModules.niri
-        config.flake.modules.homeManager.scripts
+        flakeCfg.flake.modules.homeManager.scripts
       ];
       programs.niri.enable = true;
 
@@ -79,8 +82,8 @@
         binds = {
           "Mod+Shift+Slash".action."show-hotkey-overlay" = [ ];
           "Mod+T" = {
-            hotkey-overlay.title = "Open a Terminal: kitty";
-            action.spawn = "kitty";
+            hotkey-overlay.title = "Open a Terminal: ${config.my.terminal.pname}";
+            action.spawn = lib.getExe config.my.terminal;
           };
           "Super+Alt+S" = {
             allow-when-locked = true;

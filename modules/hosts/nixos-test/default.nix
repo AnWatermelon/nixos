@@ -41,6 +41,7 @@
           extraSpecialArgs = { inherit inputs; };
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
+            config.flake.modules.homeManager.terminal
             config.flake.modules.homeManager.zsh
             config.flake.modules.homeManager.kitty
             config.flake.modules.homeManager.git

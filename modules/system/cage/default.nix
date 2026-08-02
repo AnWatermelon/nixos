@@ -1,5 +1,5 @@
 {
-flake.modules.nixos.cage =
+  flake.modules.nixos.cage =
     {
       config,
       lib,
