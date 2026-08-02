@@ -1,38 +1,44 @@
-{ config, inputs, self, lib, ... }:
+{
+  config,
+  inputs,
+  lib,
+  self,
+  ...
+}:
 {
   flake.nixosConfigurations.iso = inputs.nixpkgs.lib.nixosSystem {
-    system = "x86_64-linux";
     specialArgs = { inherit inputs; };
     modules = [
-      ({ modulesPath, pkgs, ... }:
-        let
-          flakeSource = self.outPath;
-        in
+      (
         {
-          imports = [
-            (modulesPath + "/image/images.nix")
-          ];
-          nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-          image.modules.iso = { modulesPath, pkgs, ... }: {
-            imports = [
-              (modulesPath + "/installer/cd-dvd/installation-cd-base.nix")
-            ];
-            isoImage = {
-              makeEfiBootable = true;
-              makeUsbBootable = true;
-              edition = "Max";
-              contents = [{
-                source = flakeSource;
+          modulesPath,
+          pkgs,
+          ...
+        }:
+        {
+          imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-base.nix") ];
+
+          nixpkgs.hostPlatform = "x86_64-linux";
+          boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
+          # The installer profile enables ZFS, which has no module for the
+          # latest kernel. Nothing here installs to ZFS.
+          boot.supportedFilesystems.zfs = lib.mkForce false;
+
+          isoImage = {
+            edition = "Max";
+            contents = [
+              {
+                source = self;
                 target = "/etc/nixos/flake";
-              }];
-            };
-            boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
-            users.users."maxfh" = {
-              initialPassword = "nixos";
-            };
-            services.getty.autologinUser = lib.mkDefault "maxfh";
+              }
+            ];
           };
-        })
+
+          # installation-device.nix assigns the `nixos` user unconditionally.
+          services.getty.autologinUser = lib.mkForce "maxfh";
+          users.users.maxfh.initialPassword = "nixos";
+        }
+      )
 
       { networking.hostName = "iso"; }
 
@@ -50,21 +56,22 @@
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = { inherit inputs; };
-          users.maxfh = {
-            imports = [
-              config.flake.modules.homeManager.base
-              config.flake.modules.homeManager.zsh
-              config.flake.modules.homeManager.kitty
-              config.flake.modules.homeManager.git
-              config.flake.modules.homeManager.ssh
-              config.flake.modules.homeManager.cli
-              config.flake.modules.homeManager.neovim
-              config.flake.modules.homeManager.scripts
-              config.flake.modules.homeManager.hyprland
-            ];
-          };
+          users.maxfh.imports = [
+            config.flake.modules.homeManager.base
+            config.flake.modules.homeManager.zsh
+            config.flake.modules.homeManager.kitty
+            config.flake.modules.homeManager.git
+            config.flake.modules.homeManager.ssh
+            config.flake.modules.homeManager.cli
+            config.flake.modules.homeManager.neovim
+            config.flake.modules.homeManager.hyprland
+          ];
         };
       }
     ];
+  };
+
+  perSystem = _: {
+    packages.iso = config.flake.nixosConfigurations.iso.config.system.build.isoImage;
   };
 }
