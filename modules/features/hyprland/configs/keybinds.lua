@@ -15,7 +15,7 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd(ipc .. " panel-toggle session"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_raw(fileManager))
 hl.bind(mainMod .. " + Space", hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + Super_L", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"))
+hl.bind(mainMod .. " + Super_L", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { release = true })
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(ipc .. " config-reload"))
@@ -24,7 +24,6 @@ hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(ipc .. " session lock"))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(ipc .. " screenshot-region"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"))
-hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_raw("sh ~/.config/hypr/scripts/KillActiveProcess.sh"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("hyprpicker -a"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(ipc .. " panel-open clipboard"))
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"))
@@ -76,12 +75,7 @@ hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
 for i = 1, 9 do
 	hl.bind(mainMod .. " + SHIFT + ALT + " .. i, hl.dsp.window.move({ workspace = i, follow = false }))
 end
-hl.bind(mainMod .. " + SHIFT + ALT + 0 + ", hl.dsp.window.move({ workspace = 10, follow = false }))
--- ─────────────────────────────────────────────
---  Special workspace (scratchpad) — uncomment to enable
--- ─────────────────────────────────────────────
--- hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
--- hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+hl.bind(mainMod .. " + SHIFT + ALT + 0", hl.dsp.window.move({ workspace = 10, follow = false }))
 
 -- ─────────────────────────────────────────────
 --  Scroll through workspaces with mouse wheel
