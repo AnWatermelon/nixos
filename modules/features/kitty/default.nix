@@ -58,8 +58,10 @@
         "ctrl+shift+left" = "previous_tab";
         "ctrl+shift+w" = "close_tab";
       };
+      # globinclude (unlike include) is a no-op when the file is absent, so a
+      # fresh machine does not error before noctalia has rendered its theme.
       extraConfig = lib.mkBefore ''
-        include themes/noctalia.conf
+        globinclude themes/noctalia.conf
       '';
     };
   };
