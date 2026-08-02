@@ -12,6 +12,7 @@
       ./_hardware-configuration.nix
       config.flake.modules.nixos.terminal
       config.flake.modules.nixos.cage
+      { my.cage.enable = true; }
       { networking.hostName = "nixos-test"; }
       {
         services.openssh = {
@@ -31,6 +32,8 @@
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.hyprland
+
+      { my.cage.enable = true; }
 
       inputs.home-manager.nixosModules.home-manager
       {
