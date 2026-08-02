@@ -2,16 +2,12 @@
 -- ============================================
 -- MONITORS
 -- ============================================
+-- An empty output matches every monitor.
 hl.monitor({
-	output = "DP-1",
-	mode = "2560x144@165",
-	position = "-2560x0",
-})
-
-hl.monitor({
-	output = "DP-3",
-	mode = "2560x1440@165",
-	position = "0x0",
+	output = "",
+	mode = "highres",
+	position = "auto",
+	scale = "auto",
 })
 
 -- ============================================
@@ -27,7 +23,7 @@ end)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("GTK_USE_PORTAL", "1")
-hl.env("GDK_DEBUG", "portals")
+
 -- ============================================
 -- TAGS (modular file)
 -- ============================================
@@ -42,36 +38,6 @@ require("configs/looknfeel")
 -- ANIMATIONS (modular file)
 -- ============================================
 require("configs/UserAnimations")
-
--- ============================================
--- SMART GAPS (commented out by default)
--- ============================================
--- hl.workspace_rule({
---     workspace = "w[tv1]",
---     gaps_out = 0,
---     gaps_in  = 0,
--- })
--- hl.workspace_rule({
---     workspace = "f[1]",
---     gaps_out = 0,
---     gaps_in  = 0,
--- })
--- hl.window_rule({
---     match       = { float = 0, workspace = "w[tv1]" },
---     border_size = 0,
--- })
--- hl.window_rule({
---     match    = { float = 0, workspace = "w[tv1]" },
---     rounding = 0,
--- })
--- hl.window_rule({
---     match       = { float = 0, workspace = "f[1]" },
---     border_size = 0,
--- })
--- hl.window_rule({
---     match    = { float = 0, workspace = "f[1]" },
---     rounding = 0,
--- })
 
 -- ============================================
 -- WINDOW RULES & LAYER RULES (modular file)
@@ -125,5 +91,10 @@ require("configs/input")
 -- ============================================
 require("configs/keybinds")
 
--- For Noctalia Color templates
-require("noctalia").apply_theme()
+-- For Noctalia Color templates. noctalia.lua is rendered at runtime by the
+-- noctalia daemon, so it is absent on a fresh machine — guard the require or
+-- the whole config fails to load before noctalia has ever run.
+local ok, noctalia = pcall(require, "noctalia")
+if ok then
+	noctalia.apply_theme()
+end
