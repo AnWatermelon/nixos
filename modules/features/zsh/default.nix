@@ -7,6 +7,7 @@
         cfg = "cd ~/.config/";
         lg = "lazygit";
         p = "cd ~/Projects";
+        nrb = "sudo nixos-rebuild switch";
       };
       oh-my-zsh = {
         enable = true;
