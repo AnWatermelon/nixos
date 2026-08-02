@@ -1,4 +1,8 @@
-{ config, inputs, ... }:
+{
+  config,
+  inputs,
+  ...
+}:
 {
   flake.nixosConfigurations.nixos-test = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = { inherit inputs; };
@@ -6,6 +10,8 @@
       # Underscore prefix keeps import-tree from loading this NixOS module as a
       # flake-parts module.
       ./_hardware-configuration.nix
+      config.flake.modules.nixos.terminal
+      config.flake.modules.nixos.cage
       { networking.hostName = "nixos-test"; }
       {
         services.openssh = {
