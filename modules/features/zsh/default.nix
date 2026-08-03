@@ -8,6 +8,7 @@
         lg = "lazygit";
         p = "cd ~/Projects";
         nrb = "sudo nixos-rebuild switch";
+        hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
       };
       oh-my-zsh = {
         enable = true;
