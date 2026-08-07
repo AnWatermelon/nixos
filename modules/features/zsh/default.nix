@@ -9,6 +9,7 @@
         p = "cd ~/Projects";
         nrb = "sudo nixos-rebuild switch";
         hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
+        nfc = "nix formatter run && nix flake check";
       };
       oh-my-zsh = {
         enable = true;
