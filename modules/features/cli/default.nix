@@ -7,6 +7,7 @@
           fastfetch
           btop
           nerd-fonts.jetbrains-mono
+          lazygit
         ])
         ++ [
           inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
