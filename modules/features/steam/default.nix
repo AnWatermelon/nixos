@@ -1,5 +1,5 @@
 {
-  flake.modules.home-manager.steam =
+  flake.modules.homeManager.steam =
     { pkgs, ... }:
     {
       home.packages = with pkgs; [

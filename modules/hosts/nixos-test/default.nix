@@ -11,8 +11,6 @@
       # flake-parts module.
       ./_hardware-configuration.nix
       config.flake.modules.nixos.terminal
-      config.flake.modules.nixos.cage
-      { my.cage.enable = true; }
       { networking.hostName = "nixos-test"; }
       {
         services.openssh = {
@@ -40,13 +38,8 @@
           extraSpecialArgs = { inherit inputs; };
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
-            config.flake.modules.homeManager.terminal
-            config.flake.modules.homeManager.zsh
-            config.flake.modules.homeManager.kitty
-            config.flake.modules.homeManager.git
-            config.flake.modules.homeManager.ssh
             config.flake.modules.homeManager.cli
-            config.flake.modules.homeManager.neovim
+            config.flake.modules.homeManager.desktop
           ];
         };
       }

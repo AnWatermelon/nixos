@@ -58,14 +58,8 @@
           extraSpecialArgs = { inherit inputs; };
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
-            config.flake.modules.homeManager.terminal
-            config.flake.modules.homeManager.zsh
-            config.flake.modules.homeManager.kitty
-            config.flake.modules.homeManager.git
-            config.flake.modules.homeManager.ssh
             config.flake.modules.homeManager.cli
-            config.flake.modules.homeManager.neovim
-            config.flake.modules.homeManager.hyprland
+            config.flake.modules.homeManager.desktop
           ];
         };
       }

@@ -10,9 +10,9 @@ in
         inputs.niri.homeModules.niri
         flakeCfg.flake.modules.homeManager.scripts
       ];
-      programs.niri.enable = true;
+      programs.niri.enable = lib.mkIf (config.my.desktop.environment == "niri") true;
 
-      programs.niri.settings = {
+      programs.niri.settings = lib.mkIf (config.my.desktop.environment == "niri") {
         input = {
           keyboard = {
             numlock = true;
