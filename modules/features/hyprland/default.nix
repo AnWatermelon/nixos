@@ -7,9 +7,12 @@ in
   flake.modules.homeManager.hyprland =
     { config, ... }:
     {
-      imports = [ flakeCfg.flake.modules.homeManager.scripts ];
+      imports = [
+        ../desktop/options.nix
+        flakeCfg.flake.modules.homeManager.scripts
+      ];
 
-      xdg.configFile = lib.mkIf (config.my.desktop.environment == "hyprland") {
+      config.xdg.configFile = lib.mkIf (config.my.desktop.environment == "hyprland") {
         "hypr/hyprland.lua".source = ./hyprland.lua;
         "hypr/hyprtoolkit.conf".source = ./hyprtoolkit.conf;
         "hypr/configs/input.lua".source = ./configs/input.lua;

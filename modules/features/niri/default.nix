@@ -7,10 +7,13 @@ in
     { inputs, config, ... }:
     {
       imports = [
+        ../desktop/options.nix
         inputs.niri.homeModules.niri
         flakeCfg.flake.modules.homeManager.scripts
       ];
-      programs.niri.enable = lib.mkIf (config.my.desktop.environment == "niri") true;
+
+      config = {
+        programs.niri.enable = lib.mkIf (config.my.desktop.environment == "niri") true;
 
       programs.niri.settings = lib.mkIf (config.my.desktop.environment == "niri") {
         input = {
@@ -301,5 +304,6 @@ in
         };
       };
 
+      };
     };
 }

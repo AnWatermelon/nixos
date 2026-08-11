@@ -14,18 +14,8 @@ in
       cfg = config.my.desktop;
     in
     {
-      options.my.desktop = {
-        environment = lib.mkOption {
-          type = lib.types.enum [
-            "hyprland"
-            "niri"
-          ];
-          default = "hyprland";
-          description = "Desktop environment/window manager to use";
-        };
-      };
-
       imports = [
+        ./options.nix
         flakeCfg.flake.modules.homeManager.terminal
         flakeCfg.flake.modules.homeManager.steam
         flakeCfg.flake.modules.homeManager.discord
