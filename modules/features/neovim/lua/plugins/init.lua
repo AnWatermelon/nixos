@@ -3,6 +3,7 @@
 require("plugins.treesitter")
 require("plugins.base16")
 require("plugins.snacks")
+require("plugins.lsp")
 require("plugins.mini")
 require("plugins.flash")
 require("plugins.whichkey")

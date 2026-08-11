@@ -8,8 +8,6 @@
         viAlias = true;
         vimAlias = true;
 
-        # home-manager owns init.lua so it can merge in its own plugin
-        # scaffolding; everything of substance lives in the lua/ tree below.
         initLua = ''
           require("config.options")
           require("plugins")
@@ -19,15 +17,28 @@
           ripgrep
           fd
           git
+
+          bash-language-server
+          clang-tools # clangd for C/C++
+          dockerfile-language-server-nodejs
+          gopls
+          lua-language-server
+          marksman # Markdown
+          nil # Nix (fast, single-file)
+          nixd # Nix (full-featured, flakes/projects)
+          pyright
+          rust-analyzer
+          taplo # TOML
+          typescript-language-server
+          vscode-langservers-extracted # html, css, json, eslint
+          yaml-language-server
         ];
 
-        # Plugins and treesitter grammars are pinned by nixpkgs and placed on the
-        # packpath. No imperative bootstrap, and no lazy-lock.json that lazy.nvim
-        # could never write to anyway (the config dir is a read-only store path).
         plugins = with pkgs.vimPlugins; [
           base16-nvim
           flash-nvim
           mini-nvim
+          nvim-lspconfig
           snacks-nvim
           which-key-nvim
           (nvim-treesitter.withPlugins (
