@@ -32,7 +32,7 @@
         fastfetch
 
         # LM Studio CLI
-        export PATH="$PATH:$HOME/.lmstudio/bin"
+        export PATH="$PATH:$HOME/.lmstudio/bin:$HOME/.local/bin"
       '';
     };
   };
