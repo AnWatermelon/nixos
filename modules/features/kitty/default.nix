@@ -1,9 +1,12 @@
-{ lib, ... }:
-{
+_: {
   flake.modules.homeManager.kitty =
-    { config, pkgs, ... }:
     {
-      programs.kitty = lib.mkIf (config.my.terminal == pkgs.kitty) {
+      config,
+      lib,
+      ...
+    }:
+    {
+      programs.kitty = lib.mkIf (lib.getName config.my.terminal == "kitty") {
         enable = true;
         font = {
           name = "JetBrainsMono Nerd Font";

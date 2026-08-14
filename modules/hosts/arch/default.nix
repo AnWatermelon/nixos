@@ -7,7 +7,6 @@
       config.flake.modules.homeManager.base
       config.flake.modules.homeManager.terminal
       config.flake.modules.homeManager.hyprland
-      config.flake.modules.homeManager.kitty
       config.flake.modules.homeManager.zsh
       config.flake.modules.homeManager.neovim
 
