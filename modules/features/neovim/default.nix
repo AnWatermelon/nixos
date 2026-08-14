@@ -9,8 +9,8 @@
         vimAlias = true;
 
         initLua = ''
-          require("config.options")
-          require("plugins")
+                    require("config.options")
+                    require("plugins")
         '';
 
         extraPackages = with pkgs; [
@@ -41,6 +41,7 @@
           nvim-lspconfig
           snacks-nvim
           which-key-nvim
+          lualine-nvim
           (nvim-treesitter.withPlugins (
             p: with p; [
               bash
