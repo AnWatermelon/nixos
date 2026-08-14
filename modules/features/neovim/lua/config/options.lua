@@ -17,3 +17,12 @@ vim.g.loaded_tarPlugin = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_tutor_mode_plugin = 1
+
+-- Neovim 0.12 sources init.lua *before* loading plugins, so netrw's
+-- `FileExplorer` augroup does not exist yet when mini.files' setup() runs
+-- `silent! autocmd! FileExplorer *` to disable netrw. That command fills
+-- v:errmsg with "E216: No such group or event: FileExplorer *" whenever the
+-- group is absent. Pre-create the group so mini.files finds one to clear
+-- instead of erroring (its VimEnter autocmd still clears netrw's autocmds
+-- once netrw loads).
+vim.api.nvim_create_augroup("FileExplorer", {})
