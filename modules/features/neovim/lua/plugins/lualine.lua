@@ -1,7 +1,7 @@
 require("lualine").setup({
   options = {
-    theme = "auto",
-    component_separators = { left = "", right = "" },
-    section_separators = { left = "", right = "" },
+    theme = require("matugen").lualine_theme,
+    component_separators = { left = "", right = "" },
+    section_separators = { left = "", right = "" },
   },
 })

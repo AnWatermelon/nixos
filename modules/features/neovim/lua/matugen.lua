@@ -36,6 +36,42 @@ end
 
 function M.setup()
   require("base16-colorscheme").setup(palette())
+  -- lualine snapshots its theme when it is set up, so re-run it now that the
+  -- palette has been re-applied. No-op until lualine has been loaded once.
+  if package.loaded["lualine"] then
+    require("lualine").setup()
+  end
+end
+
+-- Lualine theme factory. Mirrors lualine's built-in base16 theme so the
+-- statusline matches the colourscheme, but re-reads the palette on every call
+-- so lualine re-setups pick up matugen updates.
+function M.lualine_theme()
+  local c = palette()
+  return {
+    normal = {
+      a = { fg = c.base01, bg = c.base0D },
+      b = { fg = c.base05, bg = c.base02 },
+      c = { fg = c.base04, bg = c.base01 },
+    },
+    replace = {
+      a = { fg = c.base01, bg = c.base09 },
+      b = { fg = c.base05, bg = c.base02 },
+    },
+    insert = {
+      a = { fg = c.base01, bg = c.base0B },
+      b = { fg = c.base05, bg = c.base02 },
+    },
+    visual = {
+      a = { fg = c.base01, bg = c.base0E },
+      b = { fg = c.base05, bg = c.base02 },
+    },
+    inactive = {
+      a = { fg = c.base03, bg = c.base01 },
+      b = { fg = c.base03, bg = c.base01 },
+      c = { fg = c.base03, bg = c.base01 },
+    },
+  }
 end
 
 local signal

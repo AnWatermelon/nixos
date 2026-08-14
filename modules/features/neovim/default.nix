@@ -9,8 +9,8 @@
         vimAlias = true;
 
         initLua = ''
-                    require("config.options")
-                    require("plugins")
+          require("config.options")
+          require("plugins")
         '';
 
         extraPackages = with pkgs; [
@@ -79,5 +79,6 @@
       };
 
       xdg.configFile."nvim/lua".source = ./lua;
+      xdg.configFile."matugen/templates/nvim-base16.lua".source = ./matugen-template.lua;
     };
 }
