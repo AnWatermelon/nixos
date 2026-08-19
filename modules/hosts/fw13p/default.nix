@@ -8,6 +8,7 @@
     specialArgs = { inherit inputs; };
     modules = [
       ./_hardware-configuration.nix
+      ./_fprint-wake.nix
       config.flake.modules.nixos.terminal
       { networking.hostName = "fw13p"; }
       {
@@ -24,6 +25,7 @@
       config.flake.modules.nixos.networking
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.audio
+      config.flake.modules.nixos.fprint
       config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
@@ -44,4 +46,3 @@
     ];
   };
 }
-
