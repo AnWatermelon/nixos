@@ -4,7 +4,7 @@
   ...
 }:
 {
-  flake.nixosConfigurations.nixos-test = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.fw13p = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = { inherit inputs; };
     modules = [
       ./_hardware-configuration.nix

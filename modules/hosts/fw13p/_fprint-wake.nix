@@ -16,7 +16,12 @@
     wantedBy = [ "multi-user.target" ];
     after = [ "systemd-udev-settle.service" ];
     serviceConfig.Type = "oneshot";
-    path = with pkgs; [ coreutils gnugrep util-linux usbutils ];
+    path = with pkgs; [
+      coreutils
+      gnugrep
+      util-linux
+      usbutils
+    ];
     script = ''
       for dev in /sys/bus/usb/devices/*; do
         [ -r "$dev/idVendor" ] || continue
@@ -59,7 +64,12 @@
       "suspend-then-hibernate.target"
     ];
     serviceConfig.Type = "oneshot";
-    path = with pkgs; [ coreutils usbutils util-linux systemd ];
+    path = with pkgs; [
+      coreutils
+      usbutils
+      util-linux
+      systemd
+    ];
     script = ''
       pci="$(cat /run/fprint-wake/pci 2>/dev/null)"
       driver="$(cat /run/fprint-wake/driver 2>/dev/null)"
