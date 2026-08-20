@@ -16,6 +16,7 @@ require("snacks").setup({
   statuscolumn = { enabled = true },
   words = { enabled = true },
   picker = { enabled = true },
+  win = { style = "terminal", },
 })
 
 vim.keymap.set("n", "<leader> ", function()
@@ -26,8 +27,10 @@ vim.keymap.set("n", "<leader>b", function()
   Snacks.picker.smart({ cwd = vim.fn.expand("~") })
 end, { desc = "Global Search" })
 
--- Prune bad oldfiles that crash fnamemodify (Neovim bug: a bare ~ not followed
--- by / triggers wildcard expansion → shell → abort in Neovim C internals).
+vim.keymap.set("n", "<leader>`", function()
+  Snacks.terminal.toggle()
+end, { desc = "Toggle terminal" })
+
 vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
   desc = "Drop oldfiles entries that crash fnamemodify",
