@@ -27,7 +27,7 @@ vim.keymap.set("n", "<leader>b", function()
   Snacks.picker.smart({ cwd = vim.fn.expand("~") })
 end, { desc = "Global Search" })
 
-vim.keymap.set("n", "<leader>`", function()
+vim.keymap.set("n", "<A-`>", function()
   Snacks.terminal.toggle()
 end, { desc = "Toggle terminal" })
 
