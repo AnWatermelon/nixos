@@ -24,6 +24,13 @@ hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("GTK_USE_PORTAL", "1")
 
+local nvidia_loaded = io.open("/sys/module/nvidia", "r") ~= nil
+if nvidia_loaded then
+	hl.env("GBM_BACKEND", "nvidia-drm")
+	hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+	hl.env("LIBVA_DRIVER_NAME", "nvidia")
+end
+
 -- ============================================
 -- TAGS (modular file)
 -- ============================================
