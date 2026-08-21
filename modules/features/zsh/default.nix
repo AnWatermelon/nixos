@@ -41,15 +41,34 @@
         # --- vi-mode indicator (lualine-style colors from noctalia palette) ---
         _vi_mode_palette="$HOME/.local/state/zsh/matugen/palette.zsh"
         _vi_mode_palette_mtime=-1
+
+        # Build one indicator string into REPLY from palette vars. No forks.
+        _vi_mode_indicator() {
+          local _bg="''${(P)1}" _fg="''${(P)2}"
+          if [[ -n "$_bg" && -n "$_fg" ]]; then
+            REPLY="%K{''${_bg}}%F{''${_fg}} $3 %k%f"
+          else
+            REPLY=" $3 "
+          fi
+        }
+
         _vi_mode_refresh_palette() {
           local _mtime
-          if [[ -f "$_vi_mode_palette" ]] && _mtime=$(zstat +mtime "$_vi_mode_palette" 2>/dev/null) && (( _mtime != _vi_mode_palette_mtime )); then
-            _vi_mode_palette_mtime=$_mtime
-            source "$_vi_mode_palette"
+          if [[ -f "$_vi_mode_palette" ]]; then
+            if _mtime=$(zstat +mtime "$_vi_mode_palette" 2>/dev/null) && (( _mtime != _vi_mode_palette_mtime )); then
+              _vi_mode_palette_mtime=$_mtime
+              source "$_vi_mode_palette" 2>/dev/null
+            fi
+          else
+            _vi_mode_palette_mtime=-1
+            unset VI_MODE_IND_NORMAL_BG VI_MODE_IND_INSERT_BG VI_MODE_IND_VISUAL_BG VI_MODE_IND_FG
           fi
-          MODE_INDICATOR="%K{''${VI_MODE_IND_NORMAL_BG:-#f0b0ff}}%F{''${VI_MODE_IND_FG:-#1f1f1f}} NORMAL %k%f"
-          INSERT_MODE_INDICATOR="%K{''${VI_MODE_IND_INSERT_BG:-#f0b0ff}}%F{''${VI_MODE_IND_FG:-#1f1f1f}} INSERT %k%f"
-          VISUAL_MODE_INDICATOR="%K{''${VI_MODE_IND_VISUAL_BG:-#d5c0d6}}%F{''${VI_MODE_IND_FG:-#1f1f1f}} VISUAL %k%f"
+          _vi_mode_indicator VI_MODE_IND_NORMAL_BG VI_MODE_IND_FG NORMAL
+          MODE_INDICATOR="$REPLY"
+          _vi_mode_indicator VI_MODE_IND_INSERT_BG VI_MODE_IND_FG INSERT
+          INSERT_MODE_INDICATOR="$REPLY"
+          _vi_mode_indicator VI_MODE_IND_VISUAL_BG VI_MODE_IND_FG VISUAL
+          VISUAL_MODE_INDICATOR="$REPLY"
         }
         zmodload -F zsh/stat b:zstat
         _vi_mode_refresh_palette
@@ -59,11 +78,26 @@
         VI_MODE_IND="''${INSERT_MODE_INDICATOR}"
         _vi_mode_set_indicator() {
           case "''${VI_KEYMAP:-main}" in
-            vicmd|viopp) VI_MODE_IND="''${MODE_INDICATOR}" ;;
-            visual) VI_MODE_IND="''${VISUAL_MODE_INDICATOR}" ;;
+            vicmd|viopp)
+              if (( ''${REGION_ACTIVE:-0} )); then
+                VI_MODE_IND="''${VISUAL_MODE_INDICATOR}"
+              else
+                VI_MODE_IND="''${MODE_INDICATOR}"
+              fi
+              ;;
             *) VI_MODE_IND="''${INSERT_MODE_INDICATOR}" ;;
           esac
         }
+
+        # Visual selection never changes $KEYMAP (stays vicmd) — detect it from
+        # REGION_ACTIVE (1=char, 2=line) on every pre-redraw.
+        _vi_mode_pre_redraw() {
+          local _old="''${VI_MODE_IND}"
+          _vi_mode_set_indicator
+          [[ "$VI_MODE_IND" != "$_old" ]] && zle reset-prompt
+        }
+        autoload -Uz add-zle-hook-widget
+        add-zle-hook-widget zle-line-pre-redraw _vi_mode_pre_redraw
 
         # Override the plugin's widgets: update indicator + cursor + redraw.
         function zle-keymap-select() {
@@ -100,7 +134,6 @@
         PROMPT="''${PROMPT%%$'\n'*}"\''${VI_MODE_IND}$'\n'"''${PROMPT#*$'\n'}"
       '';
     };
-    home.file.".local/state/zsh/matugen/.keep".text = "";
     xdg.configFile."noctalia/templates/zsh-palette.conf".source = ./zsh-palette-template.conf;
   };
 }
