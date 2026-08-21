@@ -101,5 +101,6 @@
       '';
     };
     home.file.".local/state/zsh/matugen/.keep".text = "";
+    xdg.configFile."noctalia/templates/zsh-palette.conf".source = ./zsh-palette-template.conf;
   };
 }
