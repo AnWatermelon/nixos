@@ -20,9 +20,11 @@
 
           nixpkgs.hostPlatform = "x86_64-linux";
           boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
-          # The installer profile enables ZFS, which has no module for the
-          # latest kernel. Nothing here installs to ZFS.
           boot.supportedFilesystems.zfs = lib.mkForce false;
+
+          boot.postBootCommands = ''
+            mount -o remount,size=20G,noatime /nix/.rw-store
+          '';
 
           isoImage = {
             edition = "Max";
