@@ -23,6 +23,7 @@
           '';
           maxInstall = pkgs.writeShellScriptBin "max-install" ''
             export MAX_LAYOUT_DIR="${installLayouts}"
+            export FLAKE_REV="${self.rev or ""}"
             ${builtins.readFile ./max-install.sh}
           '';
         in

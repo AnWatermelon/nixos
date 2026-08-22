@@ -113,6 +113,9 @@ fi
 echo "==> Recording target host"
 mkdir -p /mnt/etc
 echo "$HOST" >/mnt/etc/install-target
+if [[ -n "${FLAKE_REV:-}" ]]; then
+  echo "$FLAKE_REV" >/mnt/etc/install-flake-rev
+fi
 
 echo "==> Installing minimal bootstrap system (stage 1)"
 nixos-install --flake "$WORK#minimal" --no-root-passwd --no-channel-copy
@@ -121,12 +124,20 @@ echo "==> Copying flake into the installed system"
 rm -rf /mnt/etc/nixos
 cp -a "$WORK" /mnt/etc/nixos
 
+echo "==> Restoring git repository in /etc/nixos"
+git -C /mnt/etc/nixos init -q -b main
+git -C /mnt/etc/nixos remote add origin https://github.com/AnWatermelon/nixos
+
 cat <<'EOF'
 
 Install complete. On first boot, the minimal system will automatically
 switch to the target host (this needs a network connection). To continue:
 
   umount -R /mnt && systemctl reboot
+
+/etc/nixos is a git repository tracking
+https://github.com/AnWatermelon/nixos; its history is synced during
+first boot, so 'git pull' works for updates afterwards.
 
 The minimal system uses the bootstrap password 'nixos' (user maxfh,
 SSH enabled). After the final switch, root gets locked and you should

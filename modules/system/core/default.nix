@@ -8,7 +8,6 @@
         "flakes"
       ];
 
-      # Keep the store from growing without bound.
       gc = {
         automatic = true;
         dates = "weekly";
@@ -23,6 +22,11 @@
     };
 
     nixpkgs.config.allowUnfree = true;
+
+    programs.git = {
+      enable = true;
+      config.safe.directory = [ "/etc/nixos" ];
+    };
 
     system.stateVersion = "26.05";
   };
