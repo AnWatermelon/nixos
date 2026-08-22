@@ -134,6 +134,5 @@
         PROMPT="''${PROMPT%%$'\n'*}"\''${VI_MODE_IND}$'\n'"''${PROMPT#*$'\n'}"
       '';
     };
-    xdg.configFile."noctalia/templates/zsh-palette.conf".source = ./zsh-palette-template.conf;
   };
 }

@@ -1,0 +1,16 @@
+[theme.templates.user.discord-translucence]
+input_path  = "./templates/Translucence.theme.css"
+output_path = "/home/maxfh/.config/BetterDiscord/themes/Translucence.theme.css"
+
+[theme.templates.user.spotatui]
+input_path  = "./templates/spotatui.yml"
+output_path = "/home/maxfh/.config/spotatui/config.yml"
+
+[theme.templates.user.nvim-base16]
+input_path  = "./templates/nvim-base16.lua"
+output_path = "/home/maxfh/.local/state/nvim/matugen/base16.lua"
+post_hook   = "pkill -SIGUSR1 nvim"
+
+[theme.templates.user.zsh]
+input_path  = "./templates/zsh-palette.conf"
+output_path = "/home/maxfh/.local/state/zsh/matugen/palette.zsh"

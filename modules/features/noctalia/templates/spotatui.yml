@@ -1,0 +1,18 @@
+theme:
+  preset: Custom
+  active: "{{ colors.primary.default.rgb_csv }}"
+  banner: "{{ colors.primary.default.rgb_csv }}"
+  error_border: "{{ colors.error.default.rgb_csv }}"
+  error_text: "{{ colors.error.default.rgb_csv }}"
+  hint: "{{ colors.tertiary.default.rgb_csv }}"
+  hovered: "{{ colors.secondary.default.rgb_csv }}"
+  inactive: "{{ colors.outline.default.rgb_csv }}"
+  playbar_background: Reset
+  playbar_progress: "{{ colors.secondary.default.rgb_csv }}"
+  playbar_progress_text: "{{ colors.on_secondary.default.rgb_csv }}"
+  playbar_text: Reset
+  selected: "{{ colors.primary.default.rgb_csv }}"
+  text: Reset
+  background: Reset
+  header: Reset
+  highlighted_lyrics: "{{ colors.primary.default.rgb_csv }}"

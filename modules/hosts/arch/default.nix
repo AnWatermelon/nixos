@@ -9,6 +9,7 @@
       config.flake.modules.homeManager.hyprland
       config.flake.modules.homeManager.zsh
       config.flake.modules.homeManager.neovim
+      config.flake.modules.homeManager.noctalia
 
       (
         { pkgs, ... }:
