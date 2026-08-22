@@ -15,6 +15,17 @@
           pkgs,
           ...
         }:
+        let
+          installLayouts = pkgs.runCommand "max-install-layouts" { } ''
+            mkdir -p "$out"
+            cp ${./_disko-btrfs.nix} "$out/btrfs.nix"
+            cp ${./_disko-ext4.nix} "$out/ext4.nix"
+          '';
+          maxInstall = pkgs.writeShellScriptBin "max-install" ''
+            export MAX_LAYOUT_DIR="${installLayouts}"
+            ${builtins.readFile ./max-install.sh}
+          '';
+        in
         {
           imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-base.nix") ];
 
@@ -22,9 +33,27 @@
           boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
           boot.supportedFilesystems.zfs = lib.mkForce false;
 
-          boot.postBootCommands = ''
-            mount -o remount,size=20G,noatime /nix/.rw-store
-          '';
+          zramSwap.enable = true;
+          zramSwap.memoryPercent = 100;
+          systemd.services.enlarge-rwstore = {
+            description = "Lift the cap on the RAM-backed writable Nix store";
+            wantedBy = [ "multi-user.target" ];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+            };
+            script = ''
+              mount -o remount,size=100% /nix/.rw-store
+            '';
+          };
+
+          environment.systemPackages = with pkgs; [
+            btrfs-progs
+            dosfstools
+            gptfdisk
+            inputs.disko.packages.${pkgs.system}.disko
+            maxInstall
+          ];
 
           isoImage = {
             edition = "Max";
@@ -36,7 +65,6 @@
             ];
           };
 
-          # installation-device.nix assigns the `nixos` user unconditionally.
           services.getty.autologinUser = lib.mkForce "maxfh";
           users.users.maxfh.initialPassword = "nixos";
         }
@@ -46,11 +74,8 @@
 
       config.flake.modules.nixos.networking
       config.flake.modules.nixos.locale
-      config.flake.modules.nixos.audio
-      config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
-      config.flake.modules.nixos.hyprland
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -60,8 +85,6 @@
           extraSpecialArgs = { inherit inputs; };
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
-            config.flake.modules.homeManager.cli
-            config.flake.modules.homeManager.desktop
           ];
         };
       }
