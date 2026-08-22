@@ -1,10 +1,16 @@
-{ config, lib, ... }:
+{ config, ... }:
 let
   flakeCfg = config;
 in
 {
   flake.modules.homeManager.niri =
-    { inputs, config, ... }:
+    {
+      inputs,
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     {
       imports = [
         ../desktop/options.nix
@@ -13,7 +19,30 @@ in
       ];
 
       config = {
-        programs.niri.enable = lib.mkIf (config.my.desktop.environment == "niri") true;
+        programs.niri = {
+          enable = lib.mkIf (config.my.desktop.environment == "niri") true;
+          package = lib.mkIf (
+            config.my.desktop.environment == "niri"
+          ) inputs.niri.packages.${pkgs.system}.niri-unstable;
+        };
+
+        xdg.configFile.niri-config.enable = lib.mkIf (config.my.desktop.environment == "niri") (
+          lib.mkForce false
+        );
+
+        xdg.configFile."niri/config.kdl" = lib.mkIf (config.my.desktop.environment == "niri") {
+          enable = config.programs.niri.finalConfig != null;
+          text = config.programs.niri.finalConfig + "\ninclude \"noctalia.kdl\"\n";
+        };
+
+        home.activation."noctalia-niri-theme-seed" = lib.mkIf (config.my.desktop.environment == "niri") (
+          lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+            if [ ! -e "$HOME/.config/niri/noctalia.kdl" ]; then
+              mkdir -p "$HOME/.config/niri"
+              cp ${./noctalia.kdl.seed} "$HOME/.config/niri/noctalia.kdl"
+            fi
+          ''
+        );
 
         programs.niri.settings = lib.mkIf (config.my.desktop.environment == "niri") {
           input = {
