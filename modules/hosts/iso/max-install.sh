@@ -90,10 +90,7 @@ HW_MIN="$WORK/modules/hosts/minimal/_hardware-configuration.nix"
 HW_TARGET="$WORK/modules/hosts/$HOST/_hardware-configuration.nix"
 [[ -f "$HW_MIN" ]] || die "no minimal host hardware config in the flake copy"
 [[ -d "$WORK/modules/hosts/$HOST" ]] || die "no host '$HOST' in the flake"
-if [[ "$KEEP_HW" -ne 1 && -f "$HW_TARGET" ]]; then
-  read -r -p "'$HOST' has a committed hardware config. Overwrite it in the install copy? [y/N] " ans
-  [[ "$ans" =~ ^[Yy]$ ]] || die "aborted"
-fi
+[[ "$KEEP_HW" -ne 1 || -f "$HW_TARGET" ]] || die "--keep-hardware: '$HOST' has no committed hardware config"
 
 echo "==> Generating hardware configuration"
 nixos-generate-config --root /mnt --show-hardware-config >"$HW_MIN"
