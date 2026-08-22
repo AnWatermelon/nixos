@@ -14,6 +14,9 @@ hl.window_rule({ match = { tag = "settings*" }, opacity = "0.8" })
 -- Kitty terminal
 hl.window_rule({ match = { class = "kitty" }, opacity = "0.9" })
 
+-- No opacity changes for browsers
+hl.window_rule({ match = { tag = "browser" }, opacity = "1.0 override"})
+
 --------------------------
 -- LAYER RULES
 --------------------------
