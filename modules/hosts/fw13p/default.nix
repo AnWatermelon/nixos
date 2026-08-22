@@ -29,6 +29,7 @@
       config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
+      config.flake.modules.nixos.desktop
 
       inputs.home-manager.nixosModules.home-manager
       {

@@ -1,9 +1,10 @@
 {
-  flake.modules.homeManager.steam =
-    { pkgs, ... }:
-    {
-      home.packages = with pkgs; [
-        steam
-      ];
+  flake.modules.nixos.steam = {
+    programs.steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
+      localNetworkGameTransfers.openFirewall = true;
     };
+  };
 }

@@ -3,6 +3,10 @@ let
   flakeCfg = config;
 in
 {
+  flake.modules.nixos.desktop = {
+    imports = [ flakeCfg.flake.modules.nixos.steam ];
+  };
+
   flake.modules.homeManager.desktop =
     {
       pkgs,
@@ -16,7 +20,6 @@ in
       imports = [
         ./options.nix
         flakeCfg.flake.modules.homeManager.terminal
-        flakeCfg.flake.modules.homeManager.steam
         flakeCfg.flake.modules.homeManager.discord
         flakeCfg.flake.modules.homeManager.zen-browser
         flakeCfg.flake.modules.homeManager.hyprland
