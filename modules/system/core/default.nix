@@ -17,6 +17,11 @@
       optimise.automatic = true;
     };
 
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
+
     nixpkgs.config.allowUnfree = true;
 
     system.stateVersion = "26.05";
