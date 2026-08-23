@@ -1,11 +1,17 @@
-{ config, lib, ... }:
+{ config, lib, inputs, ... }:
 let
   flakeCfg = config;
 in
 {
-  flake.modules.nixos.desktop = {
-    imports = [ flakeCfg.flake.modules.nixos.steam ];
-  };
+  flake.modules.nixos.desktop =
+    { pkgs, ... }:
+    {
+      imports = [ flakeCfg.flake.modules.nixos.steam ];
+
+      environment.systemPackages = [
+        inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+      ];
+    };
 
   flake.modules.homeManager.desktop =
     {
