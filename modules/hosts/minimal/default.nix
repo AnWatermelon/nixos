@@ -105,7 +105,8 @@
               say "switch complete; locking the root account"
               passwd -l root
               touch /var/lib/install-finalize.done
-              say "installation finalized: this system is now host '$target'"
+              say "installation finalized: this system will now reboot"
+              reboot
             '';
           };
         }
