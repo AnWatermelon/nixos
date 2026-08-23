@@ -61,6 +61,8 @@ _: {
           "ctrl+shift+t" = "new_tab";
           "ctrl+shift+right" = "next_tab";
           "ctrl+shift+left" = "previous_tab";
+          "ctrl+shift+l" = "next_tab";
+          "ctrl+shift+h" = "previous_tab";
           "ctrl+shift+w" = "close_tab";
         };
         # globinclude (unlike include) is a no-op when the file is absent, so a
