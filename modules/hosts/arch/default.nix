@@ -17,9 +17,13 @@
           kitty-system = pkgs.writeShellScriptBin "kitty" ''
             exec /usr/bin/kitty "$@"
           '';
+          noctalia-system = pkgs.writeShellScriptBin "noctalia" ''
+            exec /usr/bin/noctalia "$@"
+          '';
         in
         {
           my.terminal = kitty-system;
+          my.noctalia.package = noctalia-system;
           programs.kitty.package = kitty-system;
         }
       )
