@@ -16,6 +16,8 @@ Options:
                      configuration instead of regenerating it. Use this
                      when installing onto a machine that matches an
                      existing hand-written config.
+  --no-reboot        Do not reboot automatically after a successful
+                     install.
   -h, --help         Show this help.
 
 The target <host> must be a NixOS host in this flake.
@@ -31,6 +33,7 @@ HOST=""
 DISK=""
 LAYOUT="btrfs"
 KEEP_HW=0
+REBOOT=1
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -44,6 +47,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --keep-hardware)
       KEEP_HW=1
+      shift
+      ;;
+    --no-reboot)
+      REBOOT=0
       shift
       ;;
     -h | --help)
@@ -125,12 +132,11 @@ echo "==> Restoring git repository in /etc/nixos"
 git -C /mnt/etc/nixos init -q -b main
 git -C /mnt/etc/nixos remote add origin https://github.com/AnWatermelon/nixos
 
-cat <<'EOF'
+cat <<EOF
 
 Install complete. On first boot, the minimal system will automatically
-switch to the target host (this needs a network connection). To continue:
-
-  umount -R /mnt && systemctl reboot
+switch to host '$HOST' (this needs a network connection); progress is
+shown on the console, and the switch retries until it succeeds.
 
 /etc/nixos is a git repository tracking
 https://github.com/AnWatermelon/nixos; its history is synced during
@@ -141,3 +147,12 @@ SSH enabled). After the final switch, root gets locked and you should
 set a real password for maxfh right away.
 
 EOF
+
+if [[ "$REBOOT" -eq 1 ]]; then
+  echo "==> Unmounting and rebooting into the new system"
+  umount -R /mnt
+  systemctl reboot
+else
+  echo "==> Reboot skipped (--no-reboot); unmount and reboot when ready:"
+  echo "    umount -R /mnt && systemctl reboot"
+fi
