@@ -6,7 +6,11 @@ in
   flake.modules.nixos.desktop =
     { pkgs, ... }:
     {
-      imports = [ flakeCfg.flake.modules.nixos.steam ];
+      imports = [
+        ./options.nix
+        flakeCfg.flake.modules.nixos.steam
+        flakeCfg.flake.modules.nixos.hyprland
+      ];
 
       environment.systemPackages = [
         inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
