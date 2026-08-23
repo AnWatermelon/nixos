@@ -93,19 +93,19 @@ HW_TARGET="$WORK/modules/hosts/$HOST/_hardware-configuration.nix"
 [[ "$KEEP_HW" -ne 1 || -f "$HW_TARGET" ]] || die "--keep-hardware: '$HOST' has no committed hardware config"
 
 echo "==> Generating hardware configuration"
-nixos-generate-config --root /mnt --show-hardware-config >"$HW_MIN"
+nixos-generate-config --root /mnt --show-hardware-config | sed '/systemd-boot/d' >"$HW_MIN"
 if [[ "$KEEP_HW" -ne 1 ]]; then
   cp "$HW_MIN" "$HW_TARGET"
 fi
 
 echo "==> Selecting bootloader (detected: $([ -d /sys/firmware/efi ] && echo EFI || echo BIOS))"
 if [[ -d /sys/firmware/efi ]]; then
-  printf '{ boot.loader.grub = { enable = true; efiSupport = true; efiInstallAsRemovable = true; device = "nodev"; }; }\n' \
-    >"$WORK/modules/hosts/minimal/_bootloader.nix"
+  BOOTLOADER='{ boot.loader.grub = { enable = true; efiSupport = true; efiInstallAsRemovable = true; device = "nodev"; }; }'
 else
-  printf '{ boot.loader.grub = { enable = true; device = "%s"; }; }\n' "$DISK" \
-    >"$WORK/modules/hosts/minimal/_bootloader.nix"
+  printf -v BOOTLOADER '{ boot.loader.grub = { enable = true; device = "%s"; }; }' "$DISK"
 fi
+printf '%s\n' "$BOOTLOADER" >"$WORK/modules/hosts/minimal/_bootloader.nix"
+printf '%s\n' "$BOOTLOADER" >"$WORK/modules/hosts/$HOST/_bootloader.nix"
 
 echo "==> Recording target host"
 mkdir -p /mnt/etc

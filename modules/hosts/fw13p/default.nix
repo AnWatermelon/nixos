@@ -8,6 +8,7 @@
     specialArgs = { inherit inputs; };
     modules = [
       ./_hardware-configuration.nix
+      ./_bootloader.nix
       ./_fprint-wake.nix
       config.flake.modules.nixos.terminal
       { networking.hostName = "fw13p"; }

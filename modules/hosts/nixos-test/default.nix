@@ -10,6 +10,7 @@
       # Underscore prefix keeps import-tree from loading this NixOS module as a
       # flake-parts module.
       ./_hardware-configuration.nix
+      ./_bootloader.nix
       config.flake.modules.nixos.terminal
       { networking.hostName = "nixos-test"; }
       {
