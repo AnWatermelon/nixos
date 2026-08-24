@@ -16,15 +16,15 @@
           ...
         }:
         let
-          installLayouts = pkgs.runCommand "max-install-layouts" { } ''
+          installLayouts = pkgs.runCommand "install-host-layouts" { } ''
             mkdir -p "$out"
             cp ${./_disko-btrfs.nix} "$out/btrfs.nix"
             cp ${./_disko-ext4.nix} "$out/ext4.nix"
           '';
-          maxInstall = pkgs.writeShellScriptBin "max-install" ''
+          installHost = pkgs.writeShellScriptBin "install-host" ''
             export MAX_LAYOUT_DIR="${installLayouts}"
             export FLAKE_REV="${self.rev or ""}"
-            ${builtins.readFile ./max-install.sh}
+            ${builtins.readFile ./install-host.sh}
           '';
         in
         {
@@ -54,7 +54,7 @@
             dosfstools
             gptfdisk
             inputs.disko.packages.${pkgs.system}.disko
-            maxInstall
+            installHost
           ];
 
           isoImage = {
