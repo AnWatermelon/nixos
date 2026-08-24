@@ -29,12 +29,19 @@
       (
         {
           config,
+          lib,
           pkgs,
           ...
         }:
         {
           users.users.root.initialPassword = "nixos";
           users.users.maxfh.initialPassword = "nixos";
+
+          # tty1 belongs to install-finalize's live progress output; no login
+          # prompt during the minimal phase. logind still spawns a getty on
+          # the other VTs when they are switched to, and sshd is enabled, so
+          # the machine stays reachable for debugging.
+          systemd.targets.getty.wants = lib.mkForce [ ];
 
           systemd.services.install-finalize = {
             description = "Finalize installation by switching to the target host";
@@ -43,9 +50,21 @@
               "/etc/install-target"
               "!/var/lib/install-finalize.done"
             ];
+            # This unit only exists on the minimal host, so it disappears from
+            # the target host's unit set. Without this, switch-to-configuration
+            # would stop us mid-run while we are performing the switch.
+            unitConfig.X-StopOnRemoval = false;
             serviceConfig = {
-              Type = "oneshot";
+              # Start when boot has finished and take over tty1 so that every
+              # action (git sync, nixos-rebuild, ...) streams to the console.
+              Type = "idle";
               RemainAfterExit = true;
+              StandardInput = "tty";
+              StandardOutput = "journal+console";
+              StandardError = "journal+console";
+              TTYPath = "/dev/tty1";
+              TTYReset = "yes";
+              TTYVHangup = "yes";
             };
             path = [
               pkgs.coreutils
@@ -55,11 +74,18 @@
             script = ''
               set -euo pipefail
 
+              # The final switch replaces the minimal system, whose getty takes
+              # over tty1 and hangs up the console session; ignore the hangup
+              # so the trailing steps (locking root, reboot) still run. Also
+              # ignore Ctrl-C: aborting mid-switch would leave a broken system
+              # (stop it via systemctl instead).
+              trap ''' HUP INT
+
               target="$(cat /etc/install-target)"
-              say() { echo "install-finalize: $*" | tee /dev/console >&2; }
+              say() { echo "install-finalize: $*"; }
 
               say "starting finalization: target host '$target'"
-              say "progress: journalctl -u install-finalize -f"
+              say "live progress is on this console; it is also in the journal (journalctl -u install-finalize -f)"
 
               if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
                 say "syncing /etc/nixos with GitHub"
@@ -104,7 +130,7 @@
 
               if [[ $switched -ne 1 ]]; then
                 say "ERROR: switch failed after 10 attempts."
-                say "Connect the machine to the network, then run: sudo systemctl restart install-finalize"
+                say "Log in via SSH or on tty2 (Ctrl+Alt+F2), then run: sudo systemctl restart install-finalize"
                 exit 1
               fi
 
