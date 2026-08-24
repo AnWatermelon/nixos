@@ -66,9 +66,13 @@
               TTYReset = "yes";
               TTYVHangup = "yes";
             };
+            # git fetch of the Gitea origin needs the ssh client; the target
+            # host's system-wide ssh config supplies the identity and known
+            # host key for gitea.hilton-tech.net.
             path = [
               pkgs.coreutils
               pkgs.git
+              pkgs.openssh
               pkgs.shadow
               config.system.build.nixos-rebuild
             ];
