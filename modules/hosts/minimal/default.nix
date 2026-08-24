@@ -87,7 +87,9 @@
 
               # Ensure pushes to /etc/nixos go to the private Gitea mirror via
               # the shared host key (fetches stay on the public GitHub mirror).
-              git -C /etc/nixos remote set-url --push origin gitea@gitea.hilton-tech.net:max_hilton/nixos.git || true
+              if ! git -C /etc/nixos remote set-url --push origin gitea@gitea.hilton-tech.net:max_hilton/nixos.git; then
+                say "warning: could not set gitea push URL for /etc/nixos"
+              fi
 
               say "switching to host '$target' (the first switch downloads and builds; this can take a while)"
               switched=0

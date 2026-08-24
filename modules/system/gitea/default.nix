@@ -7,9 +7,9 @@
       secrets."gitea-ssh-key" = {
         sopsFile = ./secrets/gitea-ssh-key.yaml;
         path = "/etc/gitea/id_ed25519";
-        owner = "root";
-        group = "wheel";
-        mode = "0640";
+        owner = "maxfh";
+        group = "root";
+        mode = "0600";
       };
     };
 
