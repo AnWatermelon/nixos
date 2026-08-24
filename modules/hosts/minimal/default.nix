@@ -87,36 +87,6 @@
               say "starting finalization: target host '$target'"
               say "live progress is on this console; it is also in the journal (journalctl -u install-finalize -f)"
 
-              if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
-                say "syncing /etc/nixos with GitHub"
-                synced=0
-                for attempt in $(seq 1 10); do
-                  if timeout 120 git -C /etc/nixos fetch -q origin; then
-                    rev="$(cat /etc/install-flake-rev 2>/dev/null || true)"
-                    if [[ -n "$rev" ]] && git -C /etc/nixos fetch -q origin "$rev"; then
-                      git -C /etc/nixos reset --quiet FETCH_HEAD
-                    else
-                      git -C /etc/nixos reset --quiet origin/main
-                      say "warning: flake rev unavailable; /etc/nixos reset to origin/main"
-                    fi
-                    git -C /etc/nixos branch --set-upstream-to=origin/main main || true
-                    synced=1
-                    break
-                  fi
-                  say "git sync failed (attempt $attempt/10); waiting for network"
-                  sleep 30
-                done
-                if [[ $synced -ne 1 ]]; then
-                  say "warning: could not reach GitHub; using the flake as installed"
-                fi
-              fi
-
-              # Ensure pushes to /etc/nixos go to the private Gitea mirror via
-              # the shared host key (fetches stay on the public GitHub mirror).
-              if ! git -C /etc/nixos remote set-url --push origin gitea@gitea.hilton-tech.net:max_hilton/nixos.git; then
-                say "warning: could not set gitea push URL for /etc/nixos"
-              fi
-
               say "switching to host '$target' (the first switch downloads and builds; this can take a while)"
               switched=0
               for attempt in $(seq 1 10); do
@@ -134,9 +104,50 @@
                 exit 1
               fi
 
+              # Sync /etc/nixos history. This runs after the switch because
+              # the shared Gitea host key is only available once the target
+              # host's sops secrets are decrypted; hosts without the key
+              # sync from the public GitHub mirror instead.
+              sync_ok=1
+              if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
+                if [[ -f /etc/gitea/id_ed25519 ]]; then
+                  sync_remote="origin"
+                else
+                  say "no Gitea host key on '$target'; syncing from the GitHub mirror"
+                  sync_remote="github"
+                fi
+                say "syncing /etc/nixos with $sync_remote"
+                sync_ok=0
+                for attempt in $(seq 1 10); do
+                  if timeout 120 git -C /etc/nixos fetch -q "$sync_remote"; then
+                    rev="$(cat /etc/install-flake-rev 2>/dev/null || true)"
+                    if [[ "$rev" =~ ^[0-9a-f]{7,64}$ ]] && git -C /etc/nixos fetch -q "$sync_remote" -- "$rev"; then
+                      git -C /etc/nixos reset --quiet FETCH_HEAD
+                    elif git -C /etc/nixos rev-parse -q --verify "$sync_remote/main" >/dev/null 2>&1; then
+                      git -C /etc/nixos reset --quiet "$sync_remote/main"
+                      say "warning: flake rev unavailable; /etc/nixos reset to $sync_remote/main"
+                    else
+                      say "warning: $sync_remote has no usable ref; /etc/nixos left as installed"
+                      sync_ok=1
+                    fi
+                    git -C /etc/nixos branch --set-upstream-to="$sync_remote/main" main 2>/dev/null || true
+                    sync_ok=1
+                    break
+                  fi
+                  say "git sync failed (attempt $attempt/10); waiting for network"
+                  sleep 30
+                done
+              fi
+
               say "switch complete; locking the root account"
               passwd -l root
-              touch /var/lib/install-finalize.done
+              if [[ $sync_ok -ne 1 ]]; then
+                say "warning: could not sync /etc/nixos with $sync_remote; it has no git history yet"
+                say "warning: install-finalize will retry on the next boot; to fix now run:"
+                say "warning:   git -C /etc/nixos fetch $sync_remote && git -C /etc/nixos reset --quiet $sync_remote/main"
+              else
+                touch /var/lib/install-finalize.done
+              fi
               say "installation finalized: this system will now reboot"
               reboot
             '';
