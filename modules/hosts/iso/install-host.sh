@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: max-install [OPTIONS] <host>
+Usage: install-host [OPTIONS] <host>
 
 Install the NixOS configuration <host> (e.g. fw13p, nixos-test) onto a
 target disk using the bundled two-stage process.
@@ -30,7 +30,7 @@ EOF
 }
 
 die() {
-  echo "max-install: error: $*" >&2
+  echo "install-host: error: $*" >&2
   exit 1
 }
 
@@ -82,7 +82,7 @@ done
 
 FLAKE_SRC="/iso/etc/nixos/flake"
 LAYOUT_DIR="${MAX_LAYOUT_DIR:-/nonexistent}"
-WORK="/tmp/max-install-flake"
+WORK="/tmp/install-host-flake"
 
 [[ -d "$FLAKE_SRC" ]] || die "flake not found at $FLAKE_SRC (are you on the Max ISO?)"
 [[ -f "$LAYOUT_DIR/$LAYOUT.nix" ]] || die "unknown layout '$LAYOUT' (available: btrfs, ext4)"
@@ -92,7 +92,7 @@ read -r -p "DESTROY all data on $DISK and install host '$HOST'? Type '$HOST' to 
 [[ "$confirm" == "$HOST" ]] || die "aborted"
 
 HOSTKEY_AGE="$FLAKE_SRC/modules/hosts/$HOST/ssh_host_ed25519_key.age"
-HOSTKEY_TMP="/tmp/max-install-${HOST}-hostkey"
+HOSTKEY_TMP="/tmp/install-host-${HOST}-hostkey"
 if [[ -f "$HOSTKEY_AGE" ]]; then
   echo "==> Decrypting pre-generated SSH host key for $HOST (sops secrets are keyed to it)"
   rm -f "$HOSTKEY_TMP"
