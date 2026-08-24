@@ -10,19 +10,24 @@
       };
     };
 
-    services.netbird.clients.wt0 = {
-      port = 51820;
+    services.netbird = {
+      enable = true;
+      clients.wt0 = {
+        port = 51820;
 
-      login = {
-        enable = true;
-        setupKeyFile = config.sops.secrets."netbird-setup-key".path;
-        systemdDependencies = [ "sops-install-secrets.service" ];
+        login = {
+          enable = true;
+          setupKeyFile = config.sops.secrets."netbird-setup-key".path;
+          systemdDependencies = [ "sops-install-secrets.service" ];
+        };
+
+        ui.enable = true;
+
+        openFirewall = true;
+        openInternalFirewall = true;
+
+        config.ManagementURL = "https://netbird.hilton-tech.net";
       };
-
-      ui.enable = true;
-
-      openFirewall = true;
-      openInternalFirewall = true;
     };
   };
 }
