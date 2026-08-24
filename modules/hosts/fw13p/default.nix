@@ -24,6 +24,7 @@
 
       config.flake.modules.nixos.boot
       config.flake.modules.nixos.networking
+      config.flake.modules.nixos.netbird
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.audio
       config.flake.modules.nixos.fprint

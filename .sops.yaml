@@ -1,16 +1,11 @@
 keys:
-  # User age key (for editing secrets from your workstation)
-  # Generate with: ssh-to-age -private-key -i ~/.ssh/id_ed25519
-  - &user_maxfh age1...  # REPLACE THIS WITH YOUR ACTUAL AGE PUBLIC KEY
+  - &user_maxfh age1jqy06u9egjhe5wrh3a0fwv68cu738w62rcc2e2lzavxccjt53g6s4d96xu
 
-  # System SSH host key (for decrypting secrets at boot on desktop)
-  # Generate with: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
-  - &host_desktop age1...  # REPLACE THIS WITH YOUR ACTUAL HOST AGE PUBLIC KEY
+  - &host_fw13p age140zxn09tw9ftzl7w04er7q76stfr5q35f6ryah8nqae34ma2nqes45hakx
 
 creation_rules:
-  # All secrets use both user key (for editing) and host keys (for boot decryption)
-  - path_regex: secrets/[^/]+\.yaml$
+  - path_regex: modules/system/netbird/secrets/.*\.ya?ml$
     key_groups:
       - age:
           - *user_maxfh
-          - *host_desktop
+          - *host_fw13p

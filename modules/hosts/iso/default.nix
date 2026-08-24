@@ -49,6 +49,7 @@
           };
 
           environment.systemPackages = with pkgs; [
+            age
             btrfs-progs
             dosfstools
             gptfdisk

@@ -21,6 +21,11 @@ Options:
   -h, --help         Show this help.
 
 The target <host> must be a NixOS host in this flake.
+
+If <host> ships a pre-generated SSH host key
+(modules/hosts/<host>/ssh_host_ed25519_key.age), you will be prompted
+for its age passphrase before any changes are made. The key decrypts
+the host's sops secrets at first boot.
 EOF
 }
 
@@ -86,6 +91,25 @@ WORK="/tmp/max-install-flake"
 read -r -p "DESTROY all data on $DISK and install host '$HOST'? Type '$HOST' to confirm: " confirm
 [[ "$confirm" == "$HOST" ]] || die "aborted"
 
+HOSTKEY_AGE="$FLAKE_SRC/modules/hosts/$HOST/ssh_host_ed25519_key.age"
+HOSTKEY_TMP="/tmp/max-install-${HOST}-hostkey"
+if [[ -f "$HOSTKEY_AGE" ]]; then
+  echo "==> Decrypting pre-generated SSH host key for $HOST (sops secrets are keyed to it)"
+  rm -f "$HOSTKEY_TMP"
+  for attempt in 1 2 3; do
+    if age -d -o "$HOSTKEY_TMP" "$HOSTKEY_AGE"; then
+      chmod 600 "$HOSTKEY_TMP"
+      break
+    fi
+    if [[ $attempt -eq 3 ]]; then
+      die "host key decryption failed after 3 attempts"
+    fi
+    echo "    (attempt $attempt failed; try again)"
+  done
+else
+  echo "==> No pre-generated SSH host key for $HOST (skipping)"
+fi
+
 echo "==> Partitioning $DISK with layout '$LAYOUT'"
 disko --mode destroy,format,mount "$LAYOUT_DIR/$LAYOUT.nix" --argstr disk "$DISK" --yes-wipe-all-disks
 
@@ -131,6 +155,14 @@ cp -a "$WORK" /mnt/etc/nixos
 echo "==> Restoring git repository in /etc/nixos"
 git -C /mnt/etc/nixos init -q -b main
 git -C /mnt/etc/nixos remote add origin https://github.com/AnWatermelon/nixos
+
+if [[ -f "$HOSTKEY_TMP" ]]; then
+  echo "==> Installing SSH host key into the new system"
+  mkdir -p /mnt/etc/ssh
+  install -m 600 "$HOSTKEY_TMP" /mnt/etc/ssh/ssh_host_ed25519_key
+  ssh-keygen -y -f /mnt/etc/ssh/ssh_host_ed25519_key >/mnt/etc/ssh/ssh_host_ed25519_key.pub
+  rm -f "$HOSTKEY_TMP"
+fi
 
 cat <<EOF
 
