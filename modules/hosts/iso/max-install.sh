@@ -155,6 +155,7 @@ cp -a "$WORK" /mnt/etc/nixos
 echo "==> Restoring git repository in /etc/nixos"
 git -C /mnt/etc/nixos init -q -b main
 git -C /mnt/etc/nixos remote add origin https://github.com/AnWatermelon/nixos
+git -C /mnt/etc/nixos remote set-url --push origin gitea@gitea.hilton-tech.net:max_hilton/nixos.git
 
 if [[ -f "$HOSTKEY_TMP" ]]; then
   echo "==> Installing SSH host key into the new system"
@@ -171,8 +172,10 @@ switch to host '$HOST' (this needs a network connection); progress is
 shown on the console, and the switch retries until it succeeds.
 
 /etc/nixos is a git repository tracking
-https://github.com/AnWatermelon/nixos; its history is synced during
-first boot, so 'git pull' works for updates afterwards.
+https://github.com/AnWatermelon/nixos (fetches) with pushes going to
+gitea@gitea.hilton-tech.net:max_hilton/nixos.git via the shared host
+key; its history is synced during first boot, so 'git pull' works for
+updates afterwards.
 
 The minimal system uses the bootstrap password 'nixos' (user maxfh,
 SSH enabled). After the final switch, root gets locked and you should

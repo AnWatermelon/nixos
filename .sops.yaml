@@ -9,3 +9,9 @@ creation_rules:
       - age:
           - *user_maxfh
           - *host_fw13p
+
+  - path_regex: modules/system/gitea/secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          - *user_maxfh
+          - *host_fw13p
