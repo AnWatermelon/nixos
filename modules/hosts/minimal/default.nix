@@ -69,6 +69,7 @@
             path = [
               pkgs.coreutils
               pkgs.git
+              pkgs.shadow
               config.system.build.nixos-rebuild
             ];
             script = ''
