@@ -12,6 +12,7 @@
             name = "Max Hilton";
             email = "maxfhilton52@gmail.com";
           };
+          pull.rebase = true;
         };
       };
     };
