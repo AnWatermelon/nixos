@@ -6,11 +6,13 @@
 }:
 let
   flakeCfg = config;
-  cfg = config.my.desktop;
 in
 {
   flake.modules.nixos.desktop =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
+    let
+      cfg = config.my.desktop;
+    in
     {
       imports = [
         ./options.nix
