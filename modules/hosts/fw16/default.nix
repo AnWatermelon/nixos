@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }:
 {
@@ -20,6 +21,10 @@
         };
       }
 
+      {
+        my.desktop.environment = "gnome";
+      }
+
       config.flake.modules.nixos.boot
       config.flake.modules.nixos.networking
       config.flake.modules.nixos.netbird
@@ -32,6 +37,10 @@
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
       config.flake.modules.nixos.terminal
+
+      {
+        environment.systemPackages = [ pkgs.libreoffice ];
+      }
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -47,9 +56,5 @@
         };
       }
     ];
-
-    environment.systemPackages = {
-      pkgs.libreoffice
-    };
   };
 }

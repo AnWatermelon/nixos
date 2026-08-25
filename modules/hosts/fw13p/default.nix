@@ -34,7 +34,6 @@
       config.flake.modules.nixos.desktop
       config.flake.modules.nixos.terminal
 
-
       inputs.home-manager.nixosModules.home-manager
       {
         home-manager = {

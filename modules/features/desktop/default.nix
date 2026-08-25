@@ -6,6 +6,7 @@
 }:
 let
   flakeCfg = config;
+  cfg = config.my.desktop;
 in
 {
   flake.modules.nixos.desktop =
@@ -14,11 +15,26 @@ in
       imports = [
         ./options.nix
         flakeCfg.flake.modules.nixos.steam
-        flakeCfg.flake.modules.nixos.hyprland
       ];
 
-      environment.systemPackages = [
-        inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+      config = lib.mkMerge [
+        {
+          environment.systemPackages = [
+            inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+          ];
+        }
+        (lib.mkIf (cfg.environment == "hyprland") {
+          programs.hyprland = {
+            enable = true;
+            xwayland.enable = true;
+          };
+        })
+        (lib.mkIf (cfg.environment == "gnome") {
+          services = {
+            displayManager.gdm.enable = true;
+            desktopManager.gnome.enable = true;
+          };
+        })
       ];
     };
 

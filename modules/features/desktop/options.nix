@@ -5,6 +5,7 @@
       type = lib.types.enum [
         "hyprland"
         "niri"
+        "gnome"
       ];
       default = "hyprland";
       description = "Desktop environment/window manager to use";
