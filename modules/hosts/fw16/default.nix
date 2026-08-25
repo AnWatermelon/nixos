@@ -4,13 +4,12 @@
   ...
 }:
 {
-  flake.nixosConfigurations.fw13p = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.fw16 = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = { inherit inputs; };
     modules = [
       ./_hardware-configuration.nix
       ./_bootloader.nix
-      ./_fprint-wake.nix
-      { networking.hostName = "fw13p"; }
+      { networking.hostName = "fw16"; }
       {
         services.openssh = {
           enable = true;
@@ -34,7 +33,6 @@
       config.flake.modules.nixos.desktop
       config.flake.modules.nixos.terminal
 
-
       inputs.home-manager.nixosModules.home-manager
       {
         home-manager = {
@@ -49,5 +47,9 @@
         };
       }
     ];
+
+    environment.systemPackages = {
+      pkgs.libreoffice
+    };
   };
 }
