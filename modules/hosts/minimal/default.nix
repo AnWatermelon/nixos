@@ -66,14 +66,15 @@
               TTYReset = "yes";
               TTYVHangup = "yes";
             };
-            # git fetch of the Gitea origin needs the ssh client; the target
-            # host's system-wide ssh config supplies the identity and known
-            # host key for gitea.hilton-tech.net.
+            # git fetch of the Gitea origin needs the ssh client;
+            # nixos-generate-config regenerates the install-time generated
+            # configs after any /etc/nixos tree reset.
             path = [
               pkgs.coreutils
+              pkgs.gnused
               pkgs.git
               pkgs.openssh
-              pkgs.shadow
+              pkgs.nixos-install-tools
               config.system.build.nixos-rebuild
             ];
             script = ''
@@ -81,9 +82,9 @@
 
               # The final switch replaces the minimal system, whose getty takes
               # over tty1 and hangs up the console session; ignore the hangup
-              # so the trailing steps (locking root, reboot) still run. Also
-              # ignore Ctrl-C: aborting mid-switch would leave a broken system
-              # (stop it via systemctl instead).
+              # so the trailing steps (root-lock marker, reboot) still run.
+              # Also ignore Ctrl-C: aborting mid-switch would leave a broken
+              # system (stop it via systemctl instead).
               trap ''' HUP INT
 
               target="$(cat /etc/install-target)"
@@ -92,14 +93,121 @@
               say "starting finalization: target host '$target'"
               say "live progress is on this console; it is also in the journal (journalctl -u install-finalize -f)"
 
+              # Fetch the remote history (Gitea origin, falling back to the
+              # public GitHub mirror) and reset the tree to it. --hard is
+              # deliberate: a mixed reset would leave the installed files in
+              # place, so a broken flake baked into the ISO would never be
+              # replaced by the fixed one on the remote. The generated configs
+              # are restored by regenerate_configs below.
+              # Sets SYNC_REMOTE to the remote that worked, or empties it.
+              SYNC_REMOTE=""
+              sync_etc_nixos() {
+                local prefer_rev="$1"
+                local attempt remote rev
+                for attempt in $(seq 1 10); do
+                  for remote in origin github; do
+                    if timeout 120 git -C /etc/nixos fetch -q "$remote"; then
+                      rev=""
+                      if [[ "$prefer_rev" == "1" ]]; then
+                        rev="$(cat /etc/install-flake-rev 2>/dev/null || true)"
+                      fi
+                      if [[ "$rev" =~ ^[0-9a-f]{7,64}$ ]] && git -C /etc/nixos fetch -q "$remote" -- "$rev"; then
+                        git -C /etc/nixos reset --hard FETCH_HEAD
+                        say "/etc/nixos reset to flake rev $rev from $remote"
+                      elif git -C /etc/nixos rev-parse -q --verify "$remote/main" >/dev/null 2>&1; then
+                        git -C /etc/nixos reset --hard "$remote/main"
+                        say "/etc/nixos reset to $remote/main"
+                      else
+                        say "warning: $remote has no usable ref; /etc/nixos left as installed"
+                        SYNC_REMOTE=""
+                        return 1
+                      fi
+                      git -C /etc/nixos branch --set-upstream-to="$remote/main" main 2>/dev/null || true
+                      SYNC_REMOTE="$remote"
+                      return 0
+                    fi
+                  done
+                  say "git sync failed (attempt $attempt/10); waiting for network"
+                  sleep 30
+                done
+                SYNC_REMOTE=""
+                return 1
+              }
+
+              # The generated _hardware-configuration.nix and _bootloader.nix
+              # files only ever exist as uncommitted local changes (the repo
+              # carries placeholders), so any tree reset -- even a manual one
+              # -- loses them. Regenerate them from the live system, which is
+              # the same machine with the mounts the installer created.
+              # Mirrors install-host.sh: the target's hardware config is only
+              # regenerated when the install did not use --keep-hardware.
+              regenerate_configs() {
+                say "regenerating hardware configuration and bootloader"
+                nixos-generate-config --root / --show-hardware-config | sed '/systemd-boot/d' \
+                  > /etc/nixos/modules/hosts/minimal/_hardware-configuration.nix
+                if [[ -f /etc/install-keep-hardware ]]; then
+                  say "--keep-hardware install: preserving '$target' hardware configuration"
+                else
+                  cp /etc/nixos/modules/hosts/minimal/_hardware-configuration.nix \
+                    /etc/nixos/modules/hosts/"$target"/_hardware-configuration.nix
+                fi
+                local bootloader
+                if [[ -d /sys/firmware/efi ]]; then
+                  bootloader='{ boot.loader.grub = { enable = true; efiSupport = true; efiInstallAsRemovable = true; device = "nodev"; }; }'
+                else
+                  printf -v bootloader '{ boot.loader.grub = { enable = true; device = "%s"; }; }' \
+                    "$(cat /etc/install-disk 2>/dev/null || echo UNKNOWN-DISK)"
+                fi
+                printf '%s\n' "$bootloader" > /etc/nixos/modules/hosts/minimal/_bootloader.nix
+                printf '%s\n' "$bootloader" > /etc/nixos/modules/hosts/"$target"/_bootloader.nix
+              }
+
+              [[ -d /etc/nixos/modules/hosts/"$target" ]] || {
+                say "ERROR: no host '$target' in /etc/nixos"
+                exit 1
+              }
+
+              # 1. Sync before the switch. This is what lets a broken baked
+              #    tree self-heal, and it gives /etc/nixos its git history.
+              #    Gitea needs the target's SSH key, which only exists after
+              #    the switch, so the GitHub mirror is the fallback that works
+              #    during the minimal phase.
+              synced=1
+              if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
+                if sync_etc_nixos 1; then
+                  say "synced /etc/nixos with $SYNC_REMOTE"
+                else
+                  synced=0
+                  say "warning: could not sync /etc/nixos; using the tree installed by the ISO"
+                fi
+              else
+                say "/etc/nixos already has git history; leaving the tree as-is"
+              fi
+
+              # 2. Always regenerate: the sync above (or any earlier reset)
+              #    replaced the install-time generated configs with the repo's
+              #    placeholders.
+              regenerate_configs
+
+              # 3. Switch, retrying up to 10 times. If the recorded flake rev
+              #    fails to build, drop the pin once and retry against the
+              #    remote's main in case the rev predates a fix.
               say "switching to host '$target' (the first switch downloads and builds; this can take a while)"
               switched=0
+              fallback_done=0
               for attempt in $(seq 1 10); do
                 if nixos-rebuild switch --flake "/etc/nixos#$target"; then
                   switched=1
                   break
                 fi
-                say "switch failed (attempt $attempt/10); retrying in 60s"
+                say "switch failed (attempt $attempt/10)"
+                if [[ $fallback_done -eq 0 && -n "$SYNC_REMOTE" ]] \
+                  && git -C /etc/nixos rev-parse -q --verify "$SYNC_REMOTE/main" >/dev/null 2>&1; then
+                  fallback_done=1
+                  say "retrying against $SYNC_REMOTE/main in case the recorded rev predates a fix"
+                  git -C /etc/nixos reset --hard "$SYNC_REMOTE/main"
+                  regenerate_configs
+                fi
                 sleep 60
               done
 
@@ -109,47 +217,28 @@
                 exit 1
               fi
 
-              # Sync /etc/nixos history. This runs after the switch because
-              # the shared Gitea host key is only available once the target
-              # host's sops secrets are decrypted; hosts without the key
-              # sync from the public GitHub mirror instead.
-              sync_ok=1
-              if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
-                if [[ -f /etc/gitea/id_ed25519 ]]; then
-                  sync_remote="origin"
-                else
-                  say "no Gitea host key on '$target'; syncing from the GitHub mirror"
-                  sync_remote="github"
+              # 4. If the pre-switch sync failed (no network on the minimal
+              #    host), retry now: the target host's sops secrets are
+              #    decrypted, so the Gitea origin may work. The reset is --hard
+              #    again, so restore the generated configs afterwards.
+              if [[ $synced -ne 1 ]]; then
+                if sync_etc_nixos 1; then
+                  synced=1
+                  regenerate_configs
                 fi
-                say "syncing /etc/nixos with $sync_remote"
-                sync_ok=0
-                for attempt in $(seq 1 10); do
-                  if timeout 120 git -C /etc/nixos fetch -q "$sync_remote"; then
-                    rev="$(cat /etc/install-flake-rev 2>/dev/null || true)"
-                    if [[ "$rev" =~ ^[0-9a-f]{7,64}$ ]] && git -C /etc/nixos fetch -q "$sync_remote" -- "$rev"; then
-                      git -C /etc/nixos reset --quiet FETCH_HEAD
-                    elif git -C /etc/nixos rev-parse -q --verify "$sync_remote/main" >/dev/null 2>&1; then
-                      git -C /etc/nixos reset --quiet "$sync_remote/main"
-                      say "warning: flake rev unavailable; /etc/nixos reset to $sync_remote/main"
-                    else
-                      say "warning: $sync_remote has no usable ref; /etc/nixos left as installed"
-                      sync_ok=1
-                    fi
-                    git -C /etc/nixos branch --set-upstream-to="$sync_remote/main" main 2>/dev/null || true
-                    sync_ok=1
-                    break
-                  fi
-                  say "git sync failed (attempt $attempt/10); waiting for network"
-                  sleep 30
-                done
               fi
 
-              say "switch complete; locking the root account"
-              passwd -l root
-              if [[ $sync_ok -ne 1 ]]; then
-                say "warning: could not sync /etc/nixos with $sync_remote; it has no git history yet"
+              # 5. Leave a marker for the target host: a first-boot unit locks
+              #    the root account once the final system has booted
+              #    successfully at least once, so a broken final boot still
+              #    leaves an emergency-console login path open.
+              say "switch complete; leaving the root-lock marker for '$target'"
+              touch /etc/root-lock-pending
+
+              if [[ $synced -ne 1 ]]; then
+                say "warning: could not sync /etc/nixos with a remote; it has no git history yet"
                 say "warning: install-finalize will retry on the next boot; to fix now run:"
-                say "warning:   git -C /etc/nixos fetch $sync_remote && git -C /etc/nixos reset --quiet $sync_remote/main"
+                say "warning:   git -C /etc/nixos fetch origin && git -C /etc/nixos reset --hard origin/main"
               else
                 touch /var/lib/install-finalize.done
               fi
