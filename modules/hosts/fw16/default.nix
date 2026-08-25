@@ -1,7 +1,6 @@
 {
   config,
   inputs,
-  pkgs,
   ...
 }:
 {
@@ -38,9 +37,12 @@
       config.flake.modules.nixos.desktop
       config.flake.modules.nixos.terminal
 
-      {
-        environment.systemPackages = [ pkgs.libreoffice ];
-      }
+      (
+        { pkgs, ... }:
+        {
+          environment.systemPackages = [ pkgs.libreoffice ];
+        }
+      )
 
       inputs.home-manager.nixosModules.home-manager
       {

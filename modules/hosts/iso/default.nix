@@ -26,6 +26,62 @@
             export FLAKE_REV="${self.rev or ""}"
             ${builtins.readFile ./install-host.sh}
           '';
+          # Optionally pre-unlock the hosts' SSH host keys (which double as
+          # their sops-nix age keys) at ISO build time, so install-host can
+          # skip its interactive age passphrase prompt.
+          #
+          # The passphrase is never passed as an environment variable: point
+          # MAX_ISO_PASSPHRASE_FILE at a file containing it (typically a
+          # root-only file copied into user-readable space by the sudo gate
+          # in scripts/build-iso.sh):
+          #   nix run .#build-iso
+          #   MAX_ISO_PASSPHRASE_FILE=/path/to/file nix build --impure .#iso
+          # Pure builds see an empty string here and are left untouched.
+          unlockedHostKeys =
+            let
+              hostsDir = "${self}/modules/hosts";
+              hostNames = builtins.attrNames (builtins.readDir hostsDir);
+              hostsWithKeys = builtins.filter (
+                name: builtins.pathExists "${hostsDir}/${name}/ssh_host_ed25519_key.age"
+              ) hostNames;
+              phraseFile = builtins.getEnv "MAX_ISO_PASSPHRASE_FILE";
+            in
+            if phraseFile == "" || hostsWithKeys == [ ] then
+              null
+            else
+              pkgs.runCommand "iso-unlocked-hostkeys"
+                {
+                  nativeBuildInputs = [
+                    pkgs.age
+                    pkgs.util-linux
+                  ];
+                  # Copy the phrase file into the store at eval time: the
+                  # derivation env only ever contains the store path, not the
+                  # passphrase itself.
+                  phrase =
+                    /.
+                    + (
+                      if lib.hasPrefix "/" phraseFile then
+                        phraseFile
+                      else
+                        throw "MAX_ISO_PASSPHRASE_FILE must be an absolute path"
+                    );
+                }
+                ''
+                  mkdir -p "$out"
+                  phrase="$(cat "$phrase")"
+                  ${lib.concatMapStringsSep "\n" (host: ''
+                    mkdir -p "$out/${host}"
+                    echo "iso: unlocking ${host} SSH host key with build-time passphrase" >&2
+                    # age refuses to read a passphrase from non-terminal stdin,
+                    # so feed it through a pty with script(1).
+                    if ! printf '%s\n' "$phrase" | script -qec \
+                        "${pkgs.age}/bin/age -d -o $out/${host}/ssh_host_ed25519_key ${hostsDir}/${host}/ssh_host_ed25519_key.age" /dev/null; then
+                      echo "iso: failed to unlock ${host} SSH host key (wrong passphrase?)" >&2
+                      exit 1
+                    fi
+                  '') hostsWithKeys}
+                '';
         in
         {
           imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-base.nix") ];
@@ -64,7 +120,11 @@
                 source = self;
                 target = "/etc/nixos/flake";
               }
-            ];
+            ]
+            ++ lib.optional (unlockedHostKeys != null) {
+              source = unlockedHostKeys;
+              target = "/unlocked-hostkeys";
+            };
           };
 
           services.getty.autologinUser = lib.mkForce "maxfh";
@@ -93,7 +153,10 @@
     ];
   };
 
-  perSystem = _: {
-    packages.iso = config.flake.nixosConfigurations.iso.config.system.build.isoImage;
+  perSystem = { pkgs, ... }: {
+    packages = {
+      iso = config.flake.nixosConfigurations.iso.config.system.build.isoImage;
+      build-iso = pkgs.writeShellScriptBin "build-iso" (builtins.readFile ../../../scripts/build-iso.sh);
+    };
   };
 }

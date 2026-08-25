@@ -25,7 +25,10 @@ The target <host> must be a NixOS host in this flake.
 If <host> ships a pre-generated SSH host key
 (modules/hosts/<host>/ssh_host_ed25519_key.age), you will be prompted
 for its age passphrase before any changes are made. The key decrypts
-the host's sops secrets at first boot.
+the host's sops secrets at first boot. If the ISO was built with the
+host keys unlocked (`nix run .#build-iso`, or
+MAX_ISO_PASSPHRASE_FILE=... nix build --impure .#iso), the key is
+already unlocked on the ISO and no prompt appears.
 EOF
 }
 
@@ -93,7 +96,12 @@ read -r -p "DESTROY all data on $DISK and install host '$HOST'? Type '$HOST' to 
 
 HOSTKEY_AGE="$FLAKE_SRC/modules/hosts/$HOST/ssh_host_ed25519_key.age"
 HOSTKEY_TMP="/tmp/install-host-${HOST}-hostkey"
-if [[ -f "$HOSTKEY_AGE" ]]; then
+UNLOCKED_KEY="/iso/unlocked-hostkeys/$HOST/ssh_host_ed25519_key"
+if [[ -f "$UNLOCKED_KEY" ]]; then
+  echo "==> Using SSH host key pre-unlocked at ISO build time (sops secrets are keyed to it)"
+  cp "$UNLOCKED_KEY" "$HOSTKEY_TMP"
+  chmod 600 "$HOSTKEY_TMP"
+elif [[ -f "$HOSTKEY_AGE" ]]; then
   echo "==> Decrypting pre-generated SSH host key for $HOST (sops secrets are keyed to it)"
   rm -f "$HOSTKEY_TMP"
   for attempt in 1 2 3; do
@@ -156,7 +164,6 @@ echo "==> Restoring git repository in /etc/nixos"
 git -C /mnt/etc/nixos init -q -b main
 git -C /mnt/etc/nixos remote add origin gitea@gitea.hilton-tech.net:max_hilton/nixos
 git -C /mnt/etc/nixos remote add github https://github.com/AnWatermelon/nixos
-# Stage the flake so Nix can see it before the first-boot history sync.
 git -C /mnt/etc/nixos add -A
 
 if [[ -f "$HOSTKEY_TMP" ]]; then
