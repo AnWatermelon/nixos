@@ -37,10 +37,6 @@
           users.users.root.initialPassword = "nixos";
           users.users.maxfh.initialPassword = "nixos";
 
-          # tty1 belongs to install-finalize's live progress output; no login
-          # prompt during the minimal phase. logind still spawns a getty on
-          # the other VTs when they are switched to, and sshd is enabled, so
-          # the machine stays reachable for debugging.
           systemd.targets.getty.wants = lib.mkForce [ ];
 
           systemd.services.install-finalize = {
@@ -50,13 +46,8 @@
               "/etc/install-target"
               "!/var/lib/install-finalize.done"
             ];
-            # This unit only exists on the minimal host, so it disappears from
-            # the target host's unit set. Without this, switch-to-configuration
-            # would stop us mid-run while we are performing the switch.
             unitConfig.X-StopOnRemoval = false;
             serviceConfig = {
-              # Start when boot has finished and take over tty1 so that every
-              # action (git sync, nixos-rebuild, ...) streams to the console.
               Type = "idle";
               RemainAfterExit = true;
               StandardInput = "tty";
@@ -66,9 +57,6 @@
               TTYReset = "yes";
               TTYVHangup = "yes";
             };
-            # git fetch of the Gitea origin needs the ssh client;
-            # nixos-generate-config regenerates the install-time generated
-            # configs after any /etc/nixos tree reset.
             path = [
               pkgs.coreutils
               pkgs.gnused
@@ -81,31 +69,16 @@
             script = ''
               set -euo pipefail
 
-              # The final switch replaces the minimal system, whose getty takes
-              # over tty1 and hangs up the console session; ignore the hangup
-              # so the trailing steps (root-lock marker, reboot) still run.
-              # Also ignore Ctrl-C: aborting mid-switch would leave a broken
-              # system (stop it via systemctl instead).
               trap ''' HUP INT
 
               target="$(cat /etc/install-target)"
               say() { echo "install-finalize: $*"; }
 
-              # ssh must never prompt on the console: on the minimal host the
-              # Gitea origin has no key yet, and a host-key prompt on tty1
-              # would hang until the fetch times out.
               export GIT_SSH_COMMAND="ssh -o BatchMode=yes"
 
               say "starting finalization: target host '$target'"
               say "live progress is on this console; it is also in the journal (journalctl -u install-finalize -f)"
 
-              # Fetch the remote history (Gitea origin, falling back to the
-              # public GitHub mirror) and reset the tree to it. --hard is
-              # deliberate: a mixed reset would leave the installed files in
-              # place, so a broken flake baked into the ISO would never be
-              # replaced by the fixed one on the remote. The generated configs
-              # are restored by regenerate_configs below.
-              # Sets SYNC_REMOTE to the remote that worked, or empties it.
               SYNC_REMOTE=""
               sync_etc_nixos() {
                 local prefer_rev="$1"
@@ -139,13 +112,6 @@
                 return 1
               }
 
-              # The generated _hardware-configuration.nix and _bootloader.nix
-              # files only ever exist as uncommitted local changes (the repo
-              # carries placeholders), so any tree reset -- even a manual one
-              # -- loses them. Regenerate them from the live system, which is
-              # the same machine with the mounts the installer created.
-              # Mirrors install-host.sh: the target's hardware config is only
-              # regenerated when the install did not use --keep-hardware.
               regenerate_configs() {
                 [[ -d /etc/nixos/modules/hosts/"$target" ]] || {
                   say "ERROR: no host '$target' in /etc/nixos"
@@ -176,11 +142,6 @@
                 exit 1
               }
 
-              # 1. Sync before the switch. This is what lets a broken baked
-              #    tree self-heal, and it gives /etc/nixos its git history.
-              #    Gitea needs the target's SSH key, which only exists after
-              #    the switch, so the GitHub mirror is the fallback that works
-              #    during the minimal phase.
               synced=1
               if ! git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1; then
                 if sync_etc_nixos 1; then
@@ -193,17 +154,8 @@
                 say "/etc/nixos already has git history; leaving the tree as-is"
               fi
 
-              # 2. Always regenerate: the sync above (or any earlier reset)
-              #    replaced the install-time generated configs with the repo's
-              #    placeholders.
               regenerate_configs
 
-              # 3. Switch, retrying up to 10 times. If the recorded flake rev
-              #    keeps failing to build, drop the pin once and retry against
-              #    the remote's main in case the rev predates a fix. The pin is
-              #    only dropped after two consecutive failures so a transient
-              #    failure (network hiccup, interrupted build) does not unpin
-              #    the rev the ISO was built and tested with.
               say "switching to host '$target' (the first switch downloads and builds; this can take a while)"
               switched=0
               fallback_done=0
@@ -229,10 +181,6 @@
                 exit 1
               fi
 
-              # 4. The switch activated the target host, so its sops secrets
-              #    are decrypted and the Gitea origin now authenticates. Make
-              #    origin the upstream so 'git pull'/'git push' use the write
-              #    remote; the GitHub mirror only works for pulls.
               if git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1 \
                 && timeout 120 git -C /etc/nixos fetch -q origin \
                 && git -C /etc/nixos rev-parse -q --verify origin/main >/dev/null 2>&1; then
@@ -240,9 +188,6 @@
                 say "/etc/nixos upstream set to origin/main"
               fi
 
-              # If the pre-switch sync failed (no network on the minimal
-              # host), retry now: the origin may work post-switch. The reset
-              # is --hard again, so restore the generated configs afterwards.
               if [[ $synced -ne 1 ]]; then
                 if sync_etc_nixos 1; then
                   synced=1
@@ -250,10 +195,6 @@
                 fi
               fi
 
-              # 5. Leave a marker for the target host: a first-boot unit locks
-              #    the root account once the final system has booted
-              #    successfully at least once, so a broken final boot still
-              #    leaves an emergency-console login path open.
               say "switch complete; leaving the root-lock marker for '$target'"
               touch /etc/root-lock-pending
 

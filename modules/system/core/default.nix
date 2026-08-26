@@ -32,10 +32,6 @@
 
       system.stateVersion = "26.05";
 
-      # install-finalize leaves /etc/root-lock-pending behind instead of
-      # locking root itself. The final host locks the account on its first
-      # successful boot, so a final boot that fails (emergency mode) still
-      # allows root console login with the bootstrap password.
       systemd.services.lock-root = {
         description = "Lock the root account after the final system's first boot";
         wantedBy = [ "multi-user.target" ];

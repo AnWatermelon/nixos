@@ -152,9 +152,6 @@ echo "$HOST" >/mnt/etc/install-target
 if [[ -n "${FLAKE_REV:-}" ]]; then
   echo "$FLAKE_REV" >/mnt/etc/install-flake-rev
 fi
-# install-finalize regenerates the generated configs whenever the /etc/nixos
-# tree is reset, so record what it needs: the disk device (BIOS grub) and
-# whether the target's hardware configuration must survive regeneration.
 echo "$DISK" >/mnt/etc/install-disk
 if [[ "$KEEP_HW" -eq 1 ]]; then
   touch /mnt/etc/install-keep-hardware
