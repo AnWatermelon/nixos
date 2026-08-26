@@ -3,15 +3,19 @@ keys:
 
   - &host_fw13p age140zxn09tw9ftzl7w04er7q76stfr5q35f6ryah8nqae34ma2nqes45hakx
 
+  - &host_fw16 age18jm4g3680tzhgyjgy8yza8wr28jsp4cx88sve8gyw9ac3qrdwppqcye3q0
+
 creation_rules:
   - path_regex: modules/system/netbird/secrets/.*\.ya?ml$
     key_groups:
       - age:
           - *user_maxfh
           - *host_fw13p
+          - *host_fw16
 
   - path_regex: modules/system/gitea/secrets/.*\.ya?ml$
     key_groups:
       - age:
           - *user_maxfh
           - *host_fw13p
+          - *host_fw16
