@@ -74,6 +74,7 @@
               pkgs.gnused
               pkgs.git
               pkgs.openssh
+              pkgs.util-linux
               pkgs.nixos-install-tools
               config.system.build.nixos-rebuild
             ];
@@ -89,6 +90,11 @@
 
               target="$(cat /etc/install-target)"
               say() { echo "install-finalize: $*"; }
+
+              # ssh must never prompt on the console: on the minimal host the
+              # Gitea origin has no key yet, and a host-key prompt on tty1
+              # would hang until the fetch times out.
+              export GIT_SSH_COMMAND="ssh -o BatchMode=yes"
 
               say "starting finalization: target host '$target'"
               say "live progress is on this console; it is also in the journal (journalctl -u install-finalize -f)"
@@ -116,11 +122,10 @@
                         say "/etc/nixos reset to flake rev $rev from $remote"
                       elif git -C /etc/nixos rev-parse -q --verify "$remote/main" >/dev/null 2>&1; then
                         git -C /etc/nixos reset --hard "$remote/main"
-                        say "/etc/nixos reset to $remote/main"
+                        say "warning: flake rev unavailable; /etc/nixos reset to $remote/main"
                       else
-                        say "warning: $remote has no usable ref; /etc/nixos left as installed"
-                        SYNC_REMOTE=""
-                        return 1
+                        say "warning: $remote has no usable ref; trying the next remote"
+                        continue
                       fi
                       git -C /etc/nixos branch --set-upstream-to="$remote/main" main 2>/dev/null || true
                       SYNC_REMOTE="$remote"
@@ -142,6 +147,10 @@
               # Mirrors install-host.sh: the target's hardware config is only
               # regenerated when the install did not use --keep-hardware.
               regenerate_configs() {
+                [[ -d /etc/nixos/modules/hosts/"$target" ]] || {
+                  say "ERROR: no host '$target' in /etc/nixos"
+                  exit 1
+                }
                 say "regenerating hardware configuration and bootloader"
                 nixos-generate-config --root / --show-hardware-config | sed '/systemd-boot/d' \
                   > /etc/nixos/modules/hosts/minimal/_hardware-configuration.nix
@@ -190,8 +199,11 @@
               regenerate_configs
 
               # 3. Switch, retrying up to 10 times. If the recorded flake rev
-              #    fails to build, drop the pin once and retry against the
-              #    remote's main in case the rev predates a fix.
+              #    keeps failing to build, drop the pin once and retry against
+              #    the remote's main in case the rev predates a fix. The pin is
+              #    only dropped after two consecutive failures so a transient
+              #    failure (network hiccup, interrupted build) does not unpin
+              #    the rev the ISO was built and tested with.
               say "switching to host '$target' (the first switch downloads and builds; this can take a while)"
               switched=0
               fallback_done=0
@@ -201,7 +213,7 @@
                   break
                 fi
                 say "switch failed (attempt $attempt/10)"
-                if [[ $fallback_done -eq 0 && -n "$SYNC_REMOTE" ]] \
+                if [[ $attempt -ge 2 && $fallback_done -eq 0 && -n "$SYNC_REMOTE" ]] \
                   && git -C /etc/nixos rev-parse -q --verify "$SYNC_REMOTE/main" >/dev/null 2>&1; then
                   fallback_done=1
                   say "retrying against $SYNC_REMOTE/main in case the recorded rev predates a fix"
@@ -217,10 +229,20 @@
                 exit 1
               fi
 
-              # 4. If the pre-switch sync failed (no network on the minimal
-              #    host), retry now: the target host's sops secrets are
-              #    decrypted, so the Gitea origin may work. The reset is --hard
-              #    again, so restore the generated configs afterwards.
+              # 4. The switch activated the target host, so its sops secrets
+              #    are decrypted and the Gitea origin now authenticates. Make
+              #    origin the upstream so 'git pull'/'git push' use the write
+              #    remote; the GitHub mirror only works for pulls.
+              if git -C /etc/nixos rev-parse -q --verify HEAD >/dev/null 2>&1 \
+                && timeout 120 git -C /etc/nixos fetch -q origin \
+                && git -C /etc/nixos rev-parse -q --verify origin/main >/dev/null 2>&1; then
+                git -C /etc/nixos branch --set-upstream-to=origin/main main 2>/dev/null || true
+                say "/etc/nixos upstream set to origin/main"
+              fi
+
+              # If the pre-switch sync failed (no network on the minimal
+              # host), retry now: the origin may work post-switch. The reset
+              # is --hard again, so restore the generated configs afterwards.
               if [[ $synced -ne 1 ]]; then
                 if sync_etc_nixos 1; then
                   synced=1
@@ -237,7 +259,7 @@
 
               if [[ $synced -ne 1 ]]; then
                 say "warning: could not sync /etc/nixos with a remote; it has no git history yet"
-                say "warning: install-finalize will retry on the next boot; to fix now run:"
+                say "warning: sync it manually once the network is back:"
                 say "warning:   git -C /etc/nixos fetch origin && git -C /etc/nixos reset --hard origin/main"
               else
                 touch /var/lib/install-finalize.done

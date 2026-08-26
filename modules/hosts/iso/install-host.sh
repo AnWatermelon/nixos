@@ -189,12 +189,13 @@ shown on the console, and the switch retries until it succeeds.
 
 /etc/nixos is a git repository tracking
 gitea@gitea.hilton-tech.net:max_hilton/nixos (hosts without the shared
-key sync from the GitHub mirror instead). Its history is synced after
-the final switch, so 'git pull' works for updates afterwards.
+key sync from the GitHub mirror instead). Its history is synced from
+the remote before the final switch, so 'git pull' works for updates
+afterwards.
 
 The minimal system uses the bootstrap password 'nixos' (user maxfh,
-SSH enabled). After the final switch, root gets locked and you should
-set a real password for maxfh right away.
+SSH enabled). Root gets locked once the final system has booted
+successfully, and you should set a real password for maxfh right away.
 
 EOF
 
