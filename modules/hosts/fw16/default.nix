@@ -21,7 +21,7 @@
       }
 
       {
-        my.desktop.environment = "gnome";
+        my.desktop.environment = "hyprland";
       }
 
       config.flake.modules.nixos.boot
@@ -40,7 +40,10 @@
       (
         { pkgs, ... }:
         {
-          environment.systemPackages = [ pkgs.libreoffice ];
+          environment.systemPackages = [ 
+            pkgs.libreoffice
+            pkgs.nemo
+          ];
         }
       )
 
