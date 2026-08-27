@@ -9,9 +9,9 @@
         cfg = "cd ~/.config/";
         lg = "lazygit";
         p = "cd ~/Projects";
-        nrb = "sudo nixos-rebuild switch";
+        nrb = "sudo nixos-rebuild switch --flake /home/maxfh/Projects/nixos";
         hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
-        nfc = "nix formatter run && nix flake check";
+        nfc = "nix fmt && nix flake check";
       };
       oh-my-zsh = {
         enable = true;
