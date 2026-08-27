@@ -118,7 +118,7 @@
                   exit 1
                 }
                 say "regenerating hardware configuration and bootloader"
-                nixos-generate-config --root / --show-hardware-config | sed '/systemd-boot/d' \
+                nixos-generate-config --show-hardware-config | sed '/systemd-boot/d' \
                   > /etc/nixos/modules/hosts/minimal/_hardware-configuration.nix
                 if [[ -f /etc/install-keep-hardware ]]; then
                   say "--keep-hardware install: preserving '$target' hardware configuration"
