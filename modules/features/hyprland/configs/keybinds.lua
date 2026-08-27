@@ -4,7 +4,7 @@ local mainMod = "SUPER"
 local terminal = "kitty"
 local fileManager = "kitty --hold -e zsh -i -c 'y'"
 local ipc = "noctalia msg"
-local browser = "zen-browser"
+local browser = "zen"
 local scripts = "sh ~/.config/scripts/"
 
 -- ─────────────────────────────────────────────
