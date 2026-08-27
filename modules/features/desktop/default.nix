@@ -25,6 +25,9 @@ in
             inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
           ];
         }
+        {
+          programs.dconf.enable = true;
+        }
         (lib.mkIf (cfg.environment == "hyprland") {
           programs.hyprland = {
             enable = true;
@@ -39,10 +42,10 @@ in
         })
       ];
     };
-
   flake.modules.homeManager.desktop =
     {
       pkgs,
+      lib,
       config,
       ...
     }:
@@ -59,8 +62,22 @@ in
         flakeCfg.flake.modules.homeManager.niri
         flakeCfg.flake.modules.homeManager.noctalia
       ];
-      config = {
-        home.packages = lib.optionals (cfg.environment == "hyprland") [ pkgs.hyprland ];
+
+      gtk = {
+        enable = true;
+        theme = {
+          name = "adw-gtk3-dark";
+          package = pkgs.adw-gtk3;
+        };
+      };
+
+      home.packages = lib.optionals (cfg.environment == "hyprland") [ pkgs.hyprland ];
+
+      dconf.settings = {
+        "org/gnome/desktop/interface" = {
+          color-scheme = "prefer-dark";
+          gtk-theme = "adw-gtk3-dark";
+        };
       };
     };
 }
