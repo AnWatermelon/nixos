@@ -19,14 +19,6 @@
     };
 
     programs.ssh = {
-      extraConfig = ''
-        Host gitea.hilton-tech.net
-          HostName 10.1.0.14
-          User gitea
-          Port 22
-          IdentityFile /etc/gitea/id_ed25519
-          IdentitiesOnly yes
-      '';
       knownHosts = {
         "gitea.hilton-tech.net" = {
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOhcQyzkGDdjHpFYvhhZLf/EW8oPrkCwgtgKB6CVTsdK";
