@@ -40,7 +40,7 @@
       (
         { pkgs, ... }:
         {
-          environment.systemPackages = [ 
+          environment.systemPackages = [
             pkgs.libreoffice
             pkgs.nemo
           ];
