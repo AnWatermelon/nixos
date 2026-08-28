@@ -63,7 +63,7 @@
               my.hardware = {
                 laptop = true;
                 gpu = "hybrid";
-                gpuPciIds = [
+                gpuDevices = [
                   { name = "igpu"; pciId = "0000:c4:00.0"; }
                   { name = "dgpu"; pciId = "0000:03:00.0"; }
                 ];
