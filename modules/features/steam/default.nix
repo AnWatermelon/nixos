@@ -10,5 +10,8 @@
         dedicatedServer.openFirewall = true;
         localNetworkGameTransfers.openFirewall = true;
       };
+      environment.systemPackages = [
+        pkgs.mangohud
+      ];
     };
 }
