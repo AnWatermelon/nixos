@@ -15,17 +15,25 @@
       default = "dgpu";
       description = "'hybrid' = has a dGPU but should render Hyprland on the iGPU";
     };
-    gpuPciIds = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+     gpuDevices = lib.mkOption {
+      type = lib.types.listOf (lib.types.submodule {
+        options = {
+          name = lib.mkOption {
+            type = lib.types.strMatching "[a-z0-9-]+";
+            description = "Colon-free friendly name, e.g. \"igpu\"";
+          };
+          pciId = lib.mkOption {
+            type = lib.types.str;
+            description = "PCI address from `lspci -D`, e.g. \"0000:c4:00.0\"";
+          };
+        };
+      });
       default = [ ];
       example = [
-        "0000:65:00.0"
-        "0000:04:00.0"
+        { name = "igpu"; pciId = "0000:c4:00.0"; }
+        { name = "dgpu"; pciId = "0000:03:00.0"; }
       ];
-      description = ''
-        PCI bus IDs (from `lspci -d ::03xx`) for AQ_DRM_DEVICES,
-        in priority order — iGPU first. Only used when gpu != "dgpu".
-      '';
+      description = "GPUs to expose as stable /dev/dri/<name>-card symlinks, priority order (first = primary).";
     };
   };
 }
