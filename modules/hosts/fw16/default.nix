@@ -21,7 +21,14 @@
       }
 
       {
-        my.desktop.environment = "hyprland";
+        my = {
+          desktop.environment = "hyprland";
+          hardware = {
+            laptop = true;
+            gpu = "hybrid";
+            gpuPciIds = [ "c4:00.0" "03:00.0" ];
+          };
+        };
       }
 
       config.flake.modules.nixos.boot

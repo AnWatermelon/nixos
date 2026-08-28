@@ -6,6 +6,11 @@ in
 {
   flake.modules.homeManager.hyprland =
     { config, ... }:
+    let
+      drmDevices = lib.concatMapStringsSep ":"
+        (id: "/dev/dri/by-path/pci-${id}-card")
+        config.my.hardware.gpuPciIds;
+    in
     {
       imports = [
         ../desktop/options.nix
@@ -25,6 +30,9 @@ in
             [ ''terminal = "kitty"'' ]
             [ ''terminal = "${lib.getExe config.my.terminal}"'' ]
             keybindsContent;
+        "hypr/configs/gpu.lua".text = lib.optionalString (config.my.hardware.gpu == "hybrid" && config.my.hardware.gpuPciIds != [ ]) ''
+          hl.env("AQ_DRM_DEVICES", "${drmDevices}")
+        '';
       };
     };
 }
