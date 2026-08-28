@@ -23,6 +23,14 @@
       {
         my = {
           desktop.environment = "hyprland";
+          hardware = {
+            laptop = true;
+            gpu = "hybrid";
+            gpuDevices = [
+              { name = "igpu"; pciId = "0000:c4:00.0"; }
+              { name = "dgpu"; pciId = "0000:03:00.0"; }
+            ];
+          };
         };
       }
 
@@ -37,6 +45,7 @@
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
+      config.flake.modules.nixos.hardware
       config.flake.modules.nixos.terminal
 
       (
@@ -55,20 +64,15 @@
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = { inherit inputs; };
+          sharedModules = [
+            ({ osConfig, ... }: {
+              my.hardware = osConfig.my.hardware;
+            })
+          ];
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
             config.flake.modules.homeManager.desktop
-            {
-              my.hardware = {
-                laptop = true;
-                gpu = "hybrid";
-                gpuDevices = [
-                  { name = "igpu"; pciId = "0000:c4:00.0"; }
-                  { name = "dgpu"; pciId = "0000:03:00.0"; }
-                ];
-              };
-            }
           ];
         };
       }
