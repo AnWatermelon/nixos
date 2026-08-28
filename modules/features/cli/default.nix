@@ -17,6 +17,8 @@ in
         btop
         nerd-fonts.jetbrains-mono
         lazygit
+        ncdu
+        nmap
       ];
     };
 }

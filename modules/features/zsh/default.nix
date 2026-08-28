@@ -12,6 +12,7 @@
         nrb = "sudo nixos-rebuild switch --flake /home/maxfh/Projects/nixos";
         hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
         nfc = "nix fmt && nix flake check";
+        tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' /";
       };
       oh-my-zsh = {
         enable = true;
