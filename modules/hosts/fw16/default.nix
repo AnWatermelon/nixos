@@ -23,11 +23,6 @@
       {
         my = {
           desktop.environment = "hyprland";
-          hardware = {
-            laptop = true;
-            gpu = "hybrid";
-            gpuPciIds = [ "c4:00.0" "03:00.0" ];
-          };
         };
       }
 
@@ -64,6 +59,16 @@
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
             config.flake.modules.homeManager.desktop
+            {
+              my.hardware = {
+                laptop = true;
+                gpu = "hybrid";
+                gpuPciIds = [
+                  "0000:c4:00.0"
+                  "0000:03:00.0"
+                ];
+              };
+            }
           ];
         };
       }
