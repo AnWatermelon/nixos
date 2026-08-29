@@ -4,6 +4,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
 
     noctalia = {
       url = "github:noctalia-dev/noctalia";
