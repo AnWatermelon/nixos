@@ -1,12 +1,8 @@
 {
-  config,
   lib,
   inputs,
   ...
 }:
-let
-  flakeCfg = config;
-in
 {
   flake.modules.nixos.desktop =
     { pkgs, config, ... }:
@@ -16,14 +12,16 @@ in
     {
       imports = [
         ./options.nix
-        flakeCfg.flake.modules.nixos.steam
-        flakeCfg.flake.modules.nixos.greetd
+        inputs.self.modules.nixos.steam
+        inputs.self.modules.nixos.greetd
       ];
 
       config = lib.mkMerge [
         {
           environment.systemPackages = [
             inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+            pkgs.lunar-client
+            pkgs.heroic
           ];
         }
         {
@@ -56,12 +54,12 @@ in
     {
       imports = [
         ./options.nix
-        flakeCfg.flake.modules.homeManager.terminal
-        flakeCfg.flake.modules.homeManager.discord
-        flakeCfg.flake.modules.homeManager.zen-browser
-        flakeCfg.flake.modules.homeManager.hyprland
-        flakeCfg.flake.modules.homeManager.niri
-        flakeCfg.flake.modules.homeManager.noctalia
+        inputs.self.modules.homeManager.terminal
+        inputs.self.modules.homeManager.discord
+        inputs.self.modules.homeManager.zen-browser
+        inputs.self.modules.homeManager.hyprland
+        inputs.self.modules.homeManager.niri
+        inputs.self.modules.homeManager.noctalia
       ];
 
       gtk = {
