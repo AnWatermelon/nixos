@@ -17,6 +17,7 @@ in
       imports = [
         ./options.nix
         flakeCfg.flake.modules.nixos.steam
+        flakeCfg.flake.modules.nixos.greetd
       ];
 
       config = lib.mkMerge [
