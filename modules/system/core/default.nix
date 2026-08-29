@@ -19,7 +19,11 @@
       enable32Bit = true;
     };
 
-    services.upower.enable = true;
+    services = {
+      upower.enable = true;
+      tuned.enable = true;
+      fwupd.enable = true;
+    };
     programs.zsh.enable = true;
 
     nixpkgs.config.allowUnfree = true;
