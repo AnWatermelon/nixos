@@ -33,12 +33,18 @@
             xwayland.enable = true;
             withUWSM = true;
           };
+          xdg.portal.extraPortals = [
+            pkgs.xdg-desktop-portal-hyprland
+          ];
         })
         (lib.mkIf (cfg.environment == "gnome") {
           services = {
             displayManager.gdm.enable = true;
             desktopManager.gnome.enable = true;
           };
+          xdg.portal.extraPortals = [
+            pkgs.xdg-desktop-portal-gtk
+          ];
         })
       ];
     };
