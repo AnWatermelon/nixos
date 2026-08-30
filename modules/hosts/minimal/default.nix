@@ -64,7 +64,7 @@
               pkgs.openssh
               pkgs.util-linux
               pkgs.nixos-install-tools
-              config.system.build.nixos-rebuild
+              config.stdenv.hostPlatform.system.build.nixos-rebuild
             ];
             script = ''
               set -euo pipefail

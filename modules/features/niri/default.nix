@@ -23,7 +23,7 @@ in
           enable = lib.mkIf (config.my.desktop.environment == "niri") true;
           package = lib.mkIf (
             config.my.desktop.environment == "niri"
-          ) inputs.niri.packages.${pkgs.system}.niri-unstable;
+          ) inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri-unstable;
         };
 
         xdg.configFile.niri-config.enable = lib.mkIf (config.my.desktop.environment == "niri") (

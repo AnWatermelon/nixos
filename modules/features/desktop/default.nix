@@ -19,7 +19,7 @@
       config = lib.mkMerge [
         {
           environment.systemPackages = [
-            inputs.rose-pine-hyprcursor.packages.${pkgs.system}.default
+            inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default
             pkgs.lunar-client
             pkgs.heroic
           ];

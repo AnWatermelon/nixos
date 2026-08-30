@@ -20,7 +20,7 @@
 
           bash-language-server
           clang-tools # clangd for C/C++
-          dockerfile-language-server-nodejs
+          dockerfile-language-server
           gopls
           lua-language-server
           marksman # Markdown
