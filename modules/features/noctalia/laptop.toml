@@ -1,0 +1,16 @@
+[include]
+files = ["settings.toml"]
+
+[bar.default]
+end = [
+"tray",
+"bluetooth",
+"volume",
+"notifications",
+"battery",
+"session"
+]
+
+[hooks]
+battery_charging = "noctalia msg power-set performance"
+battery_discharging = "noctalia msg power-set power-saver"

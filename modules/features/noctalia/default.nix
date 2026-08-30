@@ -16,6 +16,10 @@
         };
       };
 
+      imports = [
+        ../hardware/options.nix
+      ];
+
       config = {
         home.packages = [ config.my.noctalia.package ];
 
@@ -26,6 +30,9 @@
           "noctalia/templates/nvim-base16.lua".source = ./templates/nvim-base16.lua;
           "noctalia/templates/spotatui.yml".source = ./templates/spotatui.yml;
           "noctalia/templates/Translucence.theme.css".source = ./templates/Translucence.theme.css;
+          "noctalia/laptop.toml" = lib.mkIf config.my.hardware.laptop {
+            source = ./laptop.toml;
+          };
         };
       };
     };
