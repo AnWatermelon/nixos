@@ -5,6 +5,8 @@ keys:
 
   - &host_fw16 age18jm4g3680tzhgyjgy8yza8wr28jsp4cx88sve8gyw9ac3qrdwppqcye3q0
 
+  - &host_ne4 age1smfn8rlp27r4md944mw8exg09xufnfweegw2yd5m79fy7c5p9g9ss6e645
+
 creation_rules:
   - path_regex: modules/system/netbird/secrets/.*\.ya?ml$
     key_groups:
@@ -12,6 +14,7 @@ creation_rules:
           - *user_maxfh
           - *host_fw13p
           - *host_fw16
+          - *host_ne4
 
   - path_regex: modules/system/gitea/secrets/.*\.ya?ml$
     key_groups:
@@ -19,3 +22,4 @@ creation_rules:
           - *user_maxfh
           - *host_fw13p
           - *host_fw16
+          - *host_ne4

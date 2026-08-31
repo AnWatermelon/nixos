@@ -4,12 +4,12 @@
   ...
 }:
 {
-  flake.nixosConfigurations.main-pc = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.ne4 = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = { inherit inputs; };
     modules = [
       ./_hardware-configuration.nix
       ./_bootloader.nix
-      { networking.hostName = "main-pc"; }
+      { networking.hostName = "ne4"; }
       {
         services.openssh = {
           enable = true;
