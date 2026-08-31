@@ -10,7 +10,7 @@
           hostname = "10.1.0.14";
           user = "gitea";
           port = 22;
-          identityFile = "~/.ssh/id_ed25519";
+          identityFile = "/etc/gitea/id_ed25519";
           identitiesOnly = true;
         };
       };
