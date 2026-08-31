@@ -25,7 +25,6 @@
     initrd.kernelModules = [ ];
     kernelModules = [
       "kvm-amd"
-      "amdgpu"
     ];
     extraModulePackages = [ ];
   };

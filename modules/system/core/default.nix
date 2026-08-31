@@ -14,11 +14,6 @@
       optimise.automatic = true;
     };
 
-    hardware.graphics = {
-      enable = true;
-      enable32Bit = true;
-    };
-
     services = {
       upower.enable = true;
       tuned.enable = true;
