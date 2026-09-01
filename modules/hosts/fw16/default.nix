@@ -31,11 +31,11 @@
               devices = [
                 {
                   name = "igpu";
-                  pciid = "0000:c4:00.0";
+                  pciId = "0000:c4:00.0";
                 }
                 {
                   name = "dgpu";
-                  pciid = "0000:03:00.0";
+                  pciId = "0000:03:00.0";
                 }
               ];
               vendor = "amd";
