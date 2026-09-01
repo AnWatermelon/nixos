@@ -4,7 +4,6 @@
 {
   config,
   lib,
-  pkgs,
   modulesPath,
   ...
 }:
@@ -14,47 +13,53 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
-    "nvme"
-    "xhci_pci"
-    "ahci"
-    "usb_storage"
-    "usbhid"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/7dc02a03-1ac8-4723-88a3-51507d55216d";
-    fsType = "btrfs";
-    options = [ "subvol=root" ];
+  boot = {
+    initrd = {
+      availableKernelModules = [
+        "nvme"
+        "xhci_pci"
+        "ahci"
+        "usb_storage"
+        "usbhid"
+        "sd_mod"
+      ];
+      kernelModules = [ ];
+    };
+    kernelModules = [ "kvm-amd" ];
+    extraModulePackages = [ ];
   };
 
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/7dc02a03-1ac8-4723-88a3-51507d55216d";
-    fsType = "btrfs";
-    options = [ "subvol=nix" ];
-  };
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/2aa73426-351d-439f-858b-1028b031780b";
+      fsType = "btrfs";
+      options = [ "subvol=root" ];
+    };
 
-  fileSystems."/home" = {
-    device = "/dev/disk/by-uuid/7dc02a03-1ac8-4723-88a3-51507d55216d";
-    fsType = "btrfs";
-    options = [ "subvol=home" ];
-  };
+    "/nix" = {
+      device = "/dev/disk/by-uuid/2aa73426-351d-439f-858b-1028b031780b";
+      fsType = "btrfs";
+      options = [ "subvol=nix" ];
+    };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/261E-DA54";
-    fsType = "vfat";
-    options = [
-      "fmask=0022"
-      "dmask=0022"
-    ];
+    "/home" = {
+      device = "/dev/disk/by-uuid/2aa73426-351d-439f-858b-1028b031780b";
+      fsType = "btrfs";
+      options = [ "subvol=home" ];
+    };
+
+    "/boot" = {
+      device = "/dev/disk/by-uuid/5A5B-E07B";
+      fsType = "vfat";
+      options = [
+        "fmask=0022"
+        "dmask=0022"
+      ];
+    };
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/c291e993-6039-4489-9abf-370045d1cacd"; }
+    { device = "/dev/disk/by-uuid/a5e58a8e-7a8f-436a-a527-158312e52a05"; }
   ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
