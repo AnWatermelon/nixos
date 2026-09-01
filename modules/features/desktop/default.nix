@@ -14,6 +14,7 @@
         ./options.nix
         inputs.self.modules.nixos.steam
         inputs.self.modules.nixos.greetd
+        inputs.self.modules.nixos.xdg
       ];
 
       config = lib.mkMerge [
@@ -22,6 +23,7 @@
             inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default
             pkgs.lunar-client
             pkgs.heroic
+            pkgs.prusa-slicer
           ];
         }
         {

@@ -41,7 +41,6 @@
       config.flake.modules.nixos.gitea
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.audio
-      config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
