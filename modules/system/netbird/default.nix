@@ -11,7 +11,7 @@
     };
 
     services.netbird.clients.wt0 = {
-      port = 51820;
+      port = 443;
 
       login = {
         enable = true;
