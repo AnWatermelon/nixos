@@ -4,9 +4,9 @@ require("snacks").setup({
     enabled = true,
     preset = {
       keys = {
-        { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+        { icon = " ", key = "f", desc = "Find File", action = "<leader> " },
         { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-        { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+        { icon = " ", key = "g", desc = "Find Text", action = "<leader>g" },
         { icon = "",  key = "l", desc = "Open lazygit", action = "lg" },
         { icon = " ", key = "s", desc = "Restore Session", section = "session" },
         { icon = " ", key = "q", desc = "Quit", action = ":qa" },
