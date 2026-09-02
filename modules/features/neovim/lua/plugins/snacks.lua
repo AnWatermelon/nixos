@@ -17,6 +17,7 @@ require("snacks").setup({
   words = { enabled = true },
   picker = { enabled = true },
   win = { style = "terminal", },
+  lazygit = { enabled = true },
 })
 
 vim.keymap.set("n", "<leader> ", function()
@@ -30,6 +31,10 @@ end, { desc = "Global Search" })
 vim.keymap.set("n", "<A-`>", function()
   Snacks.terminal.toggle()
 end, { desc = "Toggle terminal" })
+
+vim.keymap.set("n", "lg", function()
+  Snacks.lazygit.open()
+end, { desc = "Open lazygit" })
 
 vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
