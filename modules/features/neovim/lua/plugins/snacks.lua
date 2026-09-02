@@ -2,6 +2,16 @@ require("snacks").setup({
   bigfile = { enabled = true },
   dashboard = {
     enabled = true,
+    preset = {
+      keys = {
+        { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+        { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+        { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+        { icon = "",  key = "l", desc = "Open lazygit", action = "lg" },
+        { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+        { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+      },
+    },
     sections = {
       { section = "header" },
       { section = "keys", gap = 1, padding = 1 },
@@ -21,11 +31,15 @@ require("snacks").setup({
 })
 
 vim.keymap.set("n", "<leader> ", function()
-  Snacks.picker.files({ cwd = Snacks.git.get_root() or vim.fn.expand("~") })
+  Snacks.picker.files({ cwd = Snacks.git.get_root() or vim.fn.expand("~"), hidden = true, })
 end, { desc = "Find Files" })
 
 vim.keymap.set("n", "<leader>b", function()
   Snacks.picker.smart({ cwd = vim.fn.expand("~") })
+end, { desc = "Global Search" })
+
+vim.keymap.set("n", "<leader>g", function()
+  Snacks.picker.grep({ cwd = Snacks.git.get_root() or vim.fn.expand("~") })
 end, { desc = "Global Search" })
 
 vim.keymap.set("n", "<A-`>", function()
