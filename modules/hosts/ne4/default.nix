@@ -28,7 +28,7 @@
             laptop = false;
             gpu = {
               configuration = "dgpu";
-              vendor = "nvidia";
+              vendor = "amd";
             };
           };
         };
