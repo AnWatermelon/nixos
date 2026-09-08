@@ -13,6 +13,9 @@
         hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
         nfc = "nix flake check && nix formatter run";
         tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' /";
+        nbs = "sudo netbird-wt0 status -d";
+        nbd = "sudo netbird-wt0 down";
+        nbu = "sudo netbird-wt0 up";
       };
       oh-my-zsh = {
         enable = true;
