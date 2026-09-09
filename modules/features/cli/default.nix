@@ -12,6 +12,10 @@ in
         flakeCfg.flake.modules.homeManager.ssh
         flakeCfg.flake.modules.homeManager.zsh
       ];
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
       home.packages = with pkgs; [
         fastfetch
         btop
