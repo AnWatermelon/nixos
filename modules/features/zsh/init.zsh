@@ -19,6 +19,13 @@ nr() {
   nix run "nixpkgs#${cmd}" -- "$@"
 }
 
+new-project() {
+  mkdir -p "$2" && cd "$2" || return
+  git init -q
+  nix flake init -t github:the-nix-way/dev-templates#$1
+  direnv allow
+}
+
 fastfetch
 
 # --- vi-mode indicator (lualine-style colors from noctalia palette) ---
