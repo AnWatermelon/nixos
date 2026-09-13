@@ -23,7 +23,7 @@
       {
         my = {
           kernel.cachyos = "bore-zen4";
-          desktop.environment = "hyprland";
+          desktop.environment = "gnome";
           hardware = {
             laptop = true;
             gpu = {
@@ -64,7 +64,6 @@
         {
           environment.systemPackages = [
             pkgs.libreoffice
-            pkgs.nemo
           ];
         }
       )
