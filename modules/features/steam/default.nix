@@ -3,12 +3,15 @@
     { pkgs, inputs, ... }:
     {
       nixpkgs.overlays = [ inputs.millennium.overlays.default ];
-      programs.steam = {
-        enable = true;
-        package = pkgs.millennium-steam;
-        remotePlay.openFirewall = true;
-        dedicatedServer.openFirewall = true;
-        localNetworkGameTransfers.openFirewall = true;
+      programs = {
+        steam = {
+          enable = true;
+          package = pkgs.millennium-steam;
+          remotePlay.openFirewall = true;
+          dedicatedServer.openFirewall = true;
+          localNetworkGameTransfers.openFirewall = true;
+        };
+        gamescope.enable = true;
       };
       environment.systemPackages = [
         pkgs.mangohud
