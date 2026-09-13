@@ -30,6 +30,32 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", actio
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(ipc .. " panel-open maxfh/noctagent:chat"))
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_raw(scripts .. "toggle_audio.sh"))
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center system"))
+
+local SPAN_W, SPAN_H = 5120, 1440
+local NORMAL_W, NORMAL_H = 2560, 1440
+local spanned = {}
+
+hl.bind(mainMod .. " + CTRL + S", function()
+    local w = hl.get_active_window()
+    if w == nil then return end
+
+    if spanned[w.address] then
+        hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = hl.get_config("general.border_size"), window = w }))
+        hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = hl.get_config("decoration.rounding"), window = w }))
+        hl.dispatch(hl.dsp.window.float({ action = "unset", window = w }))
+        hl.dispatch(hl.dsp.window.resize({ x = NORMAL_W, y = NORMAL_H, window = w }))
+        hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-show"))
+        spanned[w.address] = nil
+    else
+        hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = 0, window = w }))
+        hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = 0, window = w }))
+        hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
+        hl.dispatch(hl.dsp.window.resize({ x = SPAN_W, y = SPAN_H, window = w }))
+        hl.dispatch(hl.dsp.window.move({ x = 0, y = 0, window = w }))
+        hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-hide"))
+        spanned[w.address] = true
+    end
+end)
 -- ─────────────────────────────────────────────
 --  Focus movement
 -- ─────────────────────────────────────────────
