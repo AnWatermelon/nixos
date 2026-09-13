@@ -1,7 +1,7 @@
 { lib, ... }:
 {
   flake.modules.nixos.hardware =
-    { config, ... }:
+    { config, pkgs, ... }:
     let
       cfg = config.my.hardware;
     in
@@ -18,8 +18,14 @@
         (lib.mkIf (cfg.gpu.vendor == "amd") {
           boot.initrd.kernelModules = [ "amdgpu" ];
           services.xserver.videoDrivers = [ "amdgpu" ];
+          nixpkgs.config.rocmSupport = true;
           hardware.graphics.enable = true;
           hardware.graphics.enable32Bit = true;
+          environment.systemPackages = [
+            pkgs.rocmPackages.rocm-smi
+            pkgs.rocmPackages.rocminfo
+          ];
+          programs.corectrl.enable = true;
         })
 
         (lib.mkIf (cfg.gpu.vendor == "nvidia") {
