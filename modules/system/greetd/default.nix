@@ -1,9 +1,9 @@
 _: {
   flake.modules.nixos.greetd =
-    { pkgs, ... }:
+    { pkgs, lib, ... }:
     {
       services.greetd = {
-        enable = true;
+        enable = lib.mkDefault true;
         settings = {
           default_session = {
             command = "${pkgs.uwsm}/bin/uwsm start hyprland-uwsm.desktop";

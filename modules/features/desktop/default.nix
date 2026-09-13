@@ -20,7 +20,6 @@
       config = lib.mkMerge [
         {
           environment.systemPackages = [
-            inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default
             pkgs.lunar-client
             pkgs.heroic
             pkgs.prusa-slicer
@@ -30,11 +29,15 @@
           programs.dconf.enable = true;
         }
         (lib.mkIf (cfg.environment == "hyprland") {
+          environment.systemPackages = [
+            inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default
+          ];
           programs.hyprland = {
             enable = true;
             xwayland.enable = true;
             withUWSM = true;
           };
+          services.greetd.enable = lib.mkForce true;
           xdg.portal.extraPortals = [
             pkgs.xdg-desktop-portal-hyprland
           ];
