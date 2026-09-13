@@ -3,7 +3,7 @@ _: {
     { pkgs, lib, ... }:
     {
       services.greetd = {
-        enable = lib.mkDefault true;
+        enable = lib.mkDefault false;
         settings = {
           default_session = {
             command = "${pkgs.uwsm}/bin/uwsm start hyprland-uwsm.desktop";
