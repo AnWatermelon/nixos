@@ -8,6 +8,7 @@ in
     {
       imports = [
         flakeCfg.flake.modules.homeManager.kitty
+        flakeCfg.flake.modules.homeManager.ghostty
       ];
 
       options.my.terminal = lib.mkOption {
