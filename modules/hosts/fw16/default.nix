@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }:
 {
@@ -41,6 +42,7 @@
               vendor = "amd";
             };
           };
+          terminal = pkgs.kitty;
         };
       }
 
@@ -83,6 +85,7 @@
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
             config.flake.modules.homeManager.desktop
+            ({ pkgs, ... }: { my.terminal = pkgs.kitty; })
           ];
         };
       }
