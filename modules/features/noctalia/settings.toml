@@ -2,7 +2,7 @@ config_version = 2
 
 [bar.default]
 border = "primary"
-border_width = 0.5
+border_width = 0.0
 center = [ "audio_visualizer_l", "clock", "media" ]
 end = [
     "tray",
@@ -147,6 +147,10 @@ font_family = "JetBrainsMono Nerd Font"
 polkit_agent = true
 settings_show_advanced = true
 telemetry_enabled = false
+button_borders = false
+card_borders = false
+input_borders = false
+popup_borders = false
 
     [shell.panel]
     clipboard_placement = "floating"
