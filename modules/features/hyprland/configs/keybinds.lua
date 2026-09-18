@@ -30,6 +30,7 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", actio
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(ipc .. " panel-open maxfh/noctagent:chat"))
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_raw(scripts .. "toggle_audio.sh"))
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center system"))
+hl.bind("ALT + TAB", hl.dsp.exec_cmd(ipc .. " window-switcher"))
 
 local SPAN_W, SPAN_H = 5120, 1440
 local NORMAL_W, NORMAL_H = 2560, 1440
