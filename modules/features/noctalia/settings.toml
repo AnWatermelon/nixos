@@ -154,7 +154,7 @@ popup_borders = false
 
     [shell.panel]
     clipboard_placement = "floating"
-    control_center_placement = "floating"
+    control_center_placement = "attached"
     open_near_click_control_center = true
     shadow = false
     transparency_mode = "glass"
