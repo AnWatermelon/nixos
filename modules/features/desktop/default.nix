@@ -22,6 +22,7 @@
           environment.systemPackages = [
             pkgs.lunar-client
             pkgs.heroic
+            pkgs.gale
             pkgs.prusa-slicer
           ];
         }
