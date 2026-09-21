@@ -53,7 +53,6 @@
         {
           environment.systemPackages = [
             pkgs.libreoffice
-            pkgs.nemo
           ];
         }
       )
