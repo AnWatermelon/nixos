@@ -28,6 +28,10 @@
         }
         {
           programs.dconf.enable = true;
+          services = {
+            gvfs.enable = true;
+            udisks2.enable = true;
+          };
         }
         (lib.mkIf (cfg.environment == "hyprland") {
           environment.systemPackages = [
@@ -73,6 +77,7 @@
         inputs.self.modules.homeManager.hyprland
         inputs.self.modules.homeManager.niri
         inputs.self.modules.homeManager.noctalia
+        inputs.self.modules.homeManager.nemo
       ];
 
       gtk = {

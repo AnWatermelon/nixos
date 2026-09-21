@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   flake.modules.homeManager.nemo =
     {
       pkgs,
@@ -12,10 +11,6 @@
         pkgs.nemo
         pkgs.vlc
       ];
-      services = {
-        gvfs.enable = true;
-        udisks2.enable = true;
-      };
       xdg.mimeApps = {
         enable = true;
         defaultApplicationPackages = [
