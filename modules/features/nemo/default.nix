@@ -1,8 +1,13 @@
 { ... }:
 {
   flake.modules.homeManager.nemo =
-    { pkgs, config, ... }:
     {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
+    lib.mkIf (config.my.desktop.environment == "hyprland") {
       home.packages = [
         pkgs.nemo
         pkgs.vlc
