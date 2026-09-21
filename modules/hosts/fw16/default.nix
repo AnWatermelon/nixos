@@ -24,7 +24,7 @@
       {
         my = {
           kernel.cachyos = "bore-zen4";
-          desktop.environment = "gnome";
+          desktop.environment = "hyprland";
           hardware = {
             laptop = true;
             gpu = {
