@@ -25,6 +25,7 @@
             pkgs.gale
             pkgs.prusa-slicer
             pkgs.antigravity-ide
+            pkgs.spotify
           ];
         }
         {
