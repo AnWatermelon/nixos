@@ -17,7 +17,7 @@
         nbs = "sudo netbird-wt0 status -d";
         nbd = "sudo netbird-wt0 down";
         nbu = "sudo netbird-wt0 up";
-        nbr = "sudo netbird-wt0 down && sudo netbird-wt0 up && sudo mount -a";
+        nbr = "sudo netbird-wt0 down && sudo netbird-wt0 up";
       };
       oh-my-zsh = {
         enable = true;
