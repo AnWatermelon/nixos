@@ -26,8 +26,6 @@ new-project() {
   direnv allow
 }
 
-fastfetch
-
 # --- vi-mode indicator (lualine-style colors from noctalia palette) ---
 _vi_mode_palette="$HOME/.local/state/zsh/matugen/palette.zsh"
 _vi_mode_palette_mtime=-1
