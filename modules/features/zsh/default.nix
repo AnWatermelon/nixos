@@ -2,8 +2,15 @@
   flake.modules.homeManager.zsh = {
     programs.zsh = {
       enable = true;
-      localVariables.VI_MODE_SET_CURSOR = "true";
-      localVariables.KEYTIMEOUT = "10";
+      enableCompletion = false;
+      localVariables = {
+        DISABLE_AUTO_UPDATE = "true";
+        DISABLE_MAGIC_FUNCTIONS = "true";
+        VI_MODE_SET_CURSOR = "true";
+        KEYTIMEOUT = "10";
+        ZSH_DISABLE_COMPFIX = "true";
+        skip_global_compinit = "1";
+      };
       shellAliases = {
         sp = "spotatui";
         cfg = "cd ~/.config/";
