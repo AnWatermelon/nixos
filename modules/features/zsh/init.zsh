@@ -36,7 +36,7 @@ autoload -Uz compinit
 
 if [[ "$current_gen" != "$last_gen" ]]; then
   compinit -d "$zcompdump"
-i  mkdir -p "${gen_marker:h}"
+  mkdir -p "${gen_marker:h}"
   print -r -- "$current_gen" > "$gen_marker"
 else
   compinit -C -d "$zcompdump"
