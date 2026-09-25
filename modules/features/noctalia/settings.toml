@@ -1,22 +1,35 @@
 config_version = 2
 
 [bar.default]
+start = [
+  "launcher",
+  "wallpaper",
+  "workspaces",
+  "clock",
+  "date",
+  "taskbar"
+]
+center = [
+  "audio_visualizer_l",
+  "media",
+  "audio_visualizer"
+]
+end = [
+  "tray",
+  "bar",
+  "bluetooth",
+  "volume",
+  "notifications",
+  "battery",
+  "session"
+]
 border = "primary"
 border_width = 0.0
-center = [ "audio_visualizer_l", "clock", "media" ]
-end = [
-    "tray",
-    "bluetooth",
-    "volume",
-    "notifications",
-    "session"
-]
 margin_ends = 0
 radius = 20
 radius_top_left = 0
 radius_top_right = 0
 shadow = true
-start = [ "launcher", "wallpaper", "workspaces", "date", "taskbar" ]
 thickness = 35
 
 [calendar]
@@ -203,12 +216,13 @@ bands = 64
 centered = false
 color_2 = "secondary"
 mirrored = false
-width = 150.0
+width = 135.0
 
 [widget.audio_visualizer_l]
 bands = 64
 centered = false
 mirrored = false
+reversed = true
 type = "audio_visualizer"
 width = 135.0
 
