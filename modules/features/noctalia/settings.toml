@@ -229,6 +229,7 @@ bands = 64
 centered = false
 mirrored = false
 reversed = true
+color_2 = "secondary"
 type = "audio_visualizer"
 width = 135.0
 
