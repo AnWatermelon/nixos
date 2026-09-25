@@ -218,6 +218,12 @@ color_2 = "secondary"
 mirrored = false
 width = 135.0
 
+    [widget.audio_visualizer.actions]
+    left = "panel-toggle control-center audio"
+    scroll_left = "volume-down"
+    scroll_right = "volume-up"
+
+
 [widget.audio_visualizer_l]
 bands = 64
 centered = false
@@ -225,6 +231,11 @@ mirrored = false
 reversed = true
 type = "audio_visualizer"
 width = 135.0
+
+    [widget.audio_visualizer_l.actions]
+    left = "panel-toggle control-center audio"
+    scroll_left = "volume-down"
+    scroll_right = "volume-up"
 
 [widget.clock]
 format = "{:%I:%M}"
@@ -236,6 +247,13 @@ format = "{:%a %b %d}"
 hide_when_no_media = true
 max_length = 135
 title_scroll = "on_hover"
+
+    [widget.media.actions]
+    scroll_down = "none"
+    scroll_left = "media previous"
+    scroll_right = "media next"
+    scroll_up = "none"
+
 
 [widget.taskbar]
 group_by_workspace = true
