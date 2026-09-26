@@ -12,7 +12,7 @@
         skip_global_compinit = "1";
       };
       shellAliases = {
-        sp = "spotatui";
+        sp = "spotify-player";
         cfg = "cd ~/.config/";
         lg = "lazygit";
         p = "cd ~/Projects";
