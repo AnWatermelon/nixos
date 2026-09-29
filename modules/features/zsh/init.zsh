@@ -26,18 +26,3 @@ new-project() {
   direnv allow
 }
 
-local zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-local gen_marker="${ZDOTDIR:-$HOME}/.cache/zsh/last-generation"
-local current_gen="$(readlink -f /run/current-system 2>/dev/null)"
-local last_gen=""
-[[ -f "$gen_marker" ]] && last_gen="$(<"$gen_marker")"
-
-autoload -Uz compinit
-
-if [[ "$current_gen" != "$last_gen" ]]; then
-  compinit -d "$zcompdump"
-  mkdir -p "${gen_marker:h}"
-  print -r -- "$current_gen" > "$gen_marker"
-else
-  compinit -C -d "$zcompdump"
-fi
