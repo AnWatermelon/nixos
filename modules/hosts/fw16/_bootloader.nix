@@ -4,5 +4,6 @@
     efiSupport = true;
     efiInstallAsRemovable = true;
     device = "nodev";
+    timeoutStyle = "hidden";
   };
 }
