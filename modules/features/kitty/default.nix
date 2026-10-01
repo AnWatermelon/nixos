@@ -56,6 +56,8 @@ _: {
           "alt+enter" = "new_window";
           "alt+right" = "next_window";
           "alt+left" = "previous_window";
+          "alt+l" = "next_window";
+          "alt+h" = "previous_window";
           "alt+q" = "close_window";
           "alt+r" = "start_resizing_window";
           "ctrl+shift+t" = "new_tab";
