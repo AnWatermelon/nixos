@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, ... }:
 let
   flakeCfg = config;
 in
@@ -24,6 +24,7 @@ in
         ncdu
         nmap
         direnv
+        inputs.llm-agents.packages.${pkgs.system}.antigravity-cli
       ];
     };
 }
