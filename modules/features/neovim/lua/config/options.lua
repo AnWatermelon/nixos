@@ -2,8 +2,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 vim.opt.number = true
+vim.opt.showmode = false
 
-vim.opt.completeopt = "menu,menuone,noselect,popup"
+vim.opt.completeopt = "menu,menuone,noselect"
 
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true

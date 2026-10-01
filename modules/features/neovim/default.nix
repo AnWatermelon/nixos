@@ -36,8 +36,11 @@
 
         plugins = with pkgs.vimPlugins; [
           base16-nvim
+          blink-cmp
           flash-nvim
           mini-nvim
+          nui-nvim
+          noice-nvim
           nvim-lspconfig
           snacks-nvim
           which-key-nvim

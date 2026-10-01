@@ -89,14 +89,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local buf = args.buf
     local map = vim.keymap.set
 
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-
-    vim.lsp.completion.enable(true, client.id, buf, { autotrigger = true })
-
-    map("i", "<C-Space>", function()
-      vim.lsp.completion.get()
-    end, { buffer = buf, desc = "Trigger LSP completion" })
-
     map("n", "gd", vim.lsp.buf.definition, { buffer = buf, desc = "Go to definition" })
     map("n", "gD", vim.lsp.buf.declaration, { buffer = buf, desc = "Go to declaration" })
     map("n", "gr", vim.lsp.buf.references, { buffer = buf, desc = "List references" })
