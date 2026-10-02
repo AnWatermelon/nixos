@@ -1,17 +1,15 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }:
 {
   flake.nixosConfigurations.nixos-test = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = { inherit inputs; };
     modules = [
-      # Underscore prefix keeps import-tree from loading this NixOS module as a
-      # flake-parts module.
       ./_hardware-configuration.nix
       ./_bootloader.nix
-      config.flake.modules.nixos.terminal
       { networking.hostName = "nixos-test"; }
       {
         services.openssh = {
@@ -23,14 +21,33 @@
         };
       }
 
+      {
+        my = {
+          kernel.cachyos = "bore";
+          desktop.environment = "hyprland";
+          hardware = {
+            laptop = true;
+            gpu = {
+              configuration = "igpu";
+            };
+          };
+          terminal = pkgs.kitty;
+        };
+      }
+
       config.flake.modules.nixos.boot
+      config.flake.modules.nixos.kernel
       config.flake.modules.nixos.networking
+      config.flake.modules.nixos.netbird
+      config.flake.modules.nixos.gitea
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.audio
-      config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
+      config.flake.modules.nixos.hardware
+      config.flake.modules.nixos.terminal
+      config.flake.modules.nixos.nas
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -38,6 +55,11 @@
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = { inherit inputs; };
+          sharedModules = [
+            ({ osConfig, ... }: {
+              my.hardware = osConfig.my.hardware;
+            })
+          ];
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
