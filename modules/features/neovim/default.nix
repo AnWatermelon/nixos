@@ -42,6 +42,7 @@
           nui-nvim
           noice-nvim
           nvim-lspconfig
+          lazydev-nvim
           snacks-nvim
           which-key-nvim
           lualine-nvim

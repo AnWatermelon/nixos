@@ -1,16 +1,42 @@
-vim.lsp.enable("bashls")
+local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-vim.lsp.enable("clangd")
+local servers = {
+  "bashls",
+  "clangd",
+  "dockerls",
+  "gopls",
+  "html",
+  "cssls",
+  "jsonls",
+  "eslint",
+  "marksman",
+  "pyright",
+  "rust_analyzer",
+  "taplo",
+  "ts_ls",
+  "yamlls",
+}
 
-vim.lsp.enable("dockerls")
+for _, lsp in ipairs(servers) do
+  vim.lsp.config(lsp, {
+    capabilities = capabilities,
+  })
+  vim.lsp.enable(lsp)
+end
 
-vim.lsp.enable("gopls")
+vim.lsp.config("nixd", {
+  capabilities = capabilities,
+  settings = {
+    nixd = {
+      formatting = {
+        command = { "nixfmt" },
+      },
+    },
+  },
+})
+vim.lsp.enable("nixd")
 
-vim.lsp.enable("html")
-vim.lsp.enable("cssls")
-vim.lsp.enable("jsonls")
-vim.lsp.enable("eslint")
-
+-- Lua LS configuration
 local hypr_stub_dirs = {}
 for _, dir in ipairs({
   "/usr/share/hypr/stubs", -- Arch
@@ -21,59 +47,24 @@ for _, dir in ipairs({
   end
 end
 
-local lua_ls_library = vim.list_extend(vim.api.nvim_get_runtime_file("", true), hypr_stub_dirs)
-
-local vim_opt_meta = vim.fn.stdpath("cache") .. "/lua_ls/vim-opt-meta.lua"
-vim.fn.mkdir(vim.fn.fnamemodify(vim_opt_meta, ":h"), "p")
-local options_gen = vim.api.nvim_get_runtime_file("lua/vim/_meta/options.gen.lua", false)[1]
-if options_gen then
-  local out = { "--- @meta _", "--- @class vim.opt.Options" }
-  local seen = {}
-  for line in io.lines(options_gen) do
-    local name = line:match("^vim%.o%.([a-z_][a-z0-9_]*)")
-    if name and not seen[name] then
-      seen[name] = true
-      out[#out + 1] = "--- @field " .. name .. " vim.Option"
-    end
-  end
-  out[#out + 1] = "vim.opt = vim.opt"
-  out[#out + 1] = "vim.opt_local = vim.opt"
-  out[#out + 1] = "vim.opt_global = vim.opt"
-  local f = assert(io.open(vim_opt_meta, "w"))
-  f:write(table.concat(out, "\n"), "\n")
-  f:close()
-  table.insert(lua_ls_library, vim.fn.fnamemodify(vim_opt_meta, ":h"))
+local has_lazydev, lazydev = pcall(require, "lazydev")
+if has_lazydev then
+  lazydev.setup({
+    library = hypr_stub_dirs,
+  })
 end
 
 vim.lsp.config("lua_ls", {
+  capabilities = capabilities,
   settings = {
     Lua = {
-      runtime = { version = "LuaJIT" },
-      diagnostics = { globals = { "vim", "hl" } },
-      workspace = {
-        library = lua_ls_library,
-        checkThirdParty = false,
+      completion = {
+        callSnippet = "Replace",
       },
-      telemetry = { enable = false },
     },
   },
 })
 vim.lsp.enable("lua_ls")
-
-vim.lsp.enable("marksman")
-
-vim.lsp.enable("nil_ls")
-vim.lsp.enable("nixd")
-
-vim.lsp.enable("pyright")
-
-vim.lsp.enable("rust_analyzer")
-
-vim.lsp.enable("taplo")
-
-vim.lsp.enable("ts_ls")
-
-vim.lsp.enable("yamlls")
 
 vim.diagnostic.config({
   virtual_text = false,
