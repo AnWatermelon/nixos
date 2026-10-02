@@ -46,7 +46,7 @@ vim.keymap.set("n", "<A-`>", function()
   Snacks.terminal.toggle()
 end, { desc = "Toggle terminal" })
 
-vim.keymap.set("n", "lg", function()
+vim.keymap.set("n", "gl", function()
   Snacks.lazygit.open()
 end, { desc = "Open lazygit" })
 
