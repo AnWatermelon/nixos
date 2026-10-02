@@ -137,7 +137,7 @@ lock_keys = false
 history_retention_hours = 1
 
 [plugins]
-enabled = [ "noctalia/translator", "icefish/phone-connect" ]
+enabled = [ "knyrps/nix-search" ]
 
     [[plugins.source]]
     kind = "git"
