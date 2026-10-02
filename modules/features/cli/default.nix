@@ -24,7 +24,7 @@ in
         ncdu
         nmap
         direnv
-        inputs.llm-agents.packages.${pkgs.system}.antigravity-cli
+        inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli
       ];
     };
 }

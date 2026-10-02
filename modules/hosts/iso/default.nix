@@ -109,7 +109,7 @@
             btrfs-progs
             dosfstools
             gptfdisk
-            inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
+            disko
             installHost
           ];
 
