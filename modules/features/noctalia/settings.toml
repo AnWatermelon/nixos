@@ -164,6 +164,7 @@ button_borders = false
 card_borders = false
 input_borders = false
 popup_borders = false
+time_format = "{:%I:%M%p}"
 
     [shell.panel]
     clipboard_placement = "floating"
