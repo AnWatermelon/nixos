@@ -26,6 +26,7 @@
             pkgs.prusa-slicer
             pkgs.antigravity-ide
             pkgs.spotify-player
+            pkgs.electrum
           ];
         }
         {
