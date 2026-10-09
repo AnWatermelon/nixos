@@ -15,6 +15,7 @@
         defaultApplications = {
           "text/html" = desktopFile;
           "application/xhtml+xml" = desktopFile;
+          "application/pdf" = desktopFile;
           "x-scheme-handler/http" = desktopFile;
           "x-scheme-handler/https" = desktopFile;
           "x-scheme-handler/about" = desktopFile;
