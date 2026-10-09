@@ -60,6 +60,7 @@
       config.flake.modules.nixos.hardware
       config.flake.modules.nixos.terminal
       config.flake.modules.nixos.nas
+      config.flake.modules.nixos.u2f
 
       (
         { pkgs, ... }:
