@@ -8,8 +8,14 @@ _: {
     }:
     lib.mkIf (config.my.desktop.environment == "hyprland") {
       home.packages = [
-        pkgs.nemo
+        pkgs.nemo-with-extensions
+        pkgs.file-roller
         pkgs.vlc
+
+        pkgs.unzip
+        pkgs.zip
+        pkgs.p7zip
+        pkgs.unar
       ];
       xdg.mimeApps = {
         enable = true;
@@ -17,6 +23,7 @@ _: {
           config.programs.neovim.finalPackage
           pkgs.libreoffice
           pkgs.vlc
+          pkgs.file-roller
           pkgs.nemo
         ];
       };
