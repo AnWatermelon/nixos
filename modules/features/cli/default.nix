@@ -27,6 +27,7 @@ in
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli
         fzf
         nix-search-tv
+        nodejs
       ];
     };
 }
