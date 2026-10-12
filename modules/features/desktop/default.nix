@@ -27,6 +27,7 @@
             pkgs.antigravity-ide
             pkgs.spotify-player
             pkgs.electrum
+            pkgs.libreoffice
           ];
         }
         {

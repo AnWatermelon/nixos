@@ -49,15 +49,6 @@
       config.flake.modules.nixos.nas
       config.flake.modules.nixos.u2f
 
-      (
-        { pkgs, ... }:
-        {
-          environment.systemPackages = [
-            pkgs.libreoffice
-          ];
-        }
-      )
-
       inputs.home-manager.nixosModules.home-manager
       {
         home-manager = {
