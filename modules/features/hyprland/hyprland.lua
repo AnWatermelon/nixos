@@ -1,16 +1,5 @@
 -- hyprland.lua
 -- ============================================
--- MONITORS
--- ============================================
--- An empty output matches every monitor.
-hl.monitor({
-	output = "",
-	mode = "highres",
-	position = "auto",
-	scale = "auto",
-})
-
--- ============================================
 -- AUTOSTART
 -- ============================================
 hl.on("hyprland.start", function()

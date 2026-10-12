@@ -18,6 +18,12 @@ in
         flakeCfg.flake.modules.homeManager.scripts
       ];
 
+      options.my.hyprland.displayConfig = lib.mkOption {
+        type = lib.types.path;
+        default = ./displays.default.lua;
+        description = "Path to lua file with monitor rules";
+      };
+
       config.xdg.configFile = lib.mkIf (config.my.desktop.environment == "hyprland") {
         "hypr/hyprland.lua".source = ./hyprland.lua;
         "hypr/hyprtoolkit.conf".source = ./hyprtoolkit.conf;
@@ -36,6 +42,7 @@ in
             ''
               hl.env("AQ_DRM_DEVICES", "${drmDevices}")
             '';
+        "hypr/configs/display.lua".source = config.my.hyprland.displayConfig;
       };
     };
 }
