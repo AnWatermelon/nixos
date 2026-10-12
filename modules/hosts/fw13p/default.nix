@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }:
 {
@@ -21,18 +22,36 @@
         };
       }
 
+      {
+        my = {
+          kernel.cachyos = "bore-zen4";
+          desktop.environment = "hyprland";
+          hardware = {
+            laptop = true;
+            gpu = {
+              configuration = "igpu";
+              vendor = "intel";
+            };
+          };
+          terminal = pkgs.kitty;
+        };
+      }
+
       config.flake.modules.nixos.boot
+      config.flake.modules.nixos.kernel
       config.flake.modules.nixos.networking
       config.flake.modules.nixos.netbird
       config.flake.modules.nixos.gitea
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.audio
       config.flake.modules.nixos.fprint
-      config.flake.modules.nixos.xdg
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
+      config.flake.modules.nixos.hardware
       config.flake.modules.nixos.terminal
+      config.flake.modules.nixos.nas
+      config.flake.modules.nixos.u2f
 
       inputs.home-manager.nixosModules.home-manager
       {
