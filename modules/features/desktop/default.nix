@@ -13,6 +13,7 @@
       imports = [
         ./options.nix
         inputs.self.modules.nixos.steam
+        inputs.self.modules.nixos.obs
         inputs.self.modules.nixos.greetd
         inputs.self.modules.nixos.xdg
       ];
@@ -28,7 +29,6 @@
             pkgs.spotify-player
             pkgs.electrum
             pkgs.libreoffice
-            pkgs.obs-studio
           ];
         }
         {
