@@ -42,7 +42,7 @@
           services.xserver.videoDrivers = [ "modesetting" ];
           hardware.graphics = {
             enable = true;
-            extraPackages = [ config.boot.kernelPackages.pkgs.intel-media-driver or null ];
+            extraPackages = [ pkgs.intel-media-driver ];
           };
         })
       ];
