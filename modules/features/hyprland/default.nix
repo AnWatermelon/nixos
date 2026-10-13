@@ -20,7 +20,7 @@ in
 
       options.my.hyprland.displayConfig = lib.mkOption {
         type = lib.types.path;
-        default = ./displays.default.lua;
+        default = ./configs/displays.default.lua;
         description = "Path to lua file with monitor rules";
       };
 
