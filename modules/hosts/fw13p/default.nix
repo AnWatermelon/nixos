@@ -24,7 +24,7 @@
 
       {
         my = {
-          kernel.cachyos = "bore-zen4";
+          kernel.cachyos = "bore-x86_64-v3";
           desktop.environment = "hyprland";
           hardware = {
             laptop = true;
