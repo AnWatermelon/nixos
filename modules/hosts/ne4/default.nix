@@ -57,7 +57,10 @@
           extraSpecialArgs = { inherit inputs; };
           sharedModules = [
             ({ osConfig, ... }: {
-              my.hardware = osConfig.my.hardware;
+              my = {
+                hardware = osConfig.my.hardware;
+                hyprland.displayConfig = ./display.lua;
+              };
             })
           ];
           users.maxfh.imports = [
