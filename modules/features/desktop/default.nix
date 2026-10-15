@@ -29,6 +29,8 @@
             pkgs.spotify-player
             pkgs.electrum
             pkgs.libreoffice
+            pkgs.obs-studio
+            pkgs.godot
           ];
         }
         {
