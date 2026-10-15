@@ -9,6 +9,7 @@
         localVariables = {
           DISABLE_MAGIC_FUNCTIONS = "true";
           KEYTIMEOUT = "1";
+          FLAKE = "/home/maxfh/Projects/nixos";
         };
         shellAliases = {
           sp = "spotify_player";

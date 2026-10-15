@@ -29,6 +29,9 @@ in
         nix-search-tv
         nodejs
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
+        nh
+        nix-output-monitor
+        nvd
       ];
     };
 }
