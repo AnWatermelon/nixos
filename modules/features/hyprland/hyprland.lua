@@ -95,6 +95,8 @@ require("configs/input")
 -- ============================================
 require("configs/keybinds")
 
+require("configs/display")
+
 -- For Noctalia Color templates. noctalia.lua is rendered at runtime by the
 -- noctalia daemon, so it is absent on a fresh machine — guard the require or
 -- the whole config fails to load before noctalia has ever run.
