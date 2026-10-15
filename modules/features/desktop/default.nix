@@ -16,6 +16,7 @@
         inputs.self.modules.nixos.obs
         inputs.self.modules.nixos.greetd
         inputs.self.modules.nixos.xdg
+        inputs.self.modules.nixos.flatpak
       ];
 
       config = lib.mkMerge [
