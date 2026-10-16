@@ -1,7 +1,7 @@
 hl.monitor({
-	output = "",
-	mode = "preferred",
-	position = "auto",
-	scale = "auto",
-  cm = "hdr",
+  output = "",
+  mode = "preferred",
+  position = "auto",
+  scale = "auto",
+  cm = "auto",
 })
