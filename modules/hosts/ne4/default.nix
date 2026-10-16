@@ -22,7 +22,7 @@
 
       {
         my = {
-          kernel.cachyos = "bore-zen4";
+#          kernel.cachyos = "bore-zen4";
           desktop.environment = "hyprland";
           hardware = {
             laptop = false;
@@ -35,7 +35,7 @@
       }
 
       config.flake.modules.nixos.boot
-      config.flake.modules.nixos.kernel
+#      config.flake.modules.nixos.kernel
       config.flake.modules.nixos.networking
       config.flake.modules.nixos.netbird
       config.flake.modules.nixos.gitea
