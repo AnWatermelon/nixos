@@ -16,6 +16,12 @@ in
         enable = true;
         nix-direnv.enable = true;
       };
+      programs.nh = {
+        enable = true;
+        clean.enable = true;
+        clean.extraArgs = "--keep-since 4d --keep 3";
+        flake = "/home/maxfh/Projects/nixos";
+      };
       home.packages = with pkgs; [
         fastfetch
         btop
@@ -29,9 +35,6 @@ in
         nix-search-tv
         nodejs
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
-        nh
-        nix-output-monitor
-        nvd
       ];
     };
 }

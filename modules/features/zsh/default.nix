@@ -9,7 +9,6 @@
         localVariables = {
           DISABLE_MAGIC_FUNCTIONS = "true";
           KEYTIMEOUT = "1";
-          FLAKE = "/home/maxfh/Projects/nixos";
         };
         shellAliases = {
           sp = "spotify_player";
@@ -17,8 +16,7 @@
           lg = "lazygit";
           p = "cd ~/Projects";
           s = "cd ~/shared/Documents/School";
-          nrb = "sudo nixos-rebuild switch --flake /home/maxfh/Projects/nixos";
-          hms = "home-manager switch --flake ~/Projects/nixos#maxfh";
+          nhs = "nh os switch";
           nfc = "nix flake check && nix formatter run";
           tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' /";
           nbs = "sudo netbird-wt0 status -d";
