@@ -1,28 +1,10 @@
 config_version = 2
 
 [bar.default]
-start = [
-  "launcher",
-  "wallpaper",
-  "workspaces",
-  "clock",
-  "date",
-  "taskbar"
-]
-center = [
-  "audio_visualizer_l",
-  "media",
-  "audio_visualizer"
-]
-end = [
-  "tray",
-  "bar",
-  "bluetooth",
-  "volume",
-  "notifications",
-  "battery",
-  "session"
-]
+center = [ "audio_visualizer_l", "media", "clock", "audio_visualizer" ]
+end = [ "tray", "bluetooth", "volume", "notifications", "battery", "session" ]
+start = [ "workspaces", "taskbar" ]
+
 border = "primary"
 border_width = 0.0
 margin_ends = 0
@@ -242,6 +224,9 @@ width = 135.0
 [widget.clock]
 format = "{:%I:%M}"
 
+  [widget.clock.actions]
+  right = "panel-toggle control-center media"
+
 [widget.date]
 format = "{:%a %b %d}"
 
@@ -255,7 +240,6 @@ title_scroll = "on_hover"
     scroll_left = "media previous"
     scroll_right = "media next"
     scroll_up = "none"
-
 
 [widget.taskbar]
 group_by_workspace = true
