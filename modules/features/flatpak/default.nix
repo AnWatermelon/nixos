@@ -15,6 +15,7 @@
       ];
       packages = [
         "org.vinegarhq.Sober"
+        "io.github.lawstorant.boxflat"
       ];
     };
   };
