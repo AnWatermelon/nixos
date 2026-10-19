@@ -11,6 +11,7 @@
           KEYTIMEOUT = "1";
         };
         shellAliases = {
+          ls = "ls --hyperlink=auto";
           sp = "spotify_player";
           cfg = "cd ~/.config/";
           lg = "lazygit";
