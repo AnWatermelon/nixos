@@ -11,12 +11,16 @@ _: {
         pkgs.nemo-with-extensions
         pkgs.file-roller
         pkgs.vlc
-
         pkgs.unzip
         pkgs.zip
         pkgs.p7zip
         pkgs.unar
       ];
+
+      dconf.settings."org/cinnamon/desktop/applications/terminal" = {
+        exec = baseNameOf (lib.getExe config.my.terminal);
+      };
+
       xdg.mimeApps = {
         enable = true;
         defaultApplicationPackages = [
