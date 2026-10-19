@@ -8,6 +8,24 @@
     {
       imports = [ ./options.nix ];
       config = lib.mkMerge [
+        {
+          hardware.uinput.enable = true;
+
+          services.udev.packages = [
+            (pkgs.writeTextDir "lib/udev/rules.d/99-boxflat.rules" ''
+              # Copyright (c) 2025, Tomasz Pakuła Using Arch BTW
+
+              # Add uaccess tag to every Moza (Gudsen) ttyACM device so a user can easily access it
+              # without being added to the uucp group. This in turn will make it so EVERY user
+              # can access these devices
+              SUBSYSTEM=="tty", KERNEL=="ttyACM*", ATTRS{idVendor}=="346e", ACTION=="add", MODE="0666", TAG+="uaccess"
+
+              # Add uaccess tag to uinput devices to create virtual joysticks
+              SUBSYSTEM=="misc", KERNEL=="uinput", OPTIONS+="static_node=uinput", TAG+="uaccess"
+            '')
+          ];
+        }
+
         (lib.mkIf (cfg.gpu.devices != [ ]) {
           services.udev.extraRules = lib.concatMapStringsSep "\n" (
             d:
