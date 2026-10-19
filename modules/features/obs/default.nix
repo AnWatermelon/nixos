@@ -12,11 +12,7 @@
       programs.obs-studio = {
         enable = true;
         enableVirtualCamera = true;
-        package =
-          if isNvidia then
-            pkgs.obs-studio.override { cudaSupport = true; }
-          else
-            pkgs.obs-studio;
+        package = if isNvidia then pkgs.obs-studio.override { cudaSupport = true; } else pkgs.obs-studio;
         plugins = with pkgs.obs-studio-plugins; [
           obs-vaapi
           obs-gstreamer
