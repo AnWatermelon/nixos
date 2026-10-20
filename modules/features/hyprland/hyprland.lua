@@ -42,22 +42,9 @@ require("configs/UserAnimations")
 require("configs/windowrules")
 
 -- ============================================
--- LAYOUTS
+-- LAYOUTS & LAYOUT MANAGER
 -- ============================================
-
--- Dwindle layout settings
-hl.config({
-	dwindle = {
-		preserve_split = true, -- you probably want this
-	},
-})
-
--- Master layout settings
-hl.config({
-	master = {
-		new_status = "master",
-	},
-})
+require("layouts")
 
 -- ============================================
 -- MISC

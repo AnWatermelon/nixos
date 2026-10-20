@@ -43,6 +43,7 @@ in
               hl.env("AQ_DRM_DEVICES", "${drmDevices}")
             '';
         "hypr/configs/display.lua".source = config.my.hyprland.displayConfig;
+        "hypr/layouts".source = ./layouts;
       };
     };
 }

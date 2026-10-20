@@ -1,11 +1,84 @@
 -- keybinds.lua
 
+local manager = require("layouts/manager")
+
 local mainMod = "SUPER"
 local terminal = "kitty"
 local fileManager = "nemo"
 local ipc = "noctalia msg"
 local browser = "zen"
 local scripts = "sh ~/.config/scripts/"
+
+-- ─────────────────────────────────────────────
+--  Layout Switching & Layout-Specific Actions
+-- ─────────────────────────────────────────────
+
+-- Cycle through layouts (Dual-Master -> Dwindle -> Master)
+hl.bind(mainMod .. " + Backspace", function()
+	manager.cycle_layout(1)
+end)
+
+hl.bind(mainMod .. " + CTRL + Backspace", function()
+	manager.cycle_layout(-1)
+end)
+
+-- Quick switch to specific layouts
+hl.bind(mainMod .. " + ALT + 1", function()
+	manager.set_layout("dual_master")
+end)
+
+hl.bind(mainMod .. " + ALT + 2", function()
+	manager.set_layout("dwindle")
+end)
+
+hl.bind(mainMod .. " + ALT + 3", function()
+	manager.set_layout("master")
+end)
+
+-- Layout-specific actions (dispatched to the active layout):
+-- In Dual-Master:
+--   - Return / M: Shuffles master window onto secondary monitor & pulls slave onto main
+--   - SHIFT + Return: Promotes active window to master on main monitor
+--   - SHIFT + M: Demotes active window to secondary monitor's slave stack
+--   - Tab / SHIFT + Tab: Cycles focus across slave windows on secondary monitor
+--   - O: Toggles focus between main and secondary monitor
+-- In Dwindle:
+--   - Backslash: toggles split direction
+-- In Standard Master:
+--   - Return: swap with master
+--   - SHIFT + Return: focus master
+--   - Tab / SHIFT + Tab: cycle next / previous
+hl.bind(mainMod .. " + Return", function()
+	manager.dispatch_action("swap")
+end)
+
+hl.bind(mainMod .. " + SHIFT + Return", function()
+	manager.dispatch_action("promote")
+end)
+
+hl.bind(mainMod .. " + M", function()
+	manager.dispatch_action("swap")
+end)
+
+hl.bind(mainMod .. " + SHIFT + M", function()
+	manager.dispatch_action("demote")
+end)
+
+hl.bind(mainMod .. " + Tab", function()
+	manager.dispatch_action("cycle_next")
+end)
+
+hl.bind(mainMod .. " + SHIFT + Tab", function()
+	manager.dispatch_action("cycle_prev")
+end)
+
+hl.bind(mainMod .. " + O", function()
+	manager.dispatch_action("toggle_focus")
+end)
+
+hl.bind(mainMod .. " + backslash", function()
+	manager.dispatch_action("toggle_split")
+end)
 
 -- ─────────────────────────────────────────────
 --  Basic application launchers
