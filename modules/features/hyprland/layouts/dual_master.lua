@@ -68,16 +68,6 @@ function M.get_workspace_windows(ws, sort_mode)
         end)
     else
         table.sort(wins, function(a, b)
-            local ay = (a.at and a.at.y) or 0
-            local by = (b.at and b.at.y) or 0
-            if math.abs(ay - by) > 10 then
-                return ay < by
-            end
-            local ax = (a.at and a.at.x) or 0
-            local bx = (b.at and b.at.x) or 0
-            if ax ~= bx then
-                return ax < bx
-            end
             return (a.stable_id or 0) < (b.stable_id or 0)
         end)
     end
@@ -198,7 +188,8 @@ function M.demote()
     if not active_win then return end
 
     local sec_ws = topo.secondary.active_workspace
-    if not sec_ws then return end
+    local main_ws = topo.main.active_workspace
+    if not sec_ws or not main_ws then return end
 
     if active_win.workspace and active_win.workspace.id == sec_ws.id then
         return
@@ -210,12 +201,11 @@ function M.demote()
         window = active_win,
     }))
 
-    local main_ws = topo.main.active_workspace
     local remaining = M.get_workspace_windows(main_ws, "recent")
     if #remaining > 0 then
         hl.dispatch(hl.dsp.focus({ window = remaining[1] }))
     else
-        hl.dispatch(hl.dsp.focus({ window = active_win }))
+        hl.dispatch(hl.dsp.focus({ workspace = main_ws.id }))
     end
 end
 
@@ -232,7 +222,7 @@ function M.cycle_slaves(dir)
     end
 
     local sec_ws = topo.secondary.active_workspace
-    local slave_wins = M.get_workspace_windows(sec_ws, "spatial")
+    local slave_wins = M.get_workspace_windows(sec_ws, "stable")
     if #slave_wins == 0 then return end
 
     local active_win = hl.get_active_window()
@@ -264,7 +254,7 @@ function M.toggle_focus()
     if not active_win or not main_ws or not sec_ws then return end
 
     if active_win.workspace and active_win.workspace.id == main_ws.id then
-        local slave_wins = M.get_workspace_windows(sec_ws, "spatial")
+        local slave_wins = M.get_workspace_windows(sec_ws, "stable")
         if #slave_wins > 0 then
             hl.dispatch(hl.dsp.focus({ window = slave_wins[1] }))
         else
@@ -311,6 +301,68 @@ function M.on_window_open(win)
                 }))
             end
         end
+        hl.dispatch(hl.dsp.focus({ window = win }))
+    end
+end
+
+local function tile_dwindle(targets, area)
+    local n = #targets
+    if n == 0 then return end
+    if n == 1 then
+        targets[1]:place(area)
+        return
+    end
+
+    table.sort(targets, function(a, b)
+        local aw = a.window
+        local bw = b.window
+        if aw and bw then
+            return (aw.stable_id or 0) < (bw.stable_id or 0)
+        end
+        return (a.index or 0) < (b.index or 0)
+    end)
+
+    local cur_box = {
+        x = area.x,
+        y = area.y,
+        w = area.w,
+        h = area.h,
+    }
+
+    for i = 1, n do
+        if i == n then
+            targets[i]:place(cur_box)
+        else
+            if cur_box.w >= cur_box.h then
+                local w1 = math.floor(cur_box.w / 2)
+                targets[i]:place({
+                    x = cur_box.x,
+                    y = cur_box.y,
+                    w = w1,
+                    h = cur_box.h,
+                })
+                cur_box = {
+                    x = cur_box.x + w1,
+                    y = cur_box.y,
+                    w = cur_box.w - w1,
+                    h = cur_box.h,
+                }
+            else
+                local h1 = math.floor(cur_box.h / 2)
+                targets[i]:place({
+                    x = cur_box.x,
+                    y = cur_box.y,
+                    w = cur_box.w,
+                    h = h1,
+                })
+                cur_box = {
+                    x = cur_box.x,
+                    y = cur_box.y + h1,
+                    w = cur_box.w,
+                    h = cur_box.h - h1,
+                }
+            end
+        end
     end
 end
 
@@ -339,19 +391,17 @@ local function recalculate(ctx)
             h = area.h,
         })
 
-        local slave_count = n - 1
-        local row_h = math.floor(area.h / slave_count)
+        local slave_targets = {}
         for i = 2, n do
-            local s_idx = i - 1
-            local y = area.y + (s_idx - 1) * row_h
-            local h = (s_idx == slave_count) and (area.h - (s_idx - 1) * row_h) or row_h
-            ctx.targets[i]:place({
-                x = slave_x,
-                y = y,
-                w = slave_w,
-                h = h,
-            })
+            table.insert(slave_targets, ctx.targets[i])
         end
+
+        tile_dwindle(slave_targets, {
+            x = slave_x,
+            y = area.y,
+            w = slave_w,
+            h = area.h,
+        })
         return
     end
 
@@ -368,43 +418,7 @@ local function recalculate(ctx)
             })
         end
     else
-        if n == 1 then
-            ctx.targets[1]:place(area)
-        elseif n <= 3 then
-            local row_h = math.floor(area.h / n)
-            for i, target in ipairs(ctx.targets) do
-                local y = area.y + (i - 1) * row_h
-                local h = (i == n) and (area.h - (i - 1) * row_h) or row_h
-                target:place({
-                    x = area.x,
-                    y = y,
-                    w = area.w,
-                    h = h,
-                })
-            end
-        else
-            local cols = 2
-            local col_w = math.floor(area.w / cols)
-            local rows = math.ceil(n / cols)
-            local row_h = math.floor(area.h / rows)
-
-            for i, target in ipairs(ctx.targets) do
-                local c = (i - 1) % cols
-                local r = math.floor((i - 1) / cols)
-
-                local x = area.x + c * col_w
-                local y = area.y + r * row_h
-                local w = (c == cols - 1) and (area.w - (cols - 1) * col_w) or col_w
-                local h = (r == rows - 1) and (area.h - (rows - 1) * row_h) or row_h
-
-                target:place({
-                    x = x,
-                    y = y,
-                    w = w,
-                    h = h,
-                })
-            end
-        end
+        tile_dwindle(ctx.targets, area)
     end
 end
 
@@ -469,6 +483,7 @@ local layout_definition = {
                             }))
                         end
                     end
+                    hl.dispatch(hl.dsp.focus({ window = keep }))
                 end
             end
         end
