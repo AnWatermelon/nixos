@@ -14,9 +14,11 @@ nr() {
     return 1
   fi
 
+  export NIXPKGS_ALLOW_UNFREE=1
+
   local cmd="$1"
   shift
-  nix run "nixpkgs#${cmd}" -- "$@"
+  nix run --impure "nixpkgs#${cmd}" -- "$@"
 }
 
 new-project() {
