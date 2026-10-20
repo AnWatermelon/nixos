@@ -17,7 +17,7 @@
           p = "cd ~/Projects";
           s = "cd ~/shared/Documents/School";
           nhs = "nh os switch";
-          nfc = "nix flake check && nix formatter run";
+          nfc = "nix fmt && nix flake check";
           tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' --exclude '/home/maxfh/shared' /";
           nbs = "sudo netbird-wt0 status -d";
           nbd = "sudo netbird-wt0 down";
