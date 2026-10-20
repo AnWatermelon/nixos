@@ -9,7 +9,10 @@
       imports = [ ./options.nix ];
       config = lib.mkMerge [
         {
-          hardware.uinput.enable = true;
+          hardware = {
+            uinput.enable = true;
+            keyboard.qmk.keychronSupport = true;
+          };
 
           services.udev.packages = [
             (pkgs.writeTextDir "lib/udev/rules.d/99-boxflat.rules" ''
