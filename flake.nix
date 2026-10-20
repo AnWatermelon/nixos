@@ -12,7 +12,7 @@
     };
 
     zen-browser = {
-      url = "github:youwen5/zen-browser-flake";
+      url = "github:youwen5/zen-browser-flake/pull/23/head";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
