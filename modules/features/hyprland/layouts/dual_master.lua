@@ -1,7 +1,7 @@
 local M = {}
 
 M.config = {
-    main_monitor_name = nil,
+    main_monitor_name = "DP-3",
     single_monitor_master_ratio = 0.55,
 }
 
