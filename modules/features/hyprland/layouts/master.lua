@@ -1,6 +1,3 @@
--- layouts/master.lua
--- Wrapper for Hyprland's built-in standard single-workspace Master layout.
-
 local M = {}
 
 M.definition = {

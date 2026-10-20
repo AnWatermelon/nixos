@@ -1,5 +1,3 @@
--- keybinds.lua
-
 local manager = require("layouts/manager")
 
 local mainMod = "SUPER"
@@ -9,11 +7,6 @@ local ipc = "noctalia msg"
 local browser = "zen"
 local scripts = "sh ~/.config/scripts/"
 
--- ─────────────────────────────────────────────
---  Layout Switching & Layout-Specific Actions
--- ─────────────────────────────────────────────
-
--- Cycle through layouts (Dual-Master -> Dwindle -> Master)
 hl.bind(mainMod .. " + Backspace", function()
 	manager.cycle_layout(1)
 end)
@@ -22,7 +15,6 @@ hl.bind(mainMod .. " + CTRL + Backspace", function()
 	manager.cycle_layout(-1)
 end)
 
--- Quick switch to specific layouts
 hl.bind(mainMod .. " + ALT + 1", function()
 	manager.set_layout("dual_master")
 end)
@@ -35,19 +27,6 @@ hl.bind(mainMod .. " + ALT + 3", function()
 	manager.set_layout("master")
 end)
 
--- Layout-specific actions (dispatched to the active layout):
--- In Dual-Master:
---   - Return / M: Shuffles master window onto secondary monitor & pulls slave onto main
---   - SHIFT + Return: Promotes active window to master on main monitor
---   - SHIFT + M: Demotes active window to secondary monitor's slave stack
---   - Tab / SHIFT + Tab: Cycles focus across slave windows on secondary monitor
---   - O: Toggles focus between main and secondary monitor
--- In Dwindle:
---   - Backslash: toggles split direction
--- In Standard Master:
---   - Return: swap with master
---   - SHIFT + Return: focus master
---   - Tab / SHIFT + Tab: cycle next / previous
 hl.bind(mainMod .. " + Return", function()
 	manager.dispatch_action("swap")
 end)
@@ -80,9 +59,6 @@ hl.bind(mainMod .. " + backslash", function()
 	manager.dispatch_action("toggle_split")
 end)
 
--- ─────────────────────────────────────────────
---  Basic application launchers
--- ─────────────────────────────────────────────
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd(ipc .. " panel-toggle session"))
@@ -110,29 +86,27 @@ local NORMAL_W, NORMAL_H = 2560, 1440
 local spanned = {}
 
 hl.bind(mainMod .. " + CTRL + S", function()
-    local w = hl.get_active_window()
-    if w == nil then return end
+	local w = hl.get_active_window()
+	if w == nil then return end
 
-    if spanned[w.address] then
-        hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = hl.get_config("general.border_size"), window = w }))
-        hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = hl.get_config("decoration.rounding"), window = w }))
-        hl.dispatch(hl.dsp.window.float({ action = "unset", window = w }))
-        hl.dispatch(hl.dsp.window.resize({ x = NORMAL_W, y = NORMAL_H, window = w }))
-        hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-show"))
-        spanned[w.address] = nil
-    else
-        hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = 0, window = w }))
-        hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = 0, window = w }))
-        hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
-        hl.dispatch(hl.dsp.window.resize({ x = SPAN_W, y = SPAN_H, window = w }))
-        hl.dispatch(hl.dsp.window.move({ x = 0, y = 0, window = w }))
-        hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-hide"))
-        spanned[w.address] = true
-    end
+	if spanned[w.address] then
+		hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = hl.get_config("general.border_size"), window = w }))
+		hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = hl.get_config("decoration.rounding"), window = w }))
+		hl.dispatch(hl.dsp.window.float({ action = "unset", window = w }))
+		hl.dispatch(hl.dsp.window.resize({ x = NORMAL_W, y = NORMAL_H, window = w }))
+		hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-show"))
+		spanned[w.address] = nil
+	else
+		hl.dispatch(hl.dsp.window.set_prop({ prop = "border_size", value = 0, window = w }))
+		hl.dispatch(hl.dsp.window.set_prop({ prop = "rounding", value = 0, window = w }))
+		hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
+		hl.dispatch(hl.dsp.window.resize({ x = SPAN_W, y = SPAN_H, window = w }))
+		hl.dispatch(hl.dsp.window.move({ x = 0, y = 0, window = w }))
+		hl.dispatch(hl.dsp.exec_cmd("noctalia msg bar-hide"))
+		spanned[w.address] = true
+	end
 end)
--- ─────────────────────────────────────────────
---  Focus movement
--- ─────────────────────────────────────────────
+
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "l" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "r" }))
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "u" }))
@@ -143,9 +117,6 @@ hl.bind(mainMod .. " + l", hl.dsp.focus({ direction = "r" }))
 hl.bind(mainMod .. " + k", hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. " + j", hl.dsp.focus({ direction = "d" }))
 
--- ─────────────────────────────────────────────
---  Window movement (SHIFT + dir)
--- ─────────────────────────────────────────────
 hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "l" }))
 hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.move({ direction = "u" }))
@@ -156,9 +127,6 @@ hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + k", hl.dsp.window.move({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + j", hl.dsp.window.move({ direction = "d" }))
 
--- ─────────────────────────────────────────────
---  Window resize (CTRL + arrow keys, repeating)
--- ─────────────────────────────────────────────
 hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { repeating = true })
@@ -169,17 +137,11 @@ hl.bind(mainMod .. " + CTRL + l", hl.dsp.window.resize({ x = 50, y = 0, relative
 hl.bind(mainMod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + j", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { repeating = true })
 
--- ─────────────────────────────────────────────
---  Workspace switching (mainMod + 1-0)
--- ─────────────────────────────────────────────
 for i = 1, 9 do
 	hl.bind(mainMod .. " + " .. i, hl.dsp.focus({ workspace = i }))
 end
 hl.bind(mainMod .. " + 0", hl.dsp.focus({ workspace = 10 }))
 
--- ─────────────────────────────────────────────
---  Move window to workspace (mainMod + SHIFT + 1-0)
--- ─────────────────────────────────────────────
 for i = 1, 9 do
 	hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }))
 end
@@ -190,28 +152,18 @@ for i = 1, 9 do
 end
 hl.bind(mainMod .. " + SHIFT + ALT + 0", hl.dsp.window.move({ workspace = 10, follow = false }))
 
--- ─────────────────────────────────────────────
---  Scroll through workspaces with mouse wheel
--- ─────────────────────────────────────────────
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
--- ─────────────────────────────────────────────
---  Move / resize windows with mouse drag
--- ─────────────────────────────────────────────
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- ─────────────────────────────────────────────
---  Multimedia / brightness keys (locked + repeating)
--- ─────────────────────────────────────────────
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(ipc .. " volume-up"))
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(ipc .. " volume-down"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd(ipc .. " volume-mute"))
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(ipc .. " brightness-up"))
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(ipc .. " brightness-down"))
 
--- Media player control (playerctl)
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd(ipc .. " media next"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd(ipc .. " media toggle"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(ipc .. " media toggle"), { locked = true })

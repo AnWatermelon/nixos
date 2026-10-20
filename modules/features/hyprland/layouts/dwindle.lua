@@ -1,6 +1,3 @@
--- layouts/dwindle.lua
--- Wrapper for Hyprland's built-in Dwindle layout.
-
 local M = {}
 
 M.definition = {
