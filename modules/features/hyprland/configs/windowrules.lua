@@ -74,6 +74,29 @@ hl.window_rule({
 -- DIALOGUES / POP-UPS
 --------------------------
 
+-- XDG Desktop Portal dialogs (screen share picker, file chooser, etc.)
+hl.window_rule({
+	match = { class = "^(xdg-desktop-portal.*)$" },
+	float = true,
+	center = true,
+})
+
+-- Common authentication & polkit popups
+hl.window_rule({
+	match = { class = "^(polkit-.*|.*polkit.*|gcr-prompter|pinentry.*)$" },
+	float = true,
+	center = true,
+})
+
+-- Steam auxiliary popups / dialogs
+hl.window_rule({
+	match = {
+		class = "^(steam)$",
+		title = "^(Friends List|Steam - News|Settings|Music Player|Screenshot Uploader|Steam Guard.*)$",
+	},
+	float = true,
+})
+
 -- Save / pick-file dialogs
 hl.window_rule({
 	match = { title = "Save As|Save a File|Pick Files" },

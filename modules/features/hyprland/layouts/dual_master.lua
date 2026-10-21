@@ -11,6 +11,7 @@ function M.set_main_monitor(name)
 end
 
 function M.load_display_config()
+    package.loaded["configs/display"] = nil
     local ok, display_cfg = pcall(require, "configs/display")
     if ok and type(display_cfg) == "table" then
         if display_cfg.main_monitor then
@@ -308,20 +309,62 @@ function M.toggle_focus()
     end
 end
 
-function M.on_window_open(win)
-    if not win or win.floating then return end
-
+local function handle_window_open(win)
     local topo = M.get_topology()
     if topo.count < 2 or not topo.secondary then return end
 
     local main_ws = topo.main.active_workspace
     local sec_ws = topo.secondary.active_workspace
-    if not main_ws or not sec_ws then return end
+    if not main_ws or not sec_ws or main_ws.id == sec_ws.id then return end
 
-    local is_on_main = false
-    if win.workspace then
-        is_on_main = (win.workspace.id == main_ws.id or win.workspace.name == main_ws.name)
-    else
+    -- Re-fetch the live window to check its updated properties after rules have run
+    local fresh_win = nil
+    for _, w in ipairs(hl.get_windows()) do
+        if w.address == win.address then
+            fresh_win = w
+            break
+        end
+    end
+
+    if not fresh_win or fresh_win.floating or not fresh_win.mapped or fresh_win.hidden then
+        return
+    end
+
+    local ws_id = fresh_win.workspace and fresh_win.workspace.id
+    local ws_name = fresh_win.workspace and fresh_win.workspace.name
+
+    -- If the window is on the secondary workspace, it slots into the slave dwindle layout.
+    -- Never move or kick any windows when a window opens on the secondary workspace.
+    if ws_id == sec_ws.id or ws_name == sec_ws.name then
+        return
+    end
+
+    -- If the window was spawned by a process that already lives on the secondary monitor
+    -- (e.g. child process or popup of a slave app that Hyprland defaulted to the active master ws),
+    -- move it to the secondary monitor so it slots into the slave layout instead of demoting master.
+    local is_child_of_slave = false
+    if fresh_win.pid then
+        local slave_wins = M.get_workspace_windows(sec_ws, "recent")
+        for _, sw in ipairs(slave_wins) do
+            if sw.pid and sw.pid == fresh_win.pid then
+                is_child_of_slave = true
+                break
+            end
+        end
+    end
+
+    if is_child_of_slave then
+        hl.dispatch(hl.dsp.window.move({
+            workspace = sec_ws.id,
+            silent = false,
+            window = fresh_win,
+        }))
+        hl.dispatch(hl.dsp.focus({ window = fresh_win }))
+        return
+    end
+
+    local is_on_main = (ws_id == main_ws.id or ws_name == main_ws.name)
+    if not is_on_main and not ws_id then
         local cur_ws = hl.get_active_workspace()
         if cur_ws and (cur_ws.id == main_ws.id or cur_ws.name == main_ws.name) then
             is_on_main = true
@@ -331,7 +374,7 @@ function M.on_window_open(win)
     if is_on_main then
         local masters = M.get_workspace_windows(main_ws, "recent")
         for _, existing in ipairs(masters) do
-            if existing.address ~= win.address then
+            if existing.address ~= fresh_win.address then
                 hl.dispatch(hl.dsp.window.move({
                     workspace = sec_ws.id,
                     silent = true,
@@ -339,7 +382,19 @@ function M.on_window_open(win)
                 }))
             end
         end
-        hl.dispatch(hl.dsp.focus({ window = win }))
+        hl.dispatch(hl.dsp.focus({ window = fresh_win }))
+    end
+end
+
+function M.on_window_open(win)
+    if not win or win.floating then return end
+
+    if hl.timer then
+        hl.timer(function()
+            pcall(handle_window_open, win)
+        end, { timeout = 25, type = "oneshot" })
+    else
+        pcall(handle_window_open, win)
     end
 end
 

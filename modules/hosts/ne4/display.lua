@@ -1,3 +1,5 @@
+_G.main_monitor = "DP-3"
+
 hl.monitor({
   output = "",
   mode = "preferred",
