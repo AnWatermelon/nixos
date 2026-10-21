@@ -88,15 +88,6 @@ hl.window_rule({
 	center = true,
 })
 
--- Steam auxiliary popups / dialogs
-hl.window_rule({
-	match = {
-		class = "^(steam)$",
-		title = "^(Friends List|Steam - News|Settings|Music Player|Screenshot Uploader|Steam Guard.*)$",
-	},
-	float = true,
-})
-
 -- Save / pick-file dialogs
 hl.window_rule({
 	match = { title = "Save As|Save a File|Pick Files" },

@@ -309,6 +309,25 @@ function M.toggle_focus()
     end
 end
 
+local function should_remain_floating(win)
+    if not win then return false end
+    if win.tags then
+        local tag_str = type(win.tags) == "table" and table.concat(win.tags, " ") or tostring(win.tags)
+        if tag_str:find("file_chooser") or tag_str:find("settings") or tag_str:find("viewer") then
+            return true
+        end
+    end
+    local class = win.class or ""
+    local title = win.title or ""
+    if class:find("xdg%-desktop%-portal") or class:find("polkit") or class:find("pinentry") then
+        return true
+    end
+    if title:find("Save As") or title:find("Save a File") or title:find("Pick Files") or title:find("Open Files") then
+        return true
+    end
+    return false
+end
+
 local function handle_window_open(win)
     local topo = M.get_topology()
     if topo.count < 2 or not topo.secondary then return end
@@ -326,44 +345,73 @@ local function handle_window_open(win)
         end
     end
 
-    if not fresh_win or fresh_win.floating or not fresh_win.mapped or fresh_win.hidden then
+    if not fresh_win or not fresh_win.mapped or fresh_win.hidden then
         return
     end
 
     local ws_id = fresh_win.workspace and fresh_win.workspace.id
     local ws_name = fresh_win.workspace and fresh_win.workspace.name
 
-    -- If the window is on the secondary workspace, it slots into the slave dwindle layout.
-    -- Never move or kick any windows when a window opens on the secondary workspace.
-    if ws_id == sec_ws.id or ws_name == sec_ws.name then
-        return
-    end
-
-    -- If the window was spawned by a process that already lives on the secondary monitor
-    -- (e.g. child process or popup of a slave app that Hyprland defaulted to the active master ws),
-    -- move it to the secondary monitor so it slots into the slave layout instead of demoting master.
+    -- Check if this window was spawned by an application running on the slave monitor
     local is_child_of_slave = false
     if fresh_win.pid then
         local slave_wins = M.get_workspace_windows(sec_ws, "recent")
         for _, sw in ipairs(slave_wins) do
-            if sw.pid and sw.pid == fresh_win.pid then
+            if sw.pid and sw.pid == fresh_win.pid and sw.address ~= fresh_win.address then
                 is_child_of_slave = true
                 break
             end
         end
     end
 
+    local is_on_sec = (ws_id == sec_ws.id or ws_name == sec_ws.name)
+    local is_on_main = (ws_id == main_ws.id or ws_name == main_ws.name)
+
+    -- If spawned by a slave application, it strictly belongs on the slave monitor.
     if is_child_of_slave then
-        hl.dispatch(hl.dsp.window.move({
-            workspace = sec_ws.id,
-            silent = false,
-            window = fresh_win,
-        }))
+        -- If Hyprland spawned it on the wrong monitor (e.g. main_ws), move it to sec_ws
+        if not is_on_sec then
+            hl.dispatch(hl.dsp.window.move({
+                workspace = sec_ws.id,
+                silent = false,
+                window = fresh_win,
+            }))
+        end
+
+        -- Ensure it doesn't fullscreen over the slave monitor
+        if fresh_win.fullscreen and fresh_win.fullscreen ~= 0 then
+            hl.dispatch(hl.dsp.window.fullscreen({
+                mode = "fullscreen",
+                action = "unset",
+                window = fresh_win,
+            }))
+        end
+
+        -- Unless it's an explicit modal dialog/picker, un-float it so it slots into dwindle
+        if fresh_win.floating and not should_remain_floating(fresh_win) then
+            hl.dispatch(hl.dsp.window.float({
+                action = "unset",
+                window = fresh_win,
+            }))
+        end
+
         hl.dispatch(hl.dsp.focus({ window = fresh_win }))
         return
     end
 
-    local is_on_main = (ws_id == main_ws.id or ws_name == main_ws.name)
+    -- If the window opened on the slave monitor directly
+    if is_on_sec then
+        if fresh_win.fullscreen and fresh_win.fullscreen ~= 0 then
+            hl.dispatch(hl.dsp.window.fullscreen({
+                mode = "fullscreen",
+                action = "unset",
+                window = fresh_win,
+            }))
+        end
+        return
+    end
+
+    -- If the window is on main_ws (or targeted for main_ws)
     if not is_on_main and not ws_id then
         local cur_ws = hl.get_active_workspace()
         if cur_ws and (cur_ws.id == main_ws.id or cur_ws.name == main_ws.name) then
@@ -372,7 +420,33 @@ local function handle_window_open(win)
     end
 
     if is_on_main then
+        if fresh_win.floating then
+            return
+        end
+
         local masters = M.get_workspace_windows(main_ws, "recent")
+        local is_child_of_master = false
+        if #masters > 0 and fresh_win.pid then
+            for _, mw in ipairs(masters) do
+                if mw.address ~= fresh_win.address and mw.pid and mw.pid == fresh_win.pid then
+                    is_child_of_master = true
+                    break
+                end
+            end
+        end
+
+        if is_child_of_master then
+            -- Secondary window spawned by master app: move it to slave monitor
+            hl.dispatch(hl.dsp.window.move({
+                workspace = sec_ws.id,
+                silent = false,
+                window = fresh_win,
+            }))
+            hl.dispatch(hl.dsp.focus({ window = fresh_win }))
+            return
+        end
+
+        -- New master application on main_ws: demote existing master window(s) to sec_ws
         for _, existing in ipairs(masters) do
             if existing.address ~= fresh_win.address then
                 hl.dispatch(hl.dsp.window.move({
@@ -387,7 +461,7 @@ local function handle_window_open(win)
 end
 
 function M.on_window_open(win)
-    if not win or win.floating then return end
+    if not win then return end
 
     if hl.timer then
         hl.timer(function()
