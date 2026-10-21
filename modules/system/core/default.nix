@@ -19,13 +19,19 @@
       tuned.enable = true;
       fwupd.enable = true;
     };
-    programs.zsh.enable = true;
 
     nixpkgs.config.allowUnfree = true;
 
-    programs.git = {
-      enable = true;
-      config.safe.directory = [ "/etc/nixos" ];
+    programs = {
+      appimage = {
+        enable = true;
+        binfmt = true;
+      };
+      zsh.enable = true;
+      git = {
+        enable = true;
+        config.safe.directory = [ "/etc/nixos" ];
+      };
     };
 
     system.stateVersion = "26.05";
