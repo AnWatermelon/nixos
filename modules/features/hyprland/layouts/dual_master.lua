@@ -1,11 +1,49 @@
 local M = {}
 
 M.config = {
-    main_monitor_name = "DP-3",
+    enabled = true,
+    main_monitor_name = nil,
     single_monitor_master_ratio = 0.55,
 }
 
+function M.set_main_monitor(name)
+    M.config.main_monitor_name = name
+end
+
+function M.load_display_config()
+    local ok, display_cfg = pcall(require, "configs/display")
+    if ok and type(display_cfg) == "table" then
+        if display_cfg.main_monitor then
+            M.config.main_monitor_name = display_cfg.main_monitor
+        elseif display_cfg.main_monitor_name then
+            M.config.main_monitor_name = display_cfg.main_monitor_name
+        end
+        if display_cfg.dual_master ~= nil then
+            M.config.enabled = display_cfg.dual_master
+        elseif display_cfg.enabled ~= nil then
+            M.config.enabled = display_cfg.enabled
+        end
+    end
+    if not M.config.main_monitor_name and _G.main_monitor then
+        M.config.main_monitor_name = _G.main_monitor
+    end
+end
+
+M.load_display_config()
+
+function M.is_available()
+    if M.config.enabled == false then
+        return false
+    end
+    local topo = M.get_topology()
+    return topo.count >= 2 and topo.secondary ~= nil
+end
+
 function M.get_topology()
+    if not M.config.main_monitor_name then
+        M.load_display_config()
+    end
+
     local monitors = hl.get_monitors()
     if #monitors == 0 then return { count = 0 } end
 
@@ -437,6 +475,11 @@ local layout_definition = {
     name = "dual_master",
     display_name = "Dual-Monitor Master",
     engine = "lua:dual_master",
+
+    is_available = function(self)
+        return M.is_available()
+    end,
+    unavailable_reason = "Dual-Monitor Master requires at least 2 monitors",
 
     init = function(self)
         hl.layout.register("dual_master", {

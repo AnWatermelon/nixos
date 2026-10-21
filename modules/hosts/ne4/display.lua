@@ -5,3 +5,7 @@ hl.monitor({
   scale = "auto",
   cm = "auto",
 })
+
+return {
+  main_monitor = "DP-3",
+}

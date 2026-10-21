@@ -4,3 +4,7 @@ hl.monitor({
 	position = "auto",
 	scale = "auto",
 })
+
+return {
+	main_monitor = nil,
+}

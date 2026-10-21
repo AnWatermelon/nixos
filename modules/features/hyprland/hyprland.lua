@@ -42,6 +42,11 @@ require("configs/UserAnimations")
 require("configs/windowrules")
 
 -- ============================================
+-- MONITORS & DISPLAYS (modular file)
+-- ============================================
+require("configs/display")
+
+-- ============================================
 -- LAYOUTS & LAYOUT MANAGER
 -- ============================================
 require("layouts")
@@ -81,8 +86,6 @@ require("configs/input")
 -- KEYBINDS (modular file)
 -- ============================================
 require("configs/keybinds")
-
-require("configs/display")
 
 -- For Noctalia Color templates. noctalia.lua is rendered at runtime by the
 -- noctalia daemon, so it is absent on a fresh machine — guard the require or
