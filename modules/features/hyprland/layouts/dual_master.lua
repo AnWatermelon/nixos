@@ -87,6 +87,46 @@ function M.get_topology()
     }
 end
 
+local function should_remain_floating(win)
+    if not win then return false end
+    if win.tags then
+        local tag_str = type(win.tags) == "table" and table.concat(win.tags, " ") or tostring(win.tags)
+        if tag_str:find("file_chooser") or tag_str:find("settings") or tag_str:find("viewer") then
+            return true
+        end
+    end
+    local class = (win.class or ""):lower()
+    local title = win.title or ""
+    local title_lower = title:lower()
+    local init_title = (win.initial_title or ""):lower()
+    local init_class = (win.initial_class or ""):lower()
+
+    if class:find("xdg%-desktop%-portal") or class:find("polkit") or class:find("pinentry") then
+        return true
+    end
+    if title_lower:find("save as") or title_lower:find("save a file") or title_lower:find("pick files") or title_lower:find("open files")
+       or init_title:find("save as") or init_title:find("save a file") or init_title:find("pick files") or init_title:find("open files") then
+        return true
+    end
+
+    -- XWayland dropdown menus, context menus, tooltips, and popup helpers
+    if win.xwayland then
+        -- Untitled XWayland subwindows are dropdowns, context menus, or popups
+        if title == "" or title == "^$" or not win.title or title:match("^%s*$") ~= nil
+           or init_title == "" or init_title == "^$" or not win.initial_title or init_title:match("^%s*$") ~= nil then
+            return true
+        end
+        -- Steam-specific notifications and popups
+        if (class:find("steam") or init_class:find("steam")) then
+            if title_lower:find("notificationtoasts") or init_title:find("notificationtoasts") then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 function M.get_workspace_windows(ws, sort_mode)
     if not ws then return {} end
     local ws_id = ws.id
@@ -94,7 +134,7 @@ function M.get_workspace_windows(ws, sort_mode)
     local wins = {}
 
     for _, w in ipairs(hl.get_windows()) do
-        if not w.floating and w.mapped and not w.hidden then
+        if not w.floating and not should_remain_floating(w) and w.mapped and not w.hidden then
             if w.workspace and (w.workspace.id == ws_id or w.workspace.name == ws_name) then
                 table.insert(wins, w)
             end
@@ -309,25 +349,6 @@ function M.toggle_focus()
     end
 end
 
-local function should_remain_floating(win)
-    if not win then return false end
-    if win.tags then
-        local tag_str = type(win.tags) == "table" and table.concat(win.tags, " ") or tostring(win.tags)
-        if tag_str:find("file_chooser") or tag_str:find("settings") or tag_str:find("viewer") then
-            return true
-        end
-    end
-    local class = win.class or ""
-    local title = win.title or ""
-    if class:find("xdg%-desktop%-portal") or class:find("polkit") or class:find("pinentry") then
-        return true
-    end
-    if title:find("Save As") or title:find("Save a File") or title:find("Pick Files") or title:find("Open Files") then
-        return true
-    end
-    return false
-end
-
 local function handle_window_open(win)
     local topo = M.get_topology()
     if topo.count < 2 or not topo.secondary then return end
@@ -346,6 +367,24 @@ local function handle_window_open(win)
     end
 
     if not fresh_win or not fresh_win.mapped or fresh_win.hidden then
+        return
+    end
+
+    -- If the window is a floating dialog, picker, or popup/dropdown menu, keep it floating and untouched
+    if should_remain_floating(fresh_win) then
+        if fresh_win.fullscreen and fresh_win.fullscreen ~= 0 then
+            hl.dispatch(hl.dsp.window.fullscreen({
+                mode = "fullscreen",
+                action = "unset",
+                window = fresh_win,
+            }))
+        end
+        if not fresh_win.floating then
+            hl.dispatch(hl.dsp.window.float({
+                action = "set",
+                window = fresh_win,
+            }))
+        end
         return
     end
 
@@ -420,10 +459,6 @@ local function handle_window_open(win)
     end
 
     if is_on_main then
-        if fresh_win.floating then
-            return
-        end
-
         local masters = M.get_workspace_windows(main_ws, "recent")
         local is_child_of_master = false
         if #masters > 0 and fresh_win.pid then
@@ -442,7 +477,18 @@ local function handle_window_open(win)
                 silent = false,
                 window = fresh_win,
             }))
+            if fresh_win.floating and not should_remain_floating(fresh_win) then
+                hl.dispatch(hl.dsp.window.float({
+                    action = "unset",
+                    window = fresh_win,
+                }))
+            end
             hl.dispatch(hl.dsp.focus({ window = fresh_win }))
+            return
+        end
+
+        -- Standalone floating windows on main_ws should remain floating without demoting master
+        if fresh_win.floating then
             return
         end
 
@@ -522,15 +568,31 @@ local function tile_dwindle(targets, area)
 end
 
 local function recalculate(ctx)
-    local n = #ctx.targets
-    if n == 0 then return end
-
     local area = ctx.area
     local topo = M.get_topology()
 
+    -- Filter out targets that should remain floating or are already floating (popups, dropdowns, dialogs)
+    local valid_targets = {}
+    for _, target in ipairs(ctx.targets) do
+        local w = target.window
+        if w and (w.floating or should_remain_floating(w)) then
+            if not w.floating then
+                hl.dispatch(hl.dsp.window.float({
+                    action = "set",
+                    window = w,
+                }))
+            end
+        else
+            table.insert(valid_targets, target)
+        end
+    end
+
+    local n = #valid_targets
+    if n == 0 then return end
+
     if topo.count < 2 or not topo.secondary then
         if n == 1 then
-            ctx.targets[1]:place(area)
+            valid_targets[1]:place(area)
             return
         end
 
@@ -539,7 +601,7 @@ local function recalculate(ctx)
         local slave_w = area.w - master_w
         local slave_x = area.x + master_w
 
-        ctx.targets[1]:place({
+        valid_targets[1]:place({
             x = area.x,
             y = area.y,
             w = master_w,
@@ -548,7 +610,7 @@ local function recalculate(ctx)
 
         local slave_targets = {}
         for i = 2, n do
-            table.insert(slave_targets, ctx.targets[i])
+            table.insert(slave_targets, valid_targets[i])
         end
 
         tile_dwindle(slave_targets, {
@@ -564,7 +626,7 @@ local function recalculate(ctx)
     local is_main_monitor = (target_mon and target_mon.name == topo.main.name)
 
     if is_main_monitor then
-        for _, target in ipairs(ctx.targets) do
+        for _, target in ipairs(valid_targets) do
             target:place({
                 x = area.x,
                 y = area.y,
@@ -573,7 +635,7 @@ local function recalculate(ctx)
             })
         end
     else
-        tile_dwindle(ctx.targets, area)
+        tile_dwindle(valid_targets, area)
     end
 end
 

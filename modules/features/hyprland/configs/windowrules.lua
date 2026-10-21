@@ -70,6 +70,42 @@ hl.window_rule({
 	no_focus = true,
 })
 
+-- Fix Steam dropdown menus and popups
+hl.window_rule({
+	name = "steam-popups",
+	match = {
+		class = "^(steam)$",
+		title = "^$",
+		xwayland = true,
+	},
+	float = true,
+	stay_focused = true,
+	min_size = { 1, 1 },
+})
+
+hl.window_rule({
+	name = "steam-popups-initial",
+	match = {
+		class = "^(steam)$",
+		initial_title = "^$",
+		xwayland = true,
+	},
+	float = true,
+	stay_focused = true,
+	min_size = { 1, 1 },
+})
+
+-- Fix Steam notification toasts
+hl.window_rule({
+	name = "steam-notificationtoasts",
+	match = {
+		class = "^(steam)$",
+		title = "^(notificationtoasts.*)$",
+		xwayland = true,
+	},
+	float = true,
+})
+
 --------------------------
 -- DIALOGUES / POP-UPS
 --------------------------
