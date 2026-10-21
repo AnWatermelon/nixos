@@ -305,6 +305,30 @@ function M.on_window_open(win)
     end
 end
 
+local function split_dwindle(area, n)
+    if n <= 1 then return { area } end
+    local a1, a2
+    local n1 = math.ceil(n / 2)
+    local n2 = math.floor(n / 2)
+    if area.w >= area.h then
+        if n == 3 then n1, n2 = 1, 2 end
+        local w1 = math.floor(area.w / 2)
+        a1 = { x = area.x, y = area.y, w = w1, h = area.h }
+        a2 = { x = area.x + w1, y = area.y, w = area.w - w1, h = area.h }
+    else
+        if n == 3 then n1, n2 = 2, 1 end
+        local h1 = math.floor(area.h / 2)
+        a1 = { x = area.x, y = area.y, w = area.w, h = h1 }
+        a2 = { x = area.x, y = area.y + h1, w = area.w, h = area.h - h1 }
+    end
+    local res1 = split_dwindle(a1, n1)
+    local res2 = split_dwindle(a2, n2)
+    local res = {}
+    for _, b in ipairs(res1) do table.insert(res, b) end
+    for _, b in ipairs(res2) do table.insert(res, b) end
+    return res
+end
+
 local function tile_dwindle(targets, area)
     local n = #targets
     if n == 0 then return end
@@ -322,46 +346,10 @@ local function tile_dwindle(targets, area)
         return (a.index or 0) < (b.index or 0)
     end)
 
-    local cur_box = {
-        x = area.x,
-        y = area.y,
-        w = area.w,
-        h = area.h,
-    }
-
-    for i = 1, n do
-        if i == n then
-            targets[i]:place(cur_box)
-        else
-            if cur_box.w >= cur_box.h then
-                local w1 = math.floor(cur_box.w / 2)
-                targets[i]:place({
-                    x = cur_box.x,
-                    y = cur_box.y,
-                    w = w1,
-                    h = cur_box.h,
-                })
-                cur_box = {
-                    x = cur_box.x + w1,
-                    y = cur_box.y,
-                    w = cur_box.w - w1,
-                    h = cur_box.h,
-                }
-            else
-                local h1 = math.floor(cur_box.h / 2)
-                targets[i]:place({
-                    x = cur_box.x,
-                    y = cur_box.y,
-                    w = cur_box.w,
-                    h = h1,
-                })
-                cur_box = {
-                    x = cur_box.x,
-                    y = cur_box.y + h1,
-                    w = cur_box.w,
-                    h = cur_box.h - h1,
-                }
-            end
+    local boxes = split_dwindle(area, n)
+    for i, target in ipairs(targets) do
+        if boxes[i] then
+            target:place(boxes[i])
         end
     end
 end
