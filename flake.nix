@@ -5,6 +5,7 @@
     import-tree.url = "github:vic/import-tree";
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     noctalia = {
       url = "github:noctalia-dev/noctalia";
