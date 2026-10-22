@@ -28,7 +28,7 @@
       ];
 
       systemd.services.rclone-nas = {
-        description = "rclone mount of NAS share with local VFS cache";
+        description = "rclone mount of NAS";
         after = [
           "network-online.target"
           "netbird-wt0.service"
