@@ -21,17 +21,17 @@
 
       config = lib.mkMerge [
         {
-          environment.systemPackages = [
-            pkgs.lunar-client
-            pkgs.heroic
-            pkgs.gale
-            pkgs.prusa-slicer
-            pkgs.antigravity-ide
-            pkgs.spotify-player
-            pkgs.electrum
-            pkgs.libreoffice
-            pkgs.obs-studio
-            pkgs.godot
+          environment.systemPackages = with pkgs; [
+            lunar-client
+            heroic
+            gale
+            prusa-slicer
+            antigravity-ide
+            spotify-player
+            electrum
+            libreoffice
+            obs-studio
+            godot
           ];
         }
         {

@@ -42,9 +42,9 @@
           nixpkgs.config.rocmSupport = true;
           hardware.graphics.enable = true;
           hardware.graphics.enable32Bit = true;
-          environment.systemPackages = [
-            pkgs.rocmPackages.rocm-smi
-            pkgs.rocmPackages.rocminfo
+          environment.systemPackages = with pkgs; [
+            rocmPackages.rocm-smi
+            rocmPackages.rocminfo
           ];
           programs.corectrl.enable = true;
         })

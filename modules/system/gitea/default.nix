@@ -5,7 +5,9 @@
     # root needs the ssh client to git-fetch the Gitea origin (the origin
     # remote is an SSH URL); without this, `git fetch`/`git pull` in
     # /etc/nixos dies with "cannot run ssh: No such file or directory".
-    environment.systemPackages = [ pkgs.openssh ];
+    environment.systemPackages = with pkgs; [
+      openssh
+    ];
 
     sops = {
       age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];

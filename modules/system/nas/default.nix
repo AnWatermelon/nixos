@@ -10,7 +10,9 @@
       imports = [ inputs.sops-nix.nixosModules.sops ];
 
       programs.fuse.enable = true;
-      environment.systemPackages = [ pkgs.rclone ];
+      environment.systemPackages = with pkgs; [
+        rclone
+      ];
 
       sops = {
         age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
