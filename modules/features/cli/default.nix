@@ -11,6 +11,7 @@ in
         flakeCfg.flake.modules.homeManager.git
         flakeCfg.flake.modules.homeManager.ssh
         flakeCfg.flake.modules.homeManager.zsh
+        flakeCfg.flake.modules.homeManager.tmux
       ];
       programs.direnv = {
         enable = true;
