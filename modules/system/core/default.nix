@@ -1,10 +1,18 @@
 {
   flake.modules.nixos.core = _: {
     nix = {
-      settings.experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
+      settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        extra-substituters = [
+          "http://cache.hilton-tech.net:5000?priority=30"
+        ];
+        extra-trusted-public-keys = [
+          "cache.hilton-tech.net-1:W3bx/PWbJiyn95ibErTD9olBiaLaLvwsk7bQMN2hXLo="
+        ];
+      };
 
       gc = {
         automatic = true;
