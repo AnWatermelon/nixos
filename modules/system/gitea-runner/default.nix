@@ -22,9 +22,12 @@
             gzip
             jq
             nix
+            nodejs
           ];
         };
       };
+
+      nix.settings.trusted-users = [ "gitea-runner" ];
 
       systemd.services."gitea-runner-cache".unitConfig.ConditionPathExists = "/var/lib/gitea-runner/token";
 
