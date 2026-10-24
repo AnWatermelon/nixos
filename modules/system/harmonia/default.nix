@@ -4,6 +4,7 @@
     {
       services.harmonia.cache = {
         enable = true;
+        signKeyPaths = [ "/var/lib/harmonia/cache-priv.pem" ];
         settings = {
           bind = "0.0.0.0:5000";
           priority = 50;

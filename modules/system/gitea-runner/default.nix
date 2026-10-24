@@ -4,9 +4,9 @@
     {
       services.gitea-actions-runner = {
         package = pkgs.gitea-actions-runner;
-        instances.cache-builder = {
+        instances.cache = {
           enable = true;
-          name = "cache-builder";
+          name = "cache";
           url = "https://gitea.hilton-tech.net";
           tokenFile = "/var/lib/gitea-runner/token";
           labels = [
@@ -26,7 +26,7 @@
         };
       };
 
-      systemd.services."gitea-runner-cache-builder".unitConfig.ConditionPathExists = "/var/lib/gitea-runner/token";
+      systemd.services."gitea-runner-cache".unitConfig.ConditionPathExists = "/var/lib/gitea-runner/token";
 
       systemd.tmpfiles.rules = [
         "d /var/lib/gitea-runner 0750 root root -"
