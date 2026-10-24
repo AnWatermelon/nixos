@@ -29,7 +29,8 @@
 
       nix.settings.trusted-users = [ "gitea-runner" ];
 
-      systemd.services."gitea-runner-cache".unitConfig.ConditionPathExists = "/var/lib/gitea-runner/token";
+      systemd.services."gitea-runner-cache".unitConfig.ConditionPathExists =
+        "/var/lib/gitea-runner/token";
 
       systemd.tmpfiles.rules = [
         "d /var/lib/gitea-runner 0750 root root -"
