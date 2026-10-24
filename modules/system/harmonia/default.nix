@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.harmonia =
-    { config, lib, ... }:
+    _:
     {
       services.harmonia.cache = {
         enable = true;

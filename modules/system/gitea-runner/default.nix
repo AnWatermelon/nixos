@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.gitea-runner =
-    { config, lib, pkgs, ... }:
+    { pkgs, ... }:
     {
       services.gitea-actions-runner = {
         package = pkgs.gitea-actions-runner;
