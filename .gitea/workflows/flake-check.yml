@@ -1,4 +1,4 @@
-name: Nix Flake Check
+name: CI & Binary Cache
 
 on:
   push:
@@ -7,16 +7,33 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: Flake Check
+    runs-on: native
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v27
-        with:
-          nix_conf: |
-            experimental-features = nix-command flakes
-
       - name: Run nix flake check
         run: nix flake check
+
+  build:
+    name: Build & Cache (${{ matrix.host }})
+    needs: check
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: native
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - cache
+          - fw13p
+          - fw16
+          - minimal
+          - ne4
+          - nixos-test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build system closure
+        run: nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel" --no-link
