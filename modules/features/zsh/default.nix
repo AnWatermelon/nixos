@@ -17,7 +17,7 @@
           lg = "lazygit";
           p = "cd ~/Projects";
           s = "cd ~/shared/Documents/School";
-          nhs = "nh os switch";
+          nhs = "nh os switch --accept-flake-config";
           nfc = "nix fmt && nix flake check";
           tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' --exclude '/home/maxfh/shared' /";
           nbs = "sudo netbird-wt0 status -d";
