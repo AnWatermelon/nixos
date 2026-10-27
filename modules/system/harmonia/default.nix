@@ -6,6 +6,7 @@
       settings = {
         bind = "0.0.0.0:5000";
         priority = 30;
+        enable_compression = false;
       };
     };
 
