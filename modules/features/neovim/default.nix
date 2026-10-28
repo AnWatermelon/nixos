@@ -1,19 +1,52 @@
+{ inputs, ... }:
 {
-  flake.modules.homeManager.neovim =
-    { pkgs, ... }:
+  flake.modules.nixos.neovim =
     {
-      programs.neovim = {
-        enable = true;
-        defaultEditor = true;
-        viAlias = true;
-        vimAlias = true;
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      # init.lua lives in a store directory next to ./lua so the wrapper never
+      # looks at ~/.config/nvim.
+      configDirectory = pkgs.linkFarm "nvim-config" [
+        {
+          name = "init.lua";
+          path = pkgs.writeText "init.lua" ''
+            vim.g.loaded_node_provider = 0
+            vim.g.loaded_perl_provider = 0
+            vim.g.loaded_ruby_provider = 0
+            vim.g.loaded_python3_provider = 0
+            require("config.options")
+            require("plugins")
+          '';
+        }
+        {
+          name = "lua";
+          path = ./lua;
+        }
+      ];
 
-        initLua = ''
-          require("config.options")
-          require("plugins")
-        '';
+      neovim = inputs.nix-wrapper-modules.wrappers.neovim.wrap {
+        inherit pkgs;
 
-        extraPackages = with pkgs; [
+        settings = {
+          config_directory = configDirectory;
+          aliases = [
+            "vi"
+            "vim"
+          ];
+        };
+
+        # HM turned the remote-plugin providers off
+        hosts = {
+          node.nvim-host.enable = false;
+          ruby.nvim-host.enable = false;
+        };
+
+        # nvim's PATH only, not global
+        runtimePkgs = with pkgs; [
           ripgrep
           fd
           git
@@ -34,7 +67,7 @@
           yaml-language-server
         ];
 
-        plugins = with pkgs.vimPlugins; [
+        specs.plugins = with pkgs.vimPlugins; [
           base16-nvim
           blink-cmp
           flash-nvim
@@ -81,8 +114,25 @@
           ))
         ];
       };
+    in
+    {
+      options.my.neovim.package = lib.mkOption {
+        type = lib.types.package;
+        readOnly = true;
+        default = neovim;
+        description = "The wrapped neovim package.";
+      };
 
-      xdg.configFile."nvim/lua".source = ./lua;
-      xdg.configFile."matugen/templates/nvim-base16.lua".source = ./matugen-template.lua;
+      config = {
+        environment = {
+          systemPackages = [ config.my.neovim.package ];
+          sessionVariables = {
+            EDITOR = "nvim";
+            VISUAL = "nvim";
+          };
+        };
+
+        my.dotfiles.files.".config/matugen/templates/nvim-base16.lua".source = ./matugen-template.lua;
+      };
     };
 }

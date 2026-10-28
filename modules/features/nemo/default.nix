@@ -26,9 +26,8 @@ _: {
       ];
 
       # Order sets precedence when several apps handle the same mime type.
-      # TODO(neovim slice): replace pkgs.neovim with the wrapped package.
       my.desktop.defaultApplicationPackages = [
-        pkgs.neovim
+        config.my.neovim.package
         pkgs.libreoffice
         pkgs.vlc
         pkgs.file-roller
