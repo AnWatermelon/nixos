@@ -14,6 +14,7 @@
         ./options.nix
         inputs.self.modules.nixos.steam
         inputs.self.modules.nixos.vivaldi
+        inputs.self.modules.nixos.zen-browser
         inputs.self.modules.nixos.obs
         inputs.self.modules.nixos.greetd
         inputs.self.modules.nixos.xdg
@@ -73,18 +74,20 @@
       pkgs,
       lib,
       config,
+      osConfig,
       ...
     }:
     let
       cfg = config.my.desktop;
     in
     {
+      # Transitional: browser modules now live on the NixOS side.
+      my.desktop.browserCommand = osConfig.my.desktop.browserCommand;
+
       imports = [
         ./options.nix
         inputs.self.modules.homeManager.terminal
         inputs.self.modules.homeManager.discord
-        inputs.self.modules.homeManager.zen-browser
-        inputs.self.modules.homeManager.vivaldi
         inputs.self.modules.homeManager.hyprland
         inputs.self.modules.homeManager.niri
         inputs.self.modules.homeManager.noctalia

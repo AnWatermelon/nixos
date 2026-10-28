@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  flake.modules.homeManager.zen-browser =
+  flake.modules.nixos.zen-browser =
     {
       pkgs,
       lib,
@@ -12,27 +12,22 @@
       zen = inputs.zen-browser.packages.${system}.default;
       desktopFile = "zen.desktop"; # confirmed via `ls .../share/applications/`
     in
-    {
-      imports = [ ../desktop/options.nix ];
+    lib.mkIf (config.my.desktop.browser == "zen") {
+      my.desktop.browserCommand = lib.getExe zen;
 
-      config = lib.mkIf (config.my.desktop.browser == "zen") {
-        home.packages = [ zen ];
-        my.desktop.browserCommand = lib.getExe zen;
+      environment = {
+        systemPackages = [ zen ];
+        sessionVariables.BROWSER = "zen";
+      };
 
-        xdg.mimeApps = {
-          enable = true;
-          defaultApplications = {
-            "text/html" = desktopFile;
-            "application/xhtml+xml" = desktopFile;
-            "application/pdf" = desktopFile;
-            "x-scheme-handler/http" = desktopFile;
-            "x-scheme-handler/https" = desktopFile;
-            "x-scheme-handler/about" = desktopFile;
-            "x-scheme-handler/unknown" = desktopFile;
-          };
-        };
-
-        home.sessionVariables.BROWSER = "zen";
+      xdg.mime.defaultApplications = {
+        "text/html" = desktopFile;
+        "application/xhtml+xml" = desktopFile;
+        "application/pdf" = desktopFile;
+        "x-scheme-handler/http" = desktopFile;
+        "x-scheme-handler/https" = desktopFile;
+        "x-scheme-handler/about" = desktopFile;
+        "x-scheme-handler/unknown" = desktopFile;
       };
     };
 }

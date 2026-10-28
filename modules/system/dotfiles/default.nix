@@ -191,11 +191,15 @@
       };
 
       config = {
-        system.userActivationScripts.dotfiles = ''
-          if [ "$(id -un)" = ${lib.escapeShellArg cfg.user} ]; then
-            ${lib.getExe activate}
-          fi
-        '';
+        system = {
+          userActivationScripts.dotfiles = ''
+            if [ "$(id -un)" = ${lib.escapeShellArg cfg.user} ]; then
+              ${lib.getExe activate}
+            fi
+          '';
+          build.dotfiles = storeTree;
+          build.dotfilesLive = liveTree;
+        };
         environment.systemPackages = lib.mkIf cfg.live [ live ];
       };
     };
