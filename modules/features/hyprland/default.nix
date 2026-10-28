@@ -9,7 +9,7 @@ in
     let
       drmDevices = lib.concatMapStringsSep ":" (
         d: "/dev/dri/${d.name}-card"
-      ) config.my.hardware.gpuDevices;
+      ) config.my.hardware.gpu.devices;
     in
     {
       imports = [
@@ -41,7 +41,8 @@ in
             ]
             keybindsContent;
         "hypr/configs/gpu.lua".text =
-          lib.optionalString (config.my.hardware.gpu == "hybrid" && config.my.hardware.gpuDevices != [ ])
+          lib.optionalString
+            (config.my.hardware.gpu.configuration == "hybrid" && config.my.hardware.gpu.devices != [ ])
             ''
               hl.env("AQ_DRM_DEVICES", "${drmDevices}")
             '';
