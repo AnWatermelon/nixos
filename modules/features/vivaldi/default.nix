@@ -9,6 +9,7 @@
         ExtensionInstallForcelist = [
           "nngceckbapebfimnlniiiahkandclblb;https://clients2.google.com/service/update2/crx" # Bitwarden
           "fcoeoabgfenejglbffodgkkbkcdhcgfn;https://clients2.google.com/service/update2/crx" # Claude
+          "dbepggeogbaibhgnhhndojpepiihcmeb;https://clients2.google.com/service/update2/crx" # Vimium
         ];
         DefaultBrowserSettingEnabled = false;
         PromotionalTabsEnabled = false;
