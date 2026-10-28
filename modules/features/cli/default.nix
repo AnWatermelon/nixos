@@ -3,6 +3,10 @@ let
   flakeCfg = config;
 in
 {
+  flake.modules.nixos.cli = _: {
+    imports = [ ];
+  };
+
   flake.modules.homeManager.cli =
     { pkgs, ... }:
     {

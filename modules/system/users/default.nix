@@ -1,7 +1,10 @@
+{ config, ... }:
 {
   flake.modules.nixos.users =
     { pkgs, ... }:
     {
+      imports = [ config.flake.modules.nixos.dotfiles ];
+
       users.users."maxfh" = {
         isNormalUser = true;
         description = "Max Hilton";

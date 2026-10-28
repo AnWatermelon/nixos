@@ -24,6 +24,7 @@
         { pkgs, ... }:
         {
           my = {
+            dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
             desktop.environment = "hyprland";
             hardware = {
@@ -59,6 +60,7 @@
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
       config.flake.modules.nixos.desktop
+      config.flake.modules.nixos.cli
       config.flake.modules.nixos.hardware
       config.flake.modules.nixos.terminal
       config.flake.modules.nixos.nas

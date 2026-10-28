@@ -1,5 +1,10 @@
+{ inputs, ... }:
 {
   flake.modules.nixos.core = _: {
+    # Ties each generation to the commit it was built from
+    # (`nixos-version --configuration-revision`).
+    system.configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
+
     nix = {
       settings = {
         experimental-features = [
