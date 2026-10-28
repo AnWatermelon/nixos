@@ -3,37 +3,30 @@ let
   flakeCfg = config;
 in
 {
-  flake.modules.nixos.cli = _: {
-    imports = [ flakeCfg.flake.modules.nixos.neovim ];
-  };
-
-  flake.modules.homeManager.cli =
-    { pkgs, ... }:
+  flake.modules.nixos.cli =
+    { config, pkgs, ... }:
     {
       imports = [
-        flakeCfg.flake.modules.homeManager.git
-        flakeCfg.flake.modules.homeManager.ssh
-        flakeCfg.flake.modules.homeManager.zsh
-        flakeCfg.flake.modules.homeManager.tmux
+        flakeCfg.flake.modules.nixos.neovim
+        flakeCfg.flake.modules.nixos.git
+        flakeCfg.flake.modules.nixos.ssh
       ];
       programs.direnv = {
         enable = true;
         nix-direnv.enable = true;
       };
+      # no clean.enable: core's nix.gc keeps 30 days of generations for rollback.
       programs.nh = {
         enable = true;
-        clean.enable = true;
-        clean.extraArgs = "--keep-since 4d --keep 3";
-        flake = "/home/maxfh/Projects/nixos";
+        flake = config.my.dotfiles.flakePath;
       };
-      home.packages = with pkgs; [
+      fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
+      users.users.maxfh.packages = with pkgs; [
         fastfetch
         btop
-        nerd-fonts.jetbrains-mono
         lazygit
         ncdu
         nmap
-        direnv
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli
         fzf
         nix-search-tv
@@ -42,4 +35,11 @@ in
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
       ];
     };
+
+  flake.modules.homeManager.cli = _: {
+    imports = [
+      flakeCfg.flake.modules.homeManager.zsh
+      flakeCfg.flake.modules.homeManager.tmux
+    ];
+  };
 }
