@@ -68,10 +68,4 @@
         })
       ];
     };
-
-  flake.modules.homeManager.hardware =
-    { ... }:
-    {
-      imports = [ ./options.nix ];
-    };
 }

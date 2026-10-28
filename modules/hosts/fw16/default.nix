@@ -68,26 +68,6 @@
       config.flake.modules.nixos.u2f
 
       inputs.nixos-hardware.nixosModules.framework-16-7040-amd
-      inputs.home-manager.nixosModules.home-manager
-      {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = { inherit inputs; };
-          sharedModules = [
-            ({ osConfig, ... }: {
-              my = {
-                hardware = osConfig.my.hardware;
-              };
-            })
-          ];
-          users.maxfh.imports = [
-            config.flake.modules.homeManager.base
-            config.flake.modules.homeManager.cli
-            config.flake.modules.homeManager.desktop
-          ];
-        };
-      }
     ];
   };
 }

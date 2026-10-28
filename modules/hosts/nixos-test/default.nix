@@ -51,25 +51,6 @@
       config.flake.modules.nixos.hardware
       config.flake.modules.nixos.terminal
       config.flake.modules.nixos.nas
-
-      inputs.home-manager.nixosModules.home-manager
-      {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = { inherit inputs; };
-          sharedModules = [
-            ({ osConfig, ... }: {
-              my.hardware = osConfig.my.hardware;
-            })
-          ];
-          users.maxfh.imports = [
-            config.flake.modules.homeManager.base
-            config.flake.modules.homeManager.cli
-            config.flake.modules.homeManager.desktop
-          ];
-        };
-      }
     ];
   };
 }

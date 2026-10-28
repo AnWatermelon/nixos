@@ -138,18 +138,6 @@
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
-
-      inputs.home-manager.nixosModules.home-manager
-      {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = { inherit inputs; };
-          users.maxfh.imports = [
-            config.flake.modules.homeManager.base
-          ];
-        };
-      }
     ];
   };
 

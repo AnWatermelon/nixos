@@ -11,7 +11,6 @@
     {
       config,
       lib,
-      options,
       pkgs,
       ...
     }:
@@ -54,15 +53,13 @@
           ln -sfn ${storeTree} "$state/current.new"
           mv -Tf "$state/current.new" "$state/current"
 
-          ${lib.optionalString (!options ? home-manager) ''
-            # Links left behind by home-manager would shadow system-wide config.
-            find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -delete
-            for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
-              if [ -d "$dir" ]; then
-                find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -delete
-              fi
-            done
-          ''}
+          # Links left behind by home-manager would shadow system-wide config.
+          find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -delete
+          for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
+            if [ -d "$dir" ]; then
+              find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -delete
+            fi
+          done
 
           while IFS= read -r target; do
             dest="$HOME/$target"

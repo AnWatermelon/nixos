@@ -104,11 +104,4 @@
         })
       ];
     };
-  # Transitional: hosts still import this until home-manager is removed.
-  flake.modules.homeManager.desktop = {
-    imports = [
-      ./options.nix
-      ../hardware/options.nix # hosts still forward my.hardware
-    ];
-  };
 }

@@ -37,7 +37,4 @@ in
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
       ];
     };
-
-  # Transitional: hosts still import this until home-manager is removed.
-  flake.modules.homeManager.cli = _: { };
 }
