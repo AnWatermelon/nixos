@@ -1,8 +1,8 @@
 {
-  flake.modules.homeManager.discord =
+  flake.modules.nixos.discord =
     { pkgs, ... }:
     {
-      home.packages = with pkgs; [
+      users.users.maxfh.packages = with pkgs; [
         discord
         betterdiscordctl
       ];

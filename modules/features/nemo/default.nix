@@ -1,5 +1,5 @@
 _: {
-  flake.modules.homeManager.nemo =
+  flake.modules.nixos.nemo =
     {
       pkgs,
       config,
@@ -7,7 +7,7 @@ _: {
       ...
     }:
     lib.mkIf (config.my.desktop.environment == "hyprland") {
-      home.packages = [
+      users.users.maxfh.packages = [
         pkgs.nemo-with-extensions
         pkgs.file-roller
         pkgs.vlc
@@ -17,19 +17,22 @@ _: {
         pkgs.unar
       ];
 
-      dconf.settings."org/cinnamon/desktop/applications/terminal" = {
-        exec = baseNameOf (lib.getExe config.my.terminal);
-      };
+      programs.dconf.profiles.user.databases = [
+        {
+          settings."org/cinnamon/desktop/applications/terminal" = {
+            exec = baseNameOf (lib.getExe config.my.terminal);
+          };
+        }
+      ];
 
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplicationPackages = [
-          config.programs.neovim.finalPackage
-          pkgs.libreoffice
-          pkgs.vlc
-          pkgs.file-roller
-          pkgs.nemo
-        ];
-      };
+      # Order sets precedence when several apps handle the same mime type.
+      # TODO(neovim slice): replace pkgs.neovim with the wrapped package.
+      my.desktop.defaultApplicationPackages = [
+        pkgs.neovim
+        pkgs.libreoffice
+        pkgs.vlc
+        pkgs.file-roller
+        pkgs.nemo
+      ];
     };
 }

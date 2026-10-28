@@ -24,6 +24,9 @@
         inputs.self.modules.nixos.ghostty
         inputs.self.modules.nixos.hyprland
         inputs.self.modules.nixos.noctalia
+        inputs.self.modules.nixos.mimeapps
+        inputs.self.modules.nixos.discord
+        inputs.self.modules.nixos.nemo
       ];
 
       config = lib.mkMerge [
@@ -43,7 +46,33 @@
           ];
         }
         {
-          programs.dconf.enable = true;
+          environment = {
+            systemPackages = [ pkgs.adw-gtk3 ];
+            etc = {
+              "xdg/gtk-3.0/settings.ini".text = ''
+                [Settings]
+                gtk-theme-name=adw-gtk3-dark
+              '';
+              "xdg/gtk-4.0/settings.ini".text = ''
+                [Settings]
+              '';
+              "gtk-2.0/gtkrc".text = ''
+                gtk-theme-name = "adw-gtk3-dark"
+              '';
+            };
+            sessionVariables.GTK2_RC_FILES = "/etc/gtk-2.0/gtkrc";
+          };
+          programs.dconf = {
+            enable = true;
+            profiles.user.databases = [
+              {
+                settings."org/gnome/desktop/interface" = {
+                  color-scheme = "prefer-dark";
+                  gtk-theme = "adw-gtk3-dark";
+                };
+              }
+            ];
+          };
           services = {
             gvfs.enable = true;
             udisks2.enable = true;
@@ -75,21 +104,12 @@
       ];
     };
   flake.modules.homeManager.desktop =
-    {
-      pkgs,
-      lib,
-      config,
-      osConfig,
-      ...
-    }:
-    let
-      cfg = config.my.desktop;
-    in
+    { osConfig, ... }:
     {
       # Transitional: browser modules now live on the NixOS side.
       my.desktop.browserCommand = osConfig.my.desktop.browserCommand;
 
-      # Transitional: niri and nemo still read the terminal from HM.
+      # Transitional: niri still reads the terminal from HM.
       my.terminal = osConfig.my.terminal;
 
       imports = [
@@ -101,26 +121,7 @@
             description = "Default terminal";
           };
         }
-        inputs.self.modules.homeManager.discord
         inputs.self.modules.homeManager.niri
-        inputs.self.modules.homeManager.nemo
       ];
-
-      gtk = {
-        enable = true;
-        theme = {
-          name = "adw-gtk3-dark";
-          package = pkgs.adw-gtk3;
-        };
-      };
-
-      home.packages = lib.optionals (cfg.environment == "hyprland") [ pkgs.hyprland ];
-
-      dconf.settings = {
-        "org/gnome/desktop/interface" = {
-          color-scheme = "prefer-dark";
-          gtk-theme = "adw-gtk3-dark";
-        };
-      };
     };
 }
