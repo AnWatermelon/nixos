@@ -1,11 +1,9 @@
 local manager = require("layouts/manager")
 
 local mainMod = "SUPER"
-local terminal = "kitty"
+local apps = require("nix/apps")
 local fileManager = "nemo"
 local ipc = "noctalia msg"
-local browser = "zen"
-local scripts = "sh ~/.config/scripts/"
 
 hl.bind(mainMod .. " + Backspace", function()
 	manager.cycle_layout(1)
@@ -59,7 +57,7 @@ hl.bind(mainMod .. " + backslash", function()
 	manager.dispatch_action("toggle_split")
 end)
 
-hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
+hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(apps.terminal))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd(ipc .. " panel-toggle session"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_raw(fileManager))
@@ -67,7 +65,7 @@ hl.bind(mainMod .. " + Space", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + Super_L", hl.dsp.exec_cmd(ipc .. " panel-toggle launcher"), { release = true })
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(ipc .. " config-reload"))
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(apps.browser))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(ipc .. " screenshot-region"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(ipc .. " panel-toggle wallpaper"))
@@ -77,7 +75,7 @@ hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center"
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(ipc .. " settings-toggle"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(ipc .. " panel-open maxfh/noctagent:chat"))
-hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_raw(scripts .. "toggle_audio.sh"))
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_raw("toggle_audio"))
 hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd(ipc .. " panel-toggle control-center system"))
 hl.bind("ALT + TAB", hl.dsp.exec_cmd(ipc .. " window-switcher"))
 

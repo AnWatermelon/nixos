@@ -20,11 +20,16 @@
         inputs.self.modules.nixos.xdg
         inputs.self.modules.nixos.flatpak
         inputs.self.modules.nixos.scripts
+        inputs.self.modules.nixos.kitty
+        inputs.self.modules.nixos.ghostty
+        inputs.self.modules.nixos.hyprland
+        inputs.self.modules.nixos.noctalia
       ];
 
       config = lib.mkMerge [
         {
           environment.systemPackages = with pkgs; [
+            config.my.terminal
             lunar-client
             heroic
             gale
@@ -84,13 +89,20 @@
       # Transitional: browser modules now live on the NixOS side.
       my.desktop.browserCommand = osConfig.my.desktop.browserCommand;
 
+      # Transitional: niri and nemo still read the terminal from HM.
+      my.terminal = osConfig.my.terminal;
+
       imports = [
         ./options.nix
-        inputs.self.modules.homeManager.terminal
+        ../hardware/options.nix # transitional: hosts still forward my.hardware
+        {
+          options.my.terminal = lib.mkOption {
+            type = lib.types.package;
+            description = "Default terminal";
+          };
+        }
         inputs.self.modules.homeManager.discord
-        inputs.self.modules.homeManager.hyprland
         inputs.self.modules.homeManager.niri
-        inputs.self.modules.homeManager.noctalia
         inputs.self.modules.homeManager.nemo
       ];
 

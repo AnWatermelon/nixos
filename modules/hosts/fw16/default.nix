@@ -27,6 +27,7 @@
             dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
             desktop.environment = "hyprland";
+            hyprland.displayConfig = ./displays.lua;
             hardware = {
               laptop = true;
               gpu = {
@@ -77,7 +78,6 @@
             ({ osConfig, ... }: {
               my = {
                 hardware = osConfig.my.hardware;
-                hyprland.displayConfig = ./displays.lua;
               };
             })
           ];
@@ -85,7 +85,6 @@
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
             config.flake.modules.homeManager.desktop
-            ({ pkgs, ... }: { my.terminal = pkgs.kitty; })
           ];
         };
       }

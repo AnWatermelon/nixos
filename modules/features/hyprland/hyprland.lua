@@ -64,7 +64,7 @@ hl.config({
 -- ============================================
 -- RENDER
 -- ============================================
-require("configs/gpu")
+require("nix/gpu")
 hl.config({
 	render = {
 		new_render_scheduling = true,

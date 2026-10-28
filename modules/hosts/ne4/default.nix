@@ -25,6 +25,7 @@
           dotfiles.live = true;
           kernel.cachyos = "bore-zen4";
           desktop.environment = "hyprland";
+          hyprland.displayConfig = ./display.lua;
           hardware = {
             laptop = false;
             gpu = {
@@ -61,7 +62,6 @@
             ({ osConfig, ... }: {
               my = {
                 hardware = osConfig.my.hardware;
-                hyprland.displayConfig = ./display.lua;
               };
             })
           ];
