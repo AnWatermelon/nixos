@@ -61,6 +61,11 @@
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = { inherit inputs; };
+          sharedModules = [
+            ({ osConfig, ... }: {
+              my.hardware = osConfig.my.hardware;
+            })
+          ];
           users.maxfh.imports = [
             config.flake.modules.homeManager.base
             config.flake.modules.homeManager.cli
