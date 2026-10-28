@@ -1,7 +1,6 @@
 {
   config,
   inputs,
-  pkgs,
   ...
 }:
 {
@@ -21,19 +20,22 @@
         };
       }
 
-      {
-        my = {
-          kernel.cachyos = "bore";
-          desktop.environment = "hyprland";
-          hardware = {
-            laptop = true;
-            gpu = {
-              configuration = "igpu";
+      (
+        { pkgs, ... }:
+        {
+          my = {
+            kernel.cachyos = "bore";
+            desktop.environment = "hyprland";
+            hardware = {
+              laptop = true;
+              gpu = {
+                configuration = "igpu";
+              };
             };
+            terminal = pkgs.kitty;
           };
-          terminal = pkgs.kitty;
-        };
-      }
+        }
+      )
 
       config.flake.modules.nixos.boot
       config.flake.modules.nixos.kernel

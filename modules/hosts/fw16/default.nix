@@ -1,7 +1,6 @@
 {
   config,
   inputs,
-  pkgs,
   ...
 }:
 {
@@ -21,30 +20,33 @@
         };
       }
 
-      {
-        my = {
-          kernel.cachyos = "bore-zen4";
-          desktop.environment = "hyprland";
-          hardware = {
-            laptop = true;
-            gpu = {
-              configuration = "hybrid";
-              devices = [
-                {
-                  name = "igpu";
-                  pciId = "0000:c4:00.0";
-                }
-                {
-                  name = "dgpu";
-                  pciId = "0000:03:00.0";
-                }
-              ];
-              vendor = "amd";
+      (
+        { pkgs, ... }:
+        {
+          my = {
+            kernel.cachyos = "bore-zen4";
+            desktop.environment = "hyprland";
+            hardware = {
+              laptop = true;
+              gpu = {
+                configuration = "hybrid";
+                devices = [
+                  {
+                    name = "igpu";
+                    pciId = "0000:c4:00.0";
+                  }
+                  {
+                    name = "dgpu";
+                    pciId = "0000:03:00.0";
+                  }
+                ];
+                vendor = "amd";
+              };
             };
+            terminal = pkgs.kitty;
           };
-          terminal = pkgs.kitty;
-        };
-      }
+        }
+      )
 
       config.flake.modules.nixos.boot
       config.flake.modules.nixos.kernel
