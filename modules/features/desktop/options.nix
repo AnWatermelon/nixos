@@ -4,8 +4,9 @@
     browser = lib.mkOption {
       type = lib.types.enum [
         "zen"
+        "vivaldi"
       ];
-      default = "zen";
+      default = "vivaldi";
       description = "Default web browser";
     };
     browserCommand = lib.mkOption {
