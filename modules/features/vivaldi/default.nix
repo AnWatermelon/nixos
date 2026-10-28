@@ -8,13 +8,10 @@
       environment.etc."vivaldi/policies/managed/nix.json".text = builtins.toJSON {
         ExtensionInstallForcelist = [
           "nngceckbapebfimnlniiiahkandclblb;https://clients2.google.com/service/update2/crx" # Bitwarden
-          "fcoeoabgfenejglbffodgkkbkcdhcgfn;https://clients2.google.com/service/update2/crx" # Claude
           "dbepggeogbaibhgnhhndojpepiihcmeb;https://clients2.google.com/service/update2/crx" # Vimium
         ];
         DefaultBrowserSettingEnabled = false;
         PromotionalTabsEnabled = false;
-        "3rdparty".extensions.nngceckbapebfimnlniiiahkandclblb.environment.base =
-          "https://bitwarden.hilton-tech.net";
       };
     };
 
