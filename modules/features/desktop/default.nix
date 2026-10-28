@@ -27,6 +27,7 @@
         inputs.self.modules.nixos.mimeapps
         inputs.self.modules.nixos.discord
         inputs.self.modules.nixos.nemo
+        inputs.self.modules.nixos.niri
       ];
 
       config = lib.mkMerge [
@@ -103,25 +104,11 @@
         })
       ];
     };
-  flake.modules.homeManager.desktop =
-    { osConfig, ... }:
-    {
-      # Transitional: browser modules now live on the NixOS side.
-      my.desktop.browserCommand = osConfig.my.desktop.browserCommand;
-
-      # Transitional: niri still reads the terminal from HM.
-      my.terminal = osConfig.my.terminal;
-
-      imports = [
-        ./options.nix
-        ../hardware/options.nix # transitional: hosts still forward my.hardware
-        {
-          options.my.terminal = lib.mkOption {
-            type = lib.types.package;
-            description = "Default terminal";
-          };
-        }
-        inputs.self.modules.homeManager.niri
-      ];
-    };
+  # Transitional: hosts still import this until home-manager is removed.
+  flake.modules.homeManager.desktop = {
+    imports = [
+      ./options.nix
+      ../hardware/options.nix # hosts still forward my.hardware
+    ];
+  };
 }
