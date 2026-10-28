@@ -1,25 +1,41 @@
+{ inputs, ... }:
 {
-  flake.modules.homeManager.tmux =
-    { pkgs, ... }:
+  flake.modules.nixos.tmux =
+    { config, pkgs, ... }:
     {
-      programs.tmux = {
+      imports = [
+        (inputs.nix-wrapper-modules.lib.getInstallModule {
+          name = "tmux";
+          value = inputs.nix-wrapper-modules.wrapperModules.tmux;
+        })
+      ];
+
+      wrappers.tmux = {
         enable = true;
-        shell = "${pkgs.zsh}/bin/zsh";
+        # the zsh wrapper, so tmux panes get the configured shell
+        shell = "${config.wrappers.zsh.wrapper}/bin/zsh";
         terminal = "screen-256color";
         baseIndex = 1;
+        secureSocket = true;
+        # match the home-manager baseline
+        mouse = false;
+        clock24 = false;
+        allowPassthrough = false;
+        disableConfirmationPrompt = false;
+        updateEnvironment = [ ];
 
         plugins = with pkgs.tmuxPlugins; [
-          sensible
-          resurrect
-          continuum
-          yank
-          vim-tmux-navigator
-          cpu
-          battery
-          prefix-highlight
+          { plugin = sensible; }
+          { plugin = resurrect; }
+          { plugin = continuum; }
+          { plugin = yank; }
+          { plugin = vim-tmux-navigator; }
+          { plugin = cpu; }
+          { plugin = battery; }
+          { plugin = prefix-highlight; }
         ];
 
-        extraConfig = ''
+        configAfter = ''
           # Optional customizations
           set -g @continuum-restore 'on'
 

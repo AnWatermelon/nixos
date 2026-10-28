@@ -10,6 +10,8 @@ in
         flakeCfg.flake.modules.nixos.neovim
         flakeCfg.flake.modules.nixos.git
         flakeCfg.flake.modules.nixos.ssh
+        flakeCfg.flake.modules.nixos.zsh
+        flakeCfg.flake.modules.nixos.tmux
       ];
       programs.direnv = {
         enable = true;
@@ -36,10 +38,6 @@ in
       ];
     };
 
-  flake.modules.homeManager.cli = _: {
-    imports = [
-      flakeCfg.flake.modules.homeManager.zsh
-      flakeCfg.flake.modules.homeManager.tmux
-    ];
-  };
+  # Transitional: hosts still import this until home-manager is removed.
+  flake.modules.homeManager.cli = _: { };
 }

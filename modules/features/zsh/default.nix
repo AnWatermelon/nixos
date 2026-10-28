@@ -1,23 +1,35 @@
+{ inputs, ... }:
 {
-  flake.modules.homeManager.zsh =
-    { pkgs, lib, ... }:
+  flake.modules.nixos.zsh =
     {
-      programs.zsh = {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
+    let
+      zshWrapper = config.wrappers.zsh.wrapper;
+    in
+    {
+      imports = [
+        (inputs.nix-wrapper-modules.lib.getInstallModule {
+          name = "zsh";
+          value = inputs.nix-wrapper-modules.wrapperModules.zsh;
+        })
+      ];
+
+      wrappers.zsh = {
         enable = true;
-        autocd = true;
-        enableCompletion = false;
-        localVariables = {
-          DISABLE_MAGIC_FUNCTIONS = "true";
-          KEYTIMEOUT = "1";
-        };
-        shellAliases = {
+        # hm-session-vars no longer exists; /etc/zshenv carries the environment
+        hmSessionVariables = null;
+
+        zshAliases = {
           ls = "ls --hyperlink=auto";
           sp = "spotify_player";
           cfg = "cd ~/.config/";
           lg = "lazygit";
           p = "cd ~/Projects";
           s = "cd ~/shared/Documents/School";
-          nhs = "nh os switch --accept-flake-config";
           nfc = "nix fmt && nix flake check";
           tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' --exclude '/home/maxfh/shared' /";
           nbs = "sudo netbird-wt0 status -d";
@@ -25,13 +37,19 @@
           nbu = "sudo netbird-wt0 up";
           nbr = "sudo netbird-wt0 down && sudo netbird-wt0 up";
         };
-        initContent = lib.mkMerge [
-          (lib.mkOrder 200 ''
+
+        zshrc.content = lib.concatStringsSep "\n" [
+          ''
             if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
               source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
             fi
-          '')
-          (lib.mkOrder 600 ''
+
+            typeset -U path cdpath fpath manpath
+
+            DISABLE_MAGIC_FUNCTIONS="true"
+            KEYTIMEOUT="1"
+          ''
+          ''
             autoload -Uz compinit
             local zcompdump="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
             mkdir -p "''${zcompdump:h}"
@@ -40,8 +58,8 @@
             else
               compinit -d "$zcompdump"
             fi
-          '')
-          (lib.mkOrder 700 ''
+          ''
+          ''
             bindkey -v
 
             _set_cursor() {
@@ -72,15 +90,71 @@
             bindkey '^P' up-history
             bindkey '^N' down-history
             bindkey -M command '^[' send-break
-          '')
-          (lib.mkOrder 800 ''
+          ''
+          ''
             source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
             [[ ! -f ~/.config/zsh/p10k.zsh ]] || source ~/.config/zsh/p10k.zsh
-          '')
+          ''
+          # set after /etc/zshrc, which sets its own history defaults
+          ''
+            HISTSIZE="10000"
+            SAVEHIST="10000"
+
+            HISTFILE="/home/maxfh/.zsh_history"
+            mkdir -p "$(dirname "$HISTFILE")"
+
+            set_opts=(
+              HIST_FCNTL_LOCK HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY autocd
+              NO_APPEND_HISTORY NO_EXTENDED_HISTORY NO_HIST_EXPIRE_DUPS_FIRST
+              NO_HIST_FIND_NO_DUPS NO_HIST_IGNORE_ALL_DUPS NO_HIST_SAVE_NO_DUPS
+            )
+            for opt in "''${set_opts[@]}"; do
+              setopt "$opt"
+            done
+            unset opt set_opts
+          ''
           (builtins.readFile ./init.zsh)
+          # kitty.conf keeps shell_integration no-rc, so source it by hand
+          ''
+            if test -n "$KITTY_INSTALLATION_DIR"; then
+              export KITTY_SHELL_INTEGRATION="no-rc no-cursor"
+              autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+              kitty-integration
+              unfunction kitty-integration
+            fi
+          ''
+          ''
+            # each generation is labeled with the commit it was built from,
+            # so a dirty tree would produce an inexact label
+            nhs() {
+              if [[ $1 == --dirty ]]; then
+                shift
+              else
+                local changes
+                changes=$(git -C "$NH_FLAKE" status --porcelain) || return 1
+                if [[ -n $changes ]]; then
+                  echo "nhs: $NH_FLAKE has uncommitted changes; commit them first or run 'nhs --dirty'" >&2
+                  return 1
+                fi
+              fi
+              nh os switch --accept-flake-config "$@"
+            }
+          ''
         ];
       };
 
-      xdg.configFile."zsh/p10k.zsh".source = ./p10k.zsh;
+      # the wrapper's bin/zsh would collide with programs.zsh in the system
+      # profile, so make every zsh (plain `zsh`, nix-shell, scripts) pick up
+      # the config by exporting the wrapper's ZDOTDIR from /etc/zshenv
+      programs.zsh = {
+        enableGlobalCompInit = false;
+        shellInit = ''
+          export ZDOTDIR=${zshWrapper.ZDOTDIR}
+        '';
+      };
+
+      users.users.maxfh.shell = zshWrapper;
+
+      my.dotfiles.files.".config/zsh/p10k.zsh".source = ./p10k.zsh;
     };
 }
