@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   # Vivaldi reads Chromium-style enterprise policies from /etc/vivaldi/policies/managed,
   # which is only writable from the system config.
   flake.modules.nixos.vivaldi =
