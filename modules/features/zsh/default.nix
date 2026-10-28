@@ -100,7 +100,7 @@
             HISTSIZE="10000"
             SAVEHIST="10000"
 
-            HISTFILE="/home/maxfh/.zsh_history"
+            HISTFILE="$HOME/.zsh_history"
             mkdir -p "$(dirname "$HISTFILE")"
 
             set_opts=(
