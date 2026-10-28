@@ -34,8 +34,11 @@ in
         "hypr/configs/windowrules.lua".source = ./configs/windowrules.lua;
         "hypr/configs/keybinds.lua".text =
           builtins.replaceStrings
-            [ ''terminal = "kitty"'' ]
-            [ ''terminal = "${lib.getExe config.my.terminal}"'' ]
+            [ ''terminal = "kitty"'' ''local browser = "zen"'' ]
+            [
+              ''terminal = "${lib.getExe config.my.terminal}"''
+              ''local browser = "${config.my.desktop.browserCommand}"''
+            ]
             keybindsContent;
         "hypr/configs/gpu.lua".text =
           lib.optionalString (config.my.hardware.gpu == "hybrid" && config.my.hardware.gpuDevices != [ ])

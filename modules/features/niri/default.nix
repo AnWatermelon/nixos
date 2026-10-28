@@ -273,7 +273,7 @@ in
             "Mod+E".action.spawn-sh = "kitty --hold -e zsh -i -c 'y'";
             "Mod+Space".action."toggle-window-floating" = [ ];
             "Mod+R".action.spawn-sh = "noctalia msg config-reload";
-            "Mod+B".action.spawn = "zen-browser";
+            "Mod+B".action.spawn = config.my.desktop.browserCommand;
             "Mod+L".action.spawn-sh = "noctalia msg session lock";
             "Mod+Shift+S".action.spawn-sh = "noctalia msg screenshot-region";
             "Mod+W".action.spawn-sh = "noctalia msg panel-toggle wallpaper";
