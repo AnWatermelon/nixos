@@ -56,6 +56,8 @@
       config.flake.modules.nixos.terminal
       config.flake.modules.nixos.nas
       config.flake.modules.nixos.u2f
+
+      inputs.nixos-hardware.nixosModules.framework-intel-core-ultra-series3
     ];
   };
 }
