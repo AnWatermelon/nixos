@@ -11,6 +11,7 @@
     modules = [
       (
         {
+          config,
           modulesPath,
           pkgs,
           ...
@@ -67,13 +68,27 @@
             ];
           };
 
+          # Root only: a separate user with passwordless sudo protects
+          # nothing, and install-host needs root anyway. No SSH keys are
+          # provisioned for the ISO, so sshd would only offer password
+          # logins.
+          users.users.maxfh.enable = false;
+          users.users.nixos.enable = false;
+          users.users.root.shell = config.users.users.maxfh.shell;
+          services.openssh.enable = lib.mkForce false;
+          services.getty.helpLine = lib.mkForce ''
+            Install with `install-host --disk <device> <host>`; see `install-host --help`.
+            To set up a wireless connection, run `nmtui`.
+          '';
+
           # kitty in cage on tty1, autologin gettys on the other VTs.
-          services.getty.autologinUser = lib.mkForce "maxfh";
-          users.users.maxfh.initialPassword = "nixos";
+          services.getty.autologinUser = lib.mkForce "root";
           my = {
+            dotfiles.user = "root";
             cage = {
               enable = true;
               autoLogin = true;
+              user = "root";
             };
             terminal = pkgs.kitty;
             neovim.lean = true;
