@@ -26,10 +26,9 @@ The target <host> must be a NixOS host in this flake.
 If <host> ships a pre-generated SSH host key
 (modules/hosts/<host>/ssh_host_ed25519_key.age), you will be prompted
 for its age passphrase before any changes are made. The key decrypts
-the host's sops secrets at first boot. If the ISO was built with the
-host keys unlocked (`nix run .#build-iso`, or
-MAX_ISO_PASSPHRASE_FILE=... nix build --impure .#iso), the key is
-already unlocked on the ISO and no prompt appears.
+the host's sops secrets at first boot. If the passphrase was entered
+when the ISO was built (`nix run .#build-iso`), the key is already
+unlocked on the ISO and no prompt appears.
 EOF
 }
 
