@@ -67,8 +67,25 @@
             ];
           };
 
+          # kitty in cage on tty1, autologin gettys on the other VTs.
           services.getty.autologinUser = lib.mkForce "maxfh";
           users.users.maxfh.initialPassword = "nixos";
+          my = {
+            cage = {
+              enable = true;
+              autoLogin = true;
+            };
+            terminal = pkgs.kitty;
+            neovim.lean = true;
+          };
+
+          # Keep the image small: none of these serve an installer.
+          services.mullvad-vpn.enable = lib.mkForce false;
+          services.speechd.enable = lib.mkForce false;
+          programs.appimage.enable = lib.mkForce false;
+          # kitty has the Nerd Font symbols built in.
+          fonts.enableDefaultPackages = lib.mkForce false;
+          fonts.packages = [ pkgs.jetbrains-mono ];
         }
       )
 
@@ -78,6 +95,13 @@
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
+      config.flake.modules.nixos.cage
+      config.flake.modules.nixos.terminal
+      config.flake.modules.nixos.kitty
+      config.flake.modules.nixos.zsh
+      config.flake.modules.nixos.tmux
+      config.flake.modules.nixos.git
+      config.flake.modules.nixos.neovim
     ];
   };
 
