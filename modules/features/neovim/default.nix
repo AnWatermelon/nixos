@@ -46,26 +46,30 @@
         };
 
         # nvim's PATH only, not global
-        runtimePkgs = with pkgs; [
-          ripgrep
-          fd
-          git
+        runtimePkgs =
+          with pkgs;
+          [
+            ripgrep
+            fd
+            git
 
-          bash-language-server
-          clang-tools # clangd for C/C++
-          dockerfile-language-server
-          gopls
-          lua-language-server
-          marksman # Markdown
-          nil # Nix (fast, single-file)
-          nixd # Nix (full-featured, flakes/projects)
-          pyright
-          rust-analyzer
-          taplo # TOML
-          typescript-language-server
-          vscode-langservers-extracted # html, css, json, eslint
-          yaml-language-server
-        ];
+            bash-language-server
+            dockerfile-language-server
+            gopls
+            lua-language-server
+            nil # Nix (fast, single-file)
+            nixd # Nix (full-featured, flakes/projects)
+            pyright
+            taplo # TOML
+            typescript-language-server
+            vscode-langservers-extracted # html, css, json, eslint
+            yaml-language-server
+          ]
+          ++ lib.optionals (!config.my.neovim.lean) [
+            clang-tools # clangd for C/C++ (~1.3 GiB with clang and gcc)
+            marksman # Markdown (pulls in the .NET runtime)
+            rust-analyzer
+          ];
 
         specs.plugins = with pkgs.vimPlugins; [
           base16-nvim
@@ -116,6 +120,8 @@
       };
     in
     {
+      options.my.neovim.lean = lib.mkEnableOption "a lighter neovim without the clangd, marksman and rust-analyzer language servers";
+
       options.my.neovim.package = lib.mkOption {
         type = lib.types.package;
         readOnly = true;

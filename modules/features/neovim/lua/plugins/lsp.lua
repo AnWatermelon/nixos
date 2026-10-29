@@ -21,7 +21,11 @@ for _, lsp in ipairs(servers) do
   vim.lsp.config(lsp, {
     capabilities = capabilities,
   })
-  vim.lsp.enable(lsp)
+  -- Lean builds (my.neovim.lean) leave some servers out.
+  local cmd = vim.lsp.config[lsp].cmd
+  if type(cmd) ~= "table" or vim.fn.executable(cmd[1]) == 1 then
+    vim.lsp.enable(lsp)
+  end
 end
 
 vim.lsp.config("nixd", {
