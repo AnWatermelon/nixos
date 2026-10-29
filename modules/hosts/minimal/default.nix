@@ -42,6 +42,8 @@
           systemd.services.install-finalize = {
             description = "Finalize installation by switching to the target host";
             wantedBy = [ "multi-user.target" ];
+            wants = [ "network-online.target" ];
+            after = [ "network-online.target" ];
             unitConfig.ConditionPathExists = [
               "/etc/install-target"
               "!/var/lib/install-finalize.done"
