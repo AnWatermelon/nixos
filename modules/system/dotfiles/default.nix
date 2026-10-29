@@ -232,6 +232,12 @@
           '';
           build.dotfiles = storeTree;
           build.dotfilesLive = liveTree;
+          # User activation skips system users (ConditionUser=!@system),
+          # so link root's files during system activation instead.
+          activationScripts.dotfiles-root = lib.mkIf (cfg.user == "root") {
+            deps = [ "users" ];
+            text = "HOME=/root ${lib.getExe activate}";
+          };
         };
         # Have links point at the new generation before a compositor reads
         # them, e.g. on the first login after booting a new generation.
