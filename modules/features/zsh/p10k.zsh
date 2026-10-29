@@ -241,6 +241,18 @@
   typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
+  # ============================[ Linux console ]=============================
+
+  # The kernel console font has no Nerd Font or arrow glyphs.
+  if [[ $TERM == linux ]]; then
+    typeset -g POWERLEVEL9K_MODE=ascii
+    typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=
+    typeset -g POWERLEVEL9K_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='>'
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VICMD_CONTENT_EXPANSION='<'
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIOWR_CONTENT_EXPANSION='^'
+  fi
+
   (( ! $+functions[p10k] )) || p10k reload
 }
 
