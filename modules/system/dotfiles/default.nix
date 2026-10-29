@@ -44,22 +44,48 @@
         name = "dotfiles-activate";
         runtimeInputs = [
           pkgs.coreutils
+          pkgs.dconf
           pkgs.findutils
           pkgs.gnugrep
         ];
         text = ''
           state="''${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
           mkdir -p "$state"
-          ln -sfn ${storeTree} "$state/current.new"
-          mv -Tf "$state/current.new" "$state/current"
+          # This also runs at every login; only a new generation resets live
+          # mode, so `dotfiles-live on` survives a reboot.
+          if [ "$(cat "$state/generation" 2>/dev/null)" != ${storeTree} ]; then
+            ln -sfn ${storeTree} "$state/current.new"
+            mv -Tf "$state/current.new" "$state/current"
+            echo ${storeTree} > "$state/generation"
+          fi
 
-          # Links left behind by home-manager would shadow system-wide config.
-          find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -delete
-          for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
-            if [ -d "$dir" ]; then
-              find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -delete
+          # Clean up after home-manager once per migration (or per rollback
+          # into a home-manager generation): its links would shadow
+          # system-wide config, its GC roots would pin its last generation
+          # forever, and the dconf values it wrote would override the
+          # system database.
+          hmState="''${XDG_STATE_HOME:-$HOME/.local/state}/home-manager"
+          if [ -e "$hmState" ]; then
+            find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -delete || true
+            for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
+              if [ -d "$dir" ]; then
+                find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -delete 2>/dev/null || true
+              fi
+            done
+            reset=1
+            for key in /org/cinnamon/desktop/applications/terminal/exec \
+              /org/gnome/desktop/interface/color-scheme /org/gnome/desktop/interface/gtk-theme; do
+              if ! dconf reset "$key"; then
+                echo "dotfiles: could not reset $key, will retry next login" >&2
+                reset=0
+              fi
+            done
+            rm -f "''${XDG_STATE_HOME:-$HOME/.local/state}"/nix/profiles/home-manager* \
+              /nix/var/nix/profiles/per-user/"$(id -un)"/home-manager*
+            if [ "$reset" = 1 ]; then
+              rm -rf "$hmState"
             fi
-          done
+          fi
 
           while IFS= read -r target; do
             dest="$HOME/$target"
@@ -197,6 +223,9 @@
           build.dotfiles = storeTree;
           build.dotfilesLive = liveTree;
         };
+        # Have links point at the new generation before a compositor reads
+        # them, e.g. on the first login after booting a new generation.
+        systemd.user.services.nixos-activation.before = [ "graphical-session-pre.target" ];
         environment.systemPackages = lib.mkIf cfg.live [ live ];
       };
     };

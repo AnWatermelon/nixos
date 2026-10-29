@@ -123,6 +123,12 @@
               unfunction kitty-integration
             fi
           ''
+          # /etc/zshenv overrides the ZDOTDIR ghostty injects its integration with
+          ''
+            if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+              source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
+            fi
+          ''
           ''
             # each generation is labeled with the commit it was built from,
             # so a dirty tree would produce an inexact label
