@@ -7,6 +7,8 @@ keys:
 
   - &host_ne4 age1smfn8rlp27r4md944mw8exg09xufnfweegw2yd5m79fy7c5p9g9ss6e645
 
+  - &host_nixos_test age1pgcgunnmad58v9q55p2gmedp9jd7d5jr7wtnpqlwqk47mry70pzs0qumt7
+
 creation_rules:
   - path_regex: modules/system/netbird/secrets/.*\.ya?ml$
     key_groups:
@@ -15,6 +17,7 @@ creation_rules:
           - *host_fw13p
           - *host_fw16
           - *host_ne4
+          - *host_nixos_test
 
   - path_regex: modules/system/gitea/secrets/.*\.ya?ml$
     key_groups:
@@ -23,8 +26,13 @@ creation_rules:
           - *host_fw13p
           - *host_fw16
           - *host_ne4
+          - *host_nixos_test
+
   - path_regex: modules/system/nas/secrets/.*\.ya?ml$
     key_groups:
       - age:
+          - *user_maxfh
           - *host_fw16
+          - *host_fw13p
           - *host_ne4
+          - *host_nixos_test
