@@ -66,10 +66,18 @@
           # system database.
           hmState="''${XDG_STATE_HOME:-$HOME/.local/state}/home-manager"
           if [ -e "$hmState" ]; then
-            find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -delete || true
-            for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
-              if [ -d "$dir" ]; then
-                find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -delete 2>/dev/null || true
+            # Links at managed paths are left for the loop below to swap in
+            # place, so a running compositor never sees its config missing.
+            {
+              find "$HOME" -maxdepth 1 -type l -lname '/nix/store/*-home-manager-files/*' -print0 || true
+              for dir in "$HOME/.config" "$HOME/.local" "$HOME/.ssh"; do
+                if [ -d "$dir" ]; then
+                  find "$dir" -xdev -type l -lname '/nix/store/*-home-manager-files/*' -print0 2>/dev/null || true
+                fi
+              done
+            } | while IFS= read -r -d "" hmLink; do
+              if ! grep -qxF -- "''${hmLink#"$HOME"/}" ${manifest}; then
+                rm "$hmLink"
               fi
             done
             reset=1
@@ -94,7 +102,9 @@
               continue
             fi
             if [ -L "$dest" ] && [[ "$(readlink "$dest")" == /nix/store/* ]]; then
-              rm "$dest"
+              ln -sfn "$link" "$dest.dotfiles-new"
+              mv -Tf "$dest.dotfiles-new" "$dest"
+              continue
             elif [ -e "$dest" ] || [ -L "$dest" ]; then
               backup="$dest.dotfiles-bak"
               if [ -e "$backup" ] || [ -L "$backup" ]; then
