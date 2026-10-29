@@ -1,4 +1,10 @@
-{ disk, ... }:
+{
+  disk,
+  # disko's --argstr only passes strings.
+  biosBoot ? "true",
+  espSize ? "2G",
+  ...
+}:
 {
   disko.devices = {
     disk = {
@@ -7,36 +13,44 @@
         device = disk;
         content = {
           type = "gpt";
-          partitions = {
-            bios_boot = {
-              size = "1M";
-              type = "EF02";
-            };
-            ESP = {
-              size = "512M";
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
+          partitions =
+            (
+              if biosBoot == "true" then
+                {
+                  bios_boot = {
+                    size = "1M";
+                    type = "EF02";
+                  };
+                }
+              else
+                { }
+            )
+            // {
+              ESP = {
+                size = espSize;
+                type = "EF00";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountpoint = "/boot";
+                };
+              };
+              swap = {
+                size = "8G";
+                content = {
+                  type = "swap";
+                  discardPolicy = "both";
+                };
+              };
+              root = {
+                size = "100%";
+                content = {
+                  type = "filesystem";
+                  format = "ext4";
+                  mountpoint = "/";
+                };
               };
             };
-            swap = {
-              size = "8G";
-              content = {
-                type = "swap";
-                discardPolicy = "both";
-              };
-            };
-            root = {
-              size = "100%";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/";
-              };
-            };
-          };
         };
       };
     };

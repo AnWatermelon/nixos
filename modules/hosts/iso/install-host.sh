@@ -12,6 +12,7 @@ Options:
   --disk DEVICE      Target disk (e.g. /dev/vda). WARNING: everything on
                      it will be destroyed. Required.
   --layout NAME      Partition layout: btrfs (default) or ext4.
+  --esp-size SIZE    EFI system partition size (default 2G, e.g. 1G).
   --keep-hardware    Keep the target host's committed hardware
                      configuration instead of regenerating it. Use this
                      when installing onto a machine that matches an
@@ -40,6 +41,7 @@ die() {
 HOST=""
 DISK=""
 LAYOUT="btrfs"
+ESP_SIZE="2G"
 KEEP_HW=0
 REBOOT=1
 
@@ -51,6 +53,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --layout)
       LAYOUT="$2"
+      shift 2
+      ;;
+    --esp-size)
+      ESP_SIZE="$2"
       shift 2
       ;;
     --keep-hardware)
@@ -90,6 +96,14 @@ WORK="/tmp/install-host-flake"
 [[ -d "$FLAKE_SRC" ]] || die "flake not found at $FLAKE_SRC (are you on the Max ISO?)"
 [[ -f "$LAYOUT_DIR/$LAYOUT.nix" ]] || die "unknown layout '$LAYOUT' (available: btrfs, ext4)"
 [[ -b "$DISK" ]] || die "$DISK is not a block device"
+[[ "$ESP_SIZE" =~ ^[0-9]+[KMGT]$ ]] || die "invalid --esp-size '$ESP_SIZE' (e.g. 512M, 2G)"
+
+# The 1M BIOS boot partition only serves GRUB on legacy BIOS.
+if [[ -d /sys/firmware/efi ]]; then
+  BIOS_BOOT=false
+else
+  BIOS_BOOT=true
+fi
 
 read -r -p "DESTROY all data on $DISK and install host '$HOST'? Type '$HOST' to confirm: " confirm
 [[ "$confirm" == "$HOST" ]] || die "aborted"
@@ -118,8 +132,12 @@ else
   echo "==> No pre-generated SSH host key for $HOST (skipping)"
 fi
 
-echo "==> Partitioning $DISK with layout '$LAYOUT'"
-disko --mode destroy,format,mount "$LAYOUT_DIR/$LAYOUT.nix" --argstr disk "$DISK" --yes-wipe-all-disks
+echo "==> Partitioning $DISK with layout '$LAYOUT' (ESP $ESP_SIZE, BIOS boot partition: $BIOS_BOOT)"
+disko --mode destroy,format,mount "$LAYOUT_DIR/$LAYOUT.nix" \
+  --argstr disk "$DISK" \
+  --argstr biosBoot "$BIOS_BOOT" \
+  --argstr espSize "$ESP_SIZE" \
+  --yes-wipe-all-disks
 
 echo "==> Copying flake to $WORK"
 rm -rf "$WORK"
