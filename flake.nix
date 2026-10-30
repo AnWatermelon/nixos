@@ -14,6 +14,8 @@
     import-tree.url = "github:vic/import-tree";
     millennium.url = "github:SteamClientHomebrew/Millennium?dir=packages/nix";
     nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    # fw16: 7.3.0 leaves the iGPU sluggish after s2idle; hold 7.2.8 until fixed upstream
+    nix-cachyos-kernel-fw16.url = "github:xddxdd/nix-cachyos-kernel/b1332396df6e880d7e3b6b451c6a74132ce8cf66";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     noctalia = {

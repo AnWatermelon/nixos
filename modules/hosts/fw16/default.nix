@@ -21,8 +21,11 @@
       }
 
       (
-        { pkgs, ... }:
+        { lib, pkgs, ... }:
         {
+          # see nix-cachyos-kernel-fw16 in flake.nix
+          nixpkgs.overlays = lib.mkAfter [ inputs.nix-cachyos-kernel-fw16.overlays.pinned ];
+
           my = {
             dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
