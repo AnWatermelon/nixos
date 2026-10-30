@@ -72,17 +72,33 @@
           # nothing, and install-host needs root anyway. No SSH keys are
           # provisioned for the ISO, so sshd would only offer password
           # logins.
-          users.users.maxfh.enable = false;
-          users.users.nixos.enable = false;
-          users.users.root.shell = config.users.users.maxfh.shell;
-          services.openssh.enable = lib.mkForce false;
-          services.getty.helpLine = lib.mkForce ''
-            Install with `install-host --disk <device> <host>`; see `install-host --help`.
-            To set up a wireless connection, run `nmtui`.
-          '';
+          users.users = {
+            maxfh.enable = false;
+            nixos.enable = false;
+            root.shell = config.users.users.maxfh.shell;
+          };
 
-          # kitty in cage on tty1, autologin gettys on the other VTs.
-          services.getty.autologinUser = lib.mkForce "root";
+          services = {
+            openssh.enable = lib.mkForce false;
+            getty = {
+              helpLine = lib.mkForce ''
+                Install with `install-host --disk <device> <host>`; see `install-host --help`.
+                To set up a wireless connection, run `nmtui`.
+              '';
+              # kitty in cage on tty1, autologin gettys on the other VTs.
+              autologinUser = lib.mkForce "root";
+            };
+            # Keep the image small: none of these serve an installer.
+            mullvad-vpn.enable = lib.mkForce false;
+            speechd.enable = lib.mkForce false;
+          };
+          programs.appimage.enable = lib.mkForce false;
+          fonts = {
+            # kitty has the Nerd Font symbols built in.
+            enableDefaultPackages = lib.mkForce false;
+            packages = [ pkgs.jetbrains-mono ];
+          };
+
           my = {
             dotfiles.user = "root";
             cage = {
@@ -93,14 +109,6 @@
             terminal = pkgs.kitty;
             neovim.lean = true;
           };
-
-          # Keep the image small: none of these serve an installer.
-          services.mullvad-vpn.enable = lib.mkForce false;
-          services.speechd.enable = lib.mkForce false;
-          programs.appimage.enable = lib.mkForce false;
-          # kitty has the Nerd Font symbols built in.
-          fonts.enableDefaultPackages = lib.mkForce false;
-          fonts.packages = [ pkgs.jetbrains-mono ];
         }
       )
 
