@@ -29,6 +29,9 @@
         };
         gamescope.enable = true;
       };
+      systemd.user.tmpfiles.rules = [
+        "L %h/.steam/steam - - - - %h/.local/share/Steam"
+      ];
       environment.systemPackages = with pkgs; [
         mangohud
       ];
