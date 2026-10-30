@@ -36,4 +36,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build system closure
-        run: nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel" --no-link --extra-substituters "https://cache.lantian.pub/lantian" --extra-trusted-public-keys "lantian:WVGO7vsRMSEN+h7Lp7kv6SAmrkEXgUGbbXm7jMDjBuQ="
+        run: nix build ".#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel" --no-link --extra-substituters "https://cache.lantian.pub/lantian" --extra-trusted-public-keys "lantian:WVGO7vsRMSEN+h7Lp7kv6SAmrkEXgUGbbXm7jMDjBuQ=" --accept-flake-config
