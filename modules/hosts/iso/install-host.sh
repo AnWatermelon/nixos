@@ -23,12 +23,14 @@ Options:
 
 The target <host> must be a NixOS host in this flake.
 
-If <host> ships a pre-generated SSH host key
-(modules/hosts/<host>/ssh_host_ed25519_key.age), you will be prompted
-for its age passphrase before any changes are made. The key decrypts
-the host's sops secrets at first boot. If the passphrase was entered
-when the ISO was built (`nix run .#build-iso`), the key is already
-unlocked on the ISO and no prompt appears.
+If <host> ships a pre-generated SSH host key, it is unlocked before any
+changes are made; the key decrypts the host's sops secrets at first
+boot. A copy sealed to the YubiKeys (ssh_host_ed25519_key.yubikey.age,
+see `nix run .#hostkeys`) unlocks with a touch and the FIDO2 PIN;
+otherwise, or if that fails, you are prompted for the age passphrase of
+ssh_host_ed25519_key.age. If the passphrase was entered when the ISO
+was built (`nix run .#build-iso`), the key is already unlocked on the
+ISO and no prompt appears.
 EOF
 }
 
@@ -108,25 +110,38 @@ read -r -p "DESTROY all data on $DISK and install host '$HOST'? Type '$HOST' to 
 [[ "$confirm" == "$HOST" ]] || die "aborted"
 
 HOSTKEY_AGE="$FLAKE_SRC/modules/hosts/$HOST/ssh_host_ed25519_key.age"
+HOSTKEY_YUBIKEY="$FLAKE_SRC/modules/hosts/$HOST/ssh_host_ed25519_key.yubikey.age"
 HOSTKEY_TMP="/tmp/install-host-${HOST}-hostkey"
 UNLOCKED_KEY="/iso/unlocked-hostkeys/$HOST/ssh_host_ed25519_key"
+rm -f "$HOSTKEY_TMP"
 if [[ -f "$UNLOCKED_KEY" ]]; then
   echo "==> Using SSH host key pre-unlocked at ISO build time (sops secrets are keyed to it)"
   cp "$UNLOCKED_KEY" "$HOSTKEY_TMP"
   chmod 600 "$HOSTKEY_TMP"
-elif [[ -f "$HOSTKEY_AGE" ]]; then
-  echo "==> Decrypting pre-generated SSH host key for $HOST (sops secrets are keyed to it)"
-  rm -f "$HOSTKEY_TMP"
-  for attempt in 1 2 3; do
-    if age -d -o "$HOSTKEY_TMP" "$HOSTKEY_AGE"; then
+elif [[ -f "$HOSTKEY_YUBIKEY" || -f "$HOSTKEY_AGE" ]]; then
+  echo "==> Unlocking the pre-generated SSH host key for $HOST (sops secrets are keyed to it)"
+  if [[ -f "$HOSTKEY_YUBIKEY" ]]; then
+    echo "    with a YubiKey; insert one and touch it when it blinks"
+    if (umask 077 && age -d -j fido2-hmac -o "$HOSTKEY_TMP" "$HOSTKEY_YUBIKEY"); then
       chmod 600 "$HOSTKEY_TMP"
-      break
+    else
+      rm -f "$HOSTKEY_TMP"
+      [[ -f "$HOSTKEY_AGE" ]] || die "YubiKey unlock failed"
+      echo "    (YubiKey unlock failed; falling back to the passphrase)"
     fi
-    if [[ $attempt -eq 3 ]]; then
-      die "host key decryption failed after 3 attempts"
-    fi
-    echo "    (attempt $attempt failed; try again)"
-  done
+  fi
+  if [[ ! -f "$HOSTKEY_TMP" ]]; then
+    for attempt in 1 2 3; do
+      if age -d -o "$HOSTKEY_TMP" "$HOSTKEY_AGE"; then
+        chmod 600 "$HOSTKEY_TMP"
+        break
+      fi
+      if [[ $attempt -eq 3 ]]; then
+        die "host key decryption failed after 3 attempts"
+      fi
+      echo "    (attempt $attempt failed; try again)"
+    done
+  fi
 else
   echo "==> No pre-generated SSH host key for $HOST (skipping)"
 fi

@@ -51,6 +51,7 @@
 
           environment.systemPackages = with pkgs; [
             age
+            age-plugin-fido2-hmac
             btrfs-progs
             dosfstools
             gptfdisk
