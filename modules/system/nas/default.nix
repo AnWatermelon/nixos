@@ -46,6 +46,7 @@
           Type = "notify";
           User = "maxfh";
           Group = "users";
+          ExecStartPre = "-/run/wrappers/bin/fusermount3 -uz /home/maxfh/shared";
           ExecStart = ''
             ${pkgs.rclone}/bin/rclone mount nas:NAS /home/maxfh/shared \
               --vfs-cache-mode full \
@@ -54,7 +55,7 @@
               --cache-dir /home/maxfh/.cache/rclone \
               --umask 022
           '';
-          ExecStop = "/run/wrappers/bin/fusermount3 -u /home/maxfh/shared";
+          ExecStop = "/run/wrappers/bin/fusermount3 -uz /home/maxfh/shared";
           Restart = "on-failure";
           RestartSec = 5;
         };
