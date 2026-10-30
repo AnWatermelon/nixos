@@ -30,6 +30,7 @@
             desktop.environment = "hyprland";
             hardware = {
               laptop = true;
+              powerDaemon = "ppd";
               gpu = {
                 configuration = "igpu";
                 vendor = "intel";

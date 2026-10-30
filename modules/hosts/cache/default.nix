@@ -42,6 +42,7 @@
       config.flake.modules.nixos.locale
       config.flake.modules.nixos.users
       config.flake.modules.nixos.core
+      config.flake.modules.nixos.hardware
       config.flake.modules.nixos.qemu-guest
       config.flake.modules.nixos.harmonia
       config.flake.modules.nixos.gitea-runner

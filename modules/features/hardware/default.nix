@@ -29,6 +29,15 @@
           ];
         }
 
+        (lib.mkIf (cfg.powerDaemon == "tuned") {
+          services.tuned.enable = true;
+        })
+
+        # nixos-hardware only enables PPD on AMD; Intel would fall back to TLP
+        (lib.mkIf (cfg.powerDaemon == "ppd") {
+          services.power-profiles-daemon.enable = true;
+        })
+
         (lib.mkIf (cfg.gpu.devices != [ ]) {
           services.udev.extraRules = lib.concatMapStringsSep "\n" (
             d:

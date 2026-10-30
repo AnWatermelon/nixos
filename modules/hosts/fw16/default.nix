@@ -36,6 +36,7 @@
             hyprland.displayConfig = ./displays.lua;
             hardware = {
               laptop = true;
+              powerDaemon = "ppd";
               gpu = {
                 configuration = "hybrid";
                 devices = [

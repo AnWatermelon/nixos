@@ -6,6 +6,14 @@
       default = false;
       description = "Whether this machine is a laptop";
     };
+    powerDaemon = lib.mkOption {
+      type = lib.types.enum [
+        "tuned"
+        "ppd"
+      ];
+      default = "tuned";
+      description = "Power management daemon; Framework laptops should use 'ppd'";
+    };
     gpu = {
       configuration = lib.mkOption {
         type = lib.types.enum [

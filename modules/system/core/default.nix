@@ -29,7 +29,6 @@
 
     services = {
       upower.enable = true;
-      tuned.enable = true;
       fwupd.enable = true;
     };
 
