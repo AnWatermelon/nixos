@@ -114,6 +114,11 @@ function M.cycle_layout(step)
     end
 end
 
+function M.has_action(action_name)
+    local layout = M.get_active_layout()
+    return layout ~= nil and layout.actions[action_name] ~= nil
+end
+
 function M.dispatch_action(action_name, ...)
     local layout = M.get_active_layout()
     if layout and layout.actions and layout.actions[action_name] then

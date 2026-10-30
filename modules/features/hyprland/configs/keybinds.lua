@@ -5,6 +5,16 @@ local apps = require("nix/apps")
 local fileManager = "nemo"
 local ipc = "noctalia msg"
 
+local function layout_action_or(action, fallback)
+	return function()
+		if manager.has_action(action) then
+			manager.dispatch_action(action)
+		else
+			fallback()
+		end
+	end
+end
+
 hl.bind(mainMod .. " + Backspace", function()
 	manager.cycle_layout(1)
 end)
@@ -25,8 +35,16 @@ hl.bind(mainMod .. " + ALT + 3", function()
 	manager.set_layout("master")
 end)
 
-hl.bind(mainMod .. " + Return", function()
+hl.bind(mainMod .. " + ALT + 4", function()
+	manager.set_layout("scrolling")
+end)
+
+hl.bind(mainMod .. " + Return", layout_action_or("toggle_full_width", function()
 	manager.dispatch_action("swap")
+end))
+
+hl.bind(mainMod .. " + CTRL + Return", function()
+	manager.dispatch_action("cycle_width")
 end)
 
 hl.bind(mainMod .. " + SHIFT + Return", function()
@@ -125,13 +143,19 @@ hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + k", hl.dsp.window.move({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + j", hl.dsp.window.move({ direction = "d" }))
 
-hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { repeating = true })
-hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { repeating = true })
+for _, key in ipairs({ "left", "h" }) do
+	hl.bind(mainMod .. " + CTRL + " .. key, layout_action_or("shrink_width", function()
+		hl.dispatch(hl.dsp.window.resize({ x = -50, y = 0, relative = true }))
+	end), { repeating = true })
+end
+for _, key in ipairs({ "right", "l" }) do
+	hl.bind(mainMod .. " + CTRL + " .. key, layout_action_or("grow_width", function()
+		hl.dispatch(hl.dsp.window.resize({ x = 50, y = 0, relative = true }))
+	end), { repeating = true })
+end
 hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { repeating = true })
 
-hl.bind(mainMod .. " + CTRL + h", hl.dsp.window.resize({ x = -50, y = 0, relative = true }), { repeating = true })
-hl.bind(mainMod .. " + CTRL + l", hl.dsp.window.resize({ x = 50, y = 0, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -50, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + j", hl.dsp.window.resize({ x = 0, y = 50, relative = true }), { repeating = true })
 
@@ -150,8 +174,12 @@ for i = 1, 9 do
 end
 hl.bind(mainMod .. " + SHIFT + ALT + 0", hl.dsp.window.move({ workspace = 10, follow = false }))
 
-hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
-hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+hl.bind(mainMod .. " + mouse_down", layout_action_or("scroll_next", function()
+	hl.dispatch(hl.dsp.focus({ workspace = "e+1" }))
+end))
+hl.bind(mainMod .. " + mouse_up", layout_action_or("scroll_prev", function()
+	hl.dispatch(hl.dsp.focus({ workspace = "e-1" }))
+end))
 
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })

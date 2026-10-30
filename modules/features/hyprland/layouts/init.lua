@@ -2,12 +2,14 @@ local manager = require("layouts/manager")
 local dual_master = require("layouts/dual_master")
 local dwindle = require("layouts/dwindle")
 local master = require("layouts/master")
+local scrolling = require("layouts/scrolling")
 
 dual_master.load_display_config()
 
 manager.register(dual_master.definition)
 manager.register(dwindle.definition)
 manager.register(master.definition)
+manager.register(scrolling.definition)
 
 if manager.is_layout_available("dual_master") then
     manager.set_layout("dual_master", true)
