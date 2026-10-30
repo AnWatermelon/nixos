@@ -22,7 +22,7 @@
 
     programs.ssh = {
       knownHosts = {
-        "gitea.hilton-tech.net" = {
+        "gitea" = {
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOhcQyzkGDdjHpFYvhhZLf/EW8oPrkCwgtgKB6CVTsdK";
           extraHostNames = [ "10.1.0.14" ];
         };

@@ -166,7 +166,7 @@ cp -a "$WORK" /mnt/etc/nixos
 
 echo "==> Restoring git repository in /etc/nixos"
 git -C /mnt/etc/nixos init -q -b main
-git -C /mnt/etc/nixos remote add origin gitea@gitea.hilton-tech.net:max_hilton/nixos
+git -C /mnt/etc/nixos remote add origin gitea:max_hilton/nixos
 git -C /mnt/etc/nixos remote add github https://github.com/AnWatermelon/nixos
 git -C /mnt/etc/nixos add -A
 
@@ -185,7 +185,7 @@ switch to host '$HOST' (this needs a network connection); progress is
 shown on the console, and the switch retries until it succeeds.
 
 /etc/nixos is a git repository tracking
-gitea@gitea.hilton-tech.net:max_hilton/nixos (hosts without the shared
+gitea:max_hilton/nixos (hosts without the shared
 key sync from the GitHub mirror instead). Its history is synced from
 the remote before the final switch, so 'git pull' works for updates
 afterwards.
