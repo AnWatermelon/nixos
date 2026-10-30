@@ -24,6 +24,7 @@
 
       systemd.tmpfiles.rules = [
         "d /home/maxfh/shared 0755 maxfh users -"
+        "d /home/maxfh/.cache 0755 maxfh users -"
         "d /home/maxfh/.cache/rclone 0700 maxfh users -"
       ];
 
