@@ -1,7 +1,7 @@
 config_version = 2
 
 [bar.default]
-center = [ "audio_visualizer_l", "media", "clock", "audio_visualizer" ]
+center = [ "audio_visualizer_l", "clock", "audio_visualizer" ]
 end = [ "tray", "bluetooth", "volume", "notifications", "battery", "session" ]
 start = [ "workspaces", "taskbar" ]
 
