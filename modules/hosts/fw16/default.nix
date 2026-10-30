@@ -26,7 +26,10 @@
           my = {
             dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
-            desktop.environment = "hyprland";
+            desktop = {
+              environment = "hyprland";
+              browser = "zen";
+            };
             hyprland.displayConfig = ./displays.lua;
             hardware = {
               laptop = true;
