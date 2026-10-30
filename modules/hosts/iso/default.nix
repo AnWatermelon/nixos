@@ -141,6 +141,16 @@
         }:$PATH"
         ${builtins.readFile ../../../scripts/build-iso.sh}
       '';
+      hostkeys = pkgs.writeShellScriptBin "hostkeys" ''
+        export PATH="${
+          lib.makeBinPath [
+            pkgs.age
+            pkgs.age-plugin-fido2-hmac
+            pkgs.util-linux
+          ]
+        }:$PATH"
+        ${builtins.readFile ../../../scripts/hostkeys.sh}
+      '';
     };
   };
 }
