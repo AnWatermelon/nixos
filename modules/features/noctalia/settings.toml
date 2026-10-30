@@ -100,6 +100,8 @@ auto_locate = true
 
 [lockscreen]
 monitors = [ "DP-2" ]
+edge_smoothness = 0.15
+transition_duration = 500
 
 [lockscreen_widgets]
 enabled = true
