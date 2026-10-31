@@ -28,6 +28,7 @@
             dotfiles.live = true;
             kernel.cachyos = "bore-x86_64-v3";
             desktop.environment = "hyprland";
+            hyprland.displayConfig = ./displays.lua;
             hardware = {
               laptop = true;
               powerDaemon = "ppd";
