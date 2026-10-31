@@ -6,7 +6,7 @@ _: {
       lib,
       ...
     }:
-    lib.mkIf (config.my.desktop.environment == "hyprland") {
+    lib.mkIf config.my.desktop.hyprland.enable {
       users.users.maxfh.packages = [
         pkgs.nemo-with-extensions
         pkgs.file-roller

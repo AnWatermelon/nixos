@@ -21,14 +21,6 @@
         the explicit xdg.mime.defaultApplications. Earlier packages win.
       '';
     };
-    environment = lib.mkOption {
-      type = lib.types.enum [
-        "hyprland"
-        "niri"
-        "gnome"
-      ];
-      default = "hyprland";
-      description = "Desktop environment/window manager to use";
-    };
+    gnome.enable = lib.mkEnableOption "the GNOME desktop (brings its own display manager, gdm)";
   };
 }

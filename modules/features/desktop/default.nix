@@ -79,21 +79,7 @@
             udisks2.enable = true;
           };
         }
-        (lib.mkIf (cfg.environment == "hyprland") {
-          environment.systemPackages = [
-            inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default
-          ];
-          programs.hyprland = {
-            enable = true;
-            xwayland.enable = true;
-            withUWSM = true;
-          };
-          services.greetd.enable = lib.mkForce true;
-          xdg.portal.extraPortals = [
-            pkgs.xdg-desktop-portal-hyprland
-          ];
-        })
-        (lib.mkIf (cfg.environment == "gnome") {
+        (lib.mkIf cfg.gnome.enable {
           services = {
             displayManager.gdm.enable = true;
             desktopManager.gnome.enable = true;

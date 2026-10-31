@@ -30,10 +30,12 @@
             dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
             desktop = {
-              environment = "hyprland";
               browser = "zen";
+              hyprland = {
+                enable = true;
+                displayConfig = ./displays.lua;
+              };
             };
-            hyprland.displayConfig = ./displays.lua;
             hardware = {
               laptop = true;
               powerDaemon = "ppd";

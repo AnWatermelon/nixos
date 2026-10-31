@@ -25,7 +25,7 @@
         {
           my = {
             kernel.cachyos = "bore";
-            desktop.environment = "hyprland";
+            desktop.hyprland.enable = true;
             hardware = {
               laptop = true;
               gpu = {
