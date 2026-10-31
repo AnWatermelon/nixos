@@ -33,8 +33,8 @@
           nfc = "nix fmt && nix flake check";
           tdu = "sudo ncdu --exclude '/.snapshots' --exclude '/mnt' --exclude '/home/maxfh/shared' /";
           nbs = "sudo netbird-wt0 status -d";
-          nbd = "sudo netbird-wt0 down";
-          nbu = "sudo netbird-wt0 up";
+          nbd = "sudo touch /run/netbird-wt0-watchdog.paused && sudo netbird-wt0 down";
+          nbu = "sudo rm -f /run/netbird-wt0-watchdog.paused; sudo netbird-wt0 up";
           nbr = "sudo netbird-wt0 down && sudo netbird-wt0 up";
         };
 
