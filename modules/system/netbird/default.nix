@@ -18,6 +18,7 @@
         runtimeInputs = with pkgs; [
           coreutils
           curl
+          iproute2
           iputils
           jq
           systemd
@@ -35,7 +36,15 @@
           log() { echo "$*"; }
 
           underlay_up() {
-            curl -s -o /dev/null --max-time 5 "$mgmt_url"
+            curl -s -o /dev/null --max-time 5 "$mgmt_url" && return 0
+
+            # with no peers up, netbird's own routes can black-hole the management
+            # server, so also probe the internet over the physical link directly
+            local dev
+            for dev in $(ip -j route show default | jq -r '.[] | select(.dev | test("wt0|mullvad") | not) | .dev'); do
+              curl -s -o /dev/null --interface "$dev" --max-time 5 http://1.1.1.1 && return 0
+            done
+            return 1
           }
 
           healthy() {
