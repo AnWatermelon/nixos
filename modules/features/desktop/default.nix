@@ -43,11 +43,11 @@
             antigravity-ide
             spotify-player
             electrum
-            libreoffice
             obs-studio
             godot
             inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
           ];
+          users.users.maxfh.packages = [ pkgs.libreoffice ];
         }
         {
           environment = {
