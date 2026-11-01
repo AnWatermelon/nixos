@@ -9,10 +9,12 @@
       terminalName = lib.getName config.my.terminal;
     in
     {
+      # No catch-all config.common: /etc/xdg/xdg-desktop-portal/portals.conf
+      # is found before the $desktop-portals.conf each desktop ships (via
+      # xdg.portal.configPackages), so it would override all of them.
       xdg.portal = {
         enable = true;
         xdgOpenUsePortal = true;
-        config.common.default = "*";
       };
 
       xdg.terminal-exec = {

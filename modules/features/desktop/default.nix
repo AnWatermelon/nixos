@@ -29,6 +29,7 @@
         inputs.self.modules.nixos.nemo
         inputs.self.modules.nixos.niri
         inputs.self.modules.nixos.kdeconnect
+        inputs.self.modules.nixos.kde
       ];
 
       config = lib.mkMerge [

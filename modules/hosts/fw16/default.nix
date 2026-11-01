@@ -26,6 +26,19 @@
           # see nix-cachyos-kernel-fw16 in flake.nix
           nixpkgs.overlays = lib.mkAfter [ inputs.nix-cachyos-kernel-fw16.overlays.pinned ];
 
+          users.users.isabel = {
+            isNormalUser = true;
+            description = "Isabel";
+            # only applies when the account is created; change it with passwd
+            initialPassword = "changeme";
+            extraGroups = [
+              "networkmanager"
+              "video"
+            ];
+            # Plasma's default browser, see the kde module
+            packages = [ pkgs.google-chrome ];
+          };
+
           my = {
             dotfiles.live = true;
             kernel.cachyos = "bore-zen4";
@@ -34,6 +47,10 @@
               hyprland = {
                 enable = true;
                 displayConfig = ./displays.lua;
+              };
+              kde = {
+                enable = true;
+                defaultUser = "isabel";
               };
             };
             hardware = {

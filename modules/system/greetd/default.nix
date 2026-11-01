@@ -9,11 +9,12 @@ _: {
     let
       desktop = config.my.desktop;
       user = "maxfh";
-      # GNOME brings gdm, so greetd only runs for the other desktops.
+      # GNOME brings gdm and KDE brings Plasma Login Manager, so greetd only
+      # runs for the other desktops.
       sessions =
         lib.optional desktop.hyprland.enable "${pkgs.uwsm}/bin/uwsm start hyprland-uwsm.desktop"
         ++ lib.optional desktop.niri.enable "${config.programs.niri.package}/bin/niri-session";
-      enabled = !desktop.gnome.enable && sessions != [ ];
+      enabled = !desktop.gnome.enable && !desktop.kde.enable && sessions != [ ];
       sessionDir = "${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
     in
     {
