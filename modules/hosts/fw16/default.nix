@@ -26,6 +26,8 @@
           # see nix-cachyos-kernel-fw16 in flake.nix
           nixpkgs.overlays = lib.mkAfter [ inputs.nix-cachyos-kernel-fw16.overlays.pinned ];
 
+          fileSystems."/home".neededForBoot = true;
+
           users.users.isabel = {
             isNormalUser = true;
             description = "Isabel";
