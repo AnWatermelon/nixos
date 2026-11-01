@@ -16,8 +16,21 @@
           inherit origin;
           appid = origin;
           cue = true; # prints "touch your key" instead of silently hanging
+          nouserok = true; # users without keys in the authfile log in with just a password
           authfile = pkgs.writeText "u2f_keys" "maxfh:${lib.concatStringsSep ":" creds}\n";
         };
+      };
+
+      # nouserok would let root in with just a password (the minimal host's
+      # bootstrap one survives install, since existing users keep theirs), so
+      # lock it outright. sudo is unaffected; it authenticates the caller.
+      system.activationScripts.lock-root = {
+        deps = [ "users" ];
+        text = ''
+          if [ "$(${pkgs.getent}/bin/getent shadow root | cut -d: -f2)" != '!' ]; then
+            ${pkgs.shadow}/bin/usermod -p '!' root
+          fi
+        '';
       };
     };
 }
