@@ -31,6 +31,13 @@
           withUWSM = true;
         };
         xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+        xdg.portal.config.hyprland = {
+          default = [
+            "hyprland"
+            "gtk"
+          ];
+          "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+        };
 
         my.dotfiles.files = {
           ".config/hypr/hyprland.lua".source = ./hyprland.lua;

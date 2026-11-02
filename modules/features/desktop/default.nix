@@ -82,6 +82,10 @@
             udisks2.enable = true;
           };
         }
+        (lib.mkIf (cfg.hyprland.enable || cfg.niri.enable) {
+          services.gnome.gnome-keyring.enable = true;
+          security.pam.services.login.enableGnomeKeyring = lib.mkIf cfg.kde.enable (lib.mkForce false);
+        })
         (lib.mkIf cfg.gnome.enable {
           services = {
             displayManager.gdm.enable = true;
