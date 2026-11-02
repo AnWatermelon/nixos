@@ -8,6 +8,8 @@ _: {
     }:
     let
       cfg = config.my.desktop.kde;
+      gpu = config.my.hardware.gpu;
+      drmDevices = lib.concatMapStringsSep ":" (d: "/dev/dri/${d.name}-card") gpu.devices;
       chrome = pkgs.google-chrome;
       desktopFile = "google-chrome.desktop";
     in
@@ -67,6 +69,14 @@ _: {
           # overrides the BROWSER set by the browser module.
           "xdg/plasma-workspace/env/browser.sh".text = ''
             export BROWSER=${lib.getExe chrome}
+          '';
+        }
+        # KWin otherwise picks the boot_vga GPU. Pin the order like
+        # AQ_DRM_DEVICES does for Hyprland: first is primary, the rest
+        # still drive their own outputs.
+        // lib.optionalAttrs (gpu.configuration == "hybrid" && gpu.devices != [ ]) {
+          "xdg/plasma-workspace/env/gpu.sh".text = ''
+            export KWIN_DRM_DEVICES=${drmDevices}
           '';
         };
       };

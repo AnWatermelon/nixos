@@ -22,7 +22,7 @@
           "hybrid"
         ];
         default = "dgpu";
-        description = "'hybrid' = has a dGPU but should render Hyprland on the iGPU";
+        description = "'hybrid' = has a dGPU but should render the desktop on the iGPU";
       };
       devices = lib.mkOption {
         type = lib.types.listOf (
