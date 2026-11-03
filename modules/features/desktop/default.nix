@@ -15,6 +15,7 @@
         inputs.self.modules.nixos.steam
         inputs.self.modules.nixos.vivaldi
         inputs.self.modules.nixos.zen-browser
+        inputs.self.modules.nixos.floorp
         inputs.self.modules.nixos.obs
         inputs.self.modules.nixos.greetd
         inputs.self.modules.nixos.xdg

@@ -5,6 +5,7 @@
       type = lib.types.enum [
         "zen"
         "vivaldi"
+        "floorp"
       ];
       default = "vivaldi";
       description = "Default web browser";

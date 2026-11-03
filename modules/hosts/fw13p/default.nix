@@ -27,8 +27,13 @@
           my = {
             dotfiles.live = true;
             kernel.cachyos = "bore-x86_64-v3";
-            desktop.hyprland.enable = true;
-            desktop.hyprland.displayConfig = ./displays.lua;
+            desktop = {
+              hyprland = {
+                enable = true;
+                displayConfig = ./displays.lua;
+              };
+              browser = "floorp";
+            };
             hardware = {
               laptop = true;
               powerDaemon = "ppd";
