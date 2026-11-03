@@ -6,7 +6,9 @@
       settings = {
         promptToReturnFromSubprocess = false;
         git.diffRenderers = [
-          { command = "${pkgs.delta}/bin/delta --paging=never --line-numbers --file-style omit --hunk-header-style omit --syntax-theme ansi --minus-style 'syntax' --plus-style 'syntax' --minus-emph-style 'reverse red' --plus-emph-style 'reverse green' --line-numbers-minus-style red --line-numbers-plus-style green"; }
+          {
+            command = "${pkgs.delta}/bin/delta --paging=never --line-numbers --file-style omit --hunk-header-style omit --syntax-theme ansi --minus-style 'syntax' --plus-style 'syntax' --minus-emph-style 'reverse red' --plus-emph-style 'reverse green' --line-numbers-minus-style red --line-numbers-plus-style green";
+          }
         ];
       };
       configFile = (pkgs.formats.yaml { }).generate "lazygit-config.yml" settings;
