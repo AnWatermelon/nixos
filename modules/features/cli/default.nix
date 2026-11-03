@@ -12,6 +12,7 @@ in
         flakeCfg.flake.modules.nixos.ssh
         flakeCfg.flake.modules.nixos.zsh
         flakeCfg.flake.modules.nixos.tmux
+        flakeCfg.flake.modules.nixos.lazygit
       ];
       programs.direnv = {
         enable = true;
@@ -26,7 +27,6 @@ in
       users.users.maxfh.packages = with pkgs; [
         fastfetch
         btop
-        lazygit
         ncdu
         nmap
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.antigravity-cli
