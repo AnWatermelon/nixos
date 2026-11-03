@@ -24,8 +24,13 @@
         my = {
           dotfiles.live = true;
           kernel.cachyos = "bore-zen4";
-          desktop.hyprland.enable = true;
-          desktop.hyprland.displayConfig = ./display.lua;
+          desktop = {
+            hyprland = {
+              enable = true;
+              displayConfig = ./display.lua;
+            };
+            browser = "floorp";
+          };
           hardware = {
             laptop = false;
             gpu = {
