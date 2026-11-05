@@ -33,7 +33,6 @@ in
         fzf
         nix-search-tv
         nodejs
-        inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex
         inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
       ];
     };
