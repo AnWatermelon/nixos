@@ -40,7 +40,7 @@
             # Plasma's default browser, see the kde module
             packages = [
               pkgs.google-chrome
-              pkgs.onlyoffice-desktopeditors
+              inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.onlyoffice-desktopeditors
             ];
           };
 
